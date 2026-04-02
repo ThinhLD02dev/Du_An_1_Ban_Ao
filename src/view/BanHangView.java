@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class BanHangView extends javax.swing.JPanel {
 }
 
     public void loadTableUnpaid() {
-        DefaultTableModel model = (DefaultTableModel) tblUnpaid.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblUnPaid.getModel();
         model.setRowCount(0);
 
         listHD = hdRepo.getAllToUnpaid();
@@ -149,14 +150,45 @@ public class BanHangView extends javax.swing.JPanel {
     public void loadFormInvoice(int hoaDonId) {
         Map<String, Object> hd = hdRepo.findById(hoaDonId);
         if (hd != null) {
-            txtIdInvoice.setText((String) hd.get("id"));
+            txtIdInvoice.setText(String.valueOf(hd.get("id")));
             txtClient.setText((String) hd.get("tenKhachHang"));
+            
+            // Format thời gian tạo
+            Timestamp ngayTao = (Timestamp) hd.get("ngayTao");
+            if (ngayTao != null) {
+                LocalDateTime ldt = ngayTao.toLocalDateTime();
+                txtTimeCreate.setText(ldt.format(format));
+            } else {
+                txtTimeCreate.setText("");
+            }
+            
             txtUseCreate.setText((String) hd.get("tenNhanVien"));
-            txtSumMoney.setText((String) hd.get("tongTien"));
+            
+            // Handle null cho các field số
+            BigDecimal tongTien = (BigDecimal) hd.get("tongTien");
+            txtSumMoney.setText(tongTien != null ? String.valueOf(tongTien) : "0");
+            
             txtSale.setText((String) hd.get("maGiamGia"));
-            txtMoneyPaid.setText((String) hd.get("tienThanhToan"));
-            txtGiveMoney.setText((String) hd.get("tienNhan"));
-            txtChange.setText((String) hd.get("tienThua"));
+            
+            BigDecimal tienThanhToan = (BigDecimal) hd.get("tienThanhToan");
+            txtMoneyPaid.setText(tienThanhToan != null ? String.valueOf(tienThanhToan) : "0");
+            
+            BigDecimal tienNhan = (BigDecimal) hd.get("tienNhan");
+            txtGiveMoney.setText(tienNhan != null ? String.valueOf(tienNhan) : "0");
+            
+            BigDecimal tienThua = (BigDecimal) hd.get("tienThua");
+            txtChange.setText(tienThua != null ? String.valueOf(tienThua) : "0");
+        } else {
+            // Reset form nếu không tìm thấy
+            txtIdInvoice.setText("");
+            txtClient.setText("");
+            txtTimeCreate.setText("");
+            txtUseCreate.setText("");
+            txtSumMoney.setText("");
+            txtSale.setText("");
+            txtMoneyPaid.setText("");
+            txtGiveMoney.setText("");
+            txtChange.setText("");
         }
     }
 
@@ -218,7 +250,7 @@ public class BanHangView extends javax.swing.JPanel {
         tblPaid = new javax.swing.JTabbedPane();
         jPanel9 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblUnpaid = new javax.swing.JTable();
+        tblUnPaid = new javax.swing.JTable();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -304,6 +336,11 @@ public class BanHangView extends javax.swing.JPanel {
         });
 
         btnCancel.setText("Huỷ hoá đơn");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -392,20 +429,20 @@ public class BanHangView extends javax.swing.JPanel {
                             .addComponent(jLabel9)
                             .addComponent(jLabel8)
                             .addComponent(jLabel10))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtIdInvoice, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtTimeCreate, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtUseCreate)
-                            .addComponent(txtSumMoney, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtTimeCreate, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                            .addComponent(txtUseCreate, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtChange, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtGiveMoney, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtSale, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtMoneyPaid)
-                            .addComponent(txtGiveMoney)
-                            .addComponent(txtChange)
-                            .addComponent(txtClient))))
+                            .addComponent(txtMoneyPaid, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtSumMoney, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtClient)
+                            .addComponent(txtIdInvoice, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(63, Short.MAX_VALUE)
+                .addContainerGap(64, Short.MAX_VALUE)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
         );
@@ -468,7 +505,7 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addComponent(btnIssueIvoice)
                 .addGap(27, 27, 27))
         );
@@ -569,7 +606,7 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel3.setBackground(new java.awt.Color(102, 204, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Danh sách hoá đơn", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
 
-        tblUnpaid.setModel(new javax.swing.table.DefaultTableModel(
+        tblUnPaid.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -580,12 +617,12 @@ public class BanHangView extends javax.swing.JPanel {
                 "Mã hoá đơn", "Thời gian tạo", "Khách hàng", "Người tạo"
             }
         ));
-        tblUnpaid.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblUnPaid.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblUnpaidMouseClicked(evt);
+                tblUnPaidMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblUnpaid);
+        jScrollPane1.setViewportView(tblUnPaid);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -697,30 +734,38 @@ public class BanHangView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
-        try {
-            int khachHangId = Integer.parseInt(txtClient.getText().trim());
-            int nhanVienId = Integer.parseInt(txtUseCreate.getText().trim());
-           
-            HoaDon hd = new HoaDon();
-            hd.setKhachHangId(khachHangId);
-            hd.setNhanVienId(nhanVienId);
-            
-            boolean success = hdRepo.createInvoice(hd);
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Tạo hóa đơn thành công!");
-                loadTableUnpaid();
-            } else {
-                JOptionPane.showMessageDialog(this, "Tạo hóa đơn thất bại!");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi dữ liệu: " + e.getMessage());
+        String tenKhachHang = txtClient.getText().trim();
+        if (tenKhachHang.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khách hàng!");
+            return;
+        }
+
+        int khachHangId = khRepo.getIdByName(tenKhachHang);
+        if (khachHangId == -1) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với tên: " + tenKhachHang);
+            return;
+        }
+
+        HoaDon hd = new HoaDon();
+        hd.setKhachHangId(khachHangId);
+        hd.setNhanVienId(idNhanVien);
+
+        int id = hdRepo.createInvoice(hd);
+        if (id > 0) {
+            JOptionPane.showMessageDialog(this, "Tạo hóa đơn thành công!");
+            currentHoaDonId = id;
+            loadTableUnpaid();
+            loadFormInvoice(id);
+            btnAdd.setEnabled(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Tạo hóa đơn thất bại!");
         }
     }//GEN-LAST:event_btnCreateInvoiceActionPerformed
 
-    private void tblUnpaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUnpaidMouseClicked
-        int row = tblUnpaid.getSelectedRow();
+    private void tblUnPaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUnPaidMouseClicked
+        int row = tblUnPaid.getSelectedRow();
         if (row >= 0) {
-            int hoaDonId = (int) tblUnpaid.getValueAt(row, 0);
+            int hoaDonId = (int) tblUnPaid.getValueAt(row, 0);
             loadTableCart(hoaDonId);
             loadFormInvoice(hoaDonId);
             currentHoaDonId = hoaDonId;
@@ -728,7 +773,7 @@ public class BanHangView extends javax.swing.JPanel {
 
         }
 
-    }//GEN-LAST:event_tblUnpaidMouseClicked
+    }//GEN-LAST:event_tblUnPaidMouseClicked
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         int row = tblCart.getSelectedRow();
@@ -779,6 +824,36 @@ public class BanHangView extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnClearActionPerformed
 
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để hủy!");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn hủy hóa đơn này? Tất cả dữ liệu sẽ bị xóa.",
+                "Xác nhận hủy hóa đơn",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Xóa chi tiết hóa đơn trước
+            hdctRepo.deleteAllCartItems(currentHoaDonId);
+            // Xóa hóa đơn
+            boolean deleted = hdRepo.delete(currentHoaDonId);
+            if (deleted) {
+                JOptionPane.showMessageDialog(this, "Hủy hóa đơn thành công!");
+                loadTableUnpaid();
+                loadTableCart(0);
+                // Reset form
+                loadFormInvoice(-1); // Hoặc reset manual
+                currentHoaDonId = -1;
+                btnAdd.setEnabled(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Hủy hóa đơn thất bại!");
+            }
+        }
+    }//GEN-LAST:event_btnCancelActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
@@ -821,7 +896,7 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JTable tblCart;
     private javax.swing.JTabbedPane tblPaid;
     private javax.swing.JTable tblProduct;
-    private javax.swing.JTable tblUnpaid;
+    private javax.swing.JTable tblUnPaid;
     private javax.swing.JTextField txtChange;
     private javax.swing.JTextField txtClient;
     private javax.swing.JTextField txtGiveMoney;

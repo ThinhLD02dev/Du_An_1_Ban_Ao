@@ -240,6 +240,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Hu&#x1ef7; ho&#xe1; &#x111;&#x1a1;n"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -269,24 +272,24 @@
                                   <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="txtIdInvoice" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtTimeCreate" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtUseCreate" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtSumMoney" alignment="1" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="txtTimeCreate" pref="140" max="32767" attributes="0"/>
+                                  <Component id="txtUseCreate" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtChange" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtGiveMoney" alignment="1" max="32767" attributes="0"/>
                                   <Component id="txtSale" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtMoneyPaid" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtGiveMoney" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtChange" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtClient" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtMoneyPaid" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtSumMoney" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtClient" max="32767" attributes="0"/>
+                                  <Component id="txtIdInvoice" alignment="1" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="63" max="32767" attributes="0"/>
+                      <EmptySpace pref="64" max="32767" attributes="0"/>
                       <Component id="jLabel6" min="-2" pref="152" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                   </Group>
@@ -468,7 +471,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="12" max="32767" attributes="0"/>
+                      <EmptySpace pref="13" max="32767" attributes="0"/>
                       <Component id="btnIssueIvoice" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   </Group>
@@ -670,7 +673,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="tblUnpaid">
+                    <Component class="javax.swing.JTable" name="tblUnPaid">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                           <Table columnCount="4" rowCount="4">
@@ -682,7 +685,7 @@
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tblUnpaidMouseClicked"/>
+                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tblUnPaidMouseClicked"/>
                       </Events>
                     </Component>
                   </SubComponents>
