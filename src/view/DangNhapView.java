@@ -9,12 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import jdbc.DbConnection;
+
 /**
  *
  * @author ngocp
  */
 public class DangNhapView extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DangNhapView.class.getName());
 
     /**
@@ -26,6 +27,8 @@ public class DangNhapView extends javax.swing.JFrame {
         add(jPanel1);
         this.setSize(400, 300);
         this.setLocationRelativeTo(null);
+        txtPass.addActionListener(evt -> btnDangNhap.doClick());
+        txtUser.addActionListener(evt -> btnDangNhap.doClick());
     }
 
     /**
@@ -124,39 +127,40 @@ public class DangNhapView extends javax.swing.JFrame {
         // TODO add your handling code here:
         login();
     }//GEN-LAST:event_btnDangNhapActionPerformed
-    
-    private void login() {
-    String ten_dang_nhap = txtUser.getText().trim();
-    String mat_khau = String.valueOf(txtPass.getPassword());
-    try (Connection conn = DbConnection.getConnection()) {
-        String sql = "SELECT * FROM tai_khoan WHERE ten_dang_nhap=? AND mat_khau=?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, ten_dang_nhap);
-        ps.setString(2, mat_khau);
-        ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            String vaiTro = rs.getString("vai_tro_id");
-            if ("2".equalsIgnoreCase(vaiTro)) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập Nhân viên thành công!");
-                MainView main = new MainView(rs.getInt("vai_tro_id"),rs.getInt("nhan_vien_id"));
-                main.setLocationRelativeTo(null);
-                main.setVisible(true);
-            }else if ("1".equalsIgnoreCase(vaiTro)) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập Admin thành công!");
-                MainView main = new MainView(rs.getInt("vai_tro_id"),rs.getInt("nhan_vien_id"));
-                main.setLocationRelativeTo(null);
-                main.setVisible(true);
+    private void login() {
+        String ten_dang_nhap = txtUser.getText().trim();
+        String mat_khau = String.valueOf(txtPass.getPassword());
+        try (Connection conn = DbConnection.getConnection()) {
+            String sql = "SELECT * FROM tai_khoan WHERE ten_dang_nhap=? AND mat_khau=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, ten_dang_nhap);
+            ps.setString(2, mat_khau);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String vaiTro = rs.getString("vai_tro_id");
+                if ("2".equalsIgnoreCase(vaiTro)) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập Nhân viên thành công!");
+                    MainView main = new MainView(rs.getInt("vai_tro_id"), rs.getInt("nhan_vien_id"));
+                    main.setLocationRelativeTo(null);
+                    main.setVisible(true);
+                } else if ("1".equalsIgnoreCase(vaiTro)) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập Admin thành công!");
+                    MainView main = new MainView(rs.getInt("vai_tro_id"), rs.getInt("nhan_vien_id"));
+                    main.setLocationRelativeTo(null);
+                    main.setVisible(true);
+                }
+
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
             }
-            
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
+
     /**
      * @param args the command line arguments
      */

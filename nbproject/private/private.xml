@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/view/BanHangView.java</file>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/model/HoaDon.java</file>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/repository/GiamGiaRepository.java</file>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/repository/SanPhamChiTietRepository.java</file>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/repository/HoaDonChiTietRepository.java</file>
-            <file>file:/D:/DuAn1/SP26_BL2_Ca3_PRO1041_SD21201/Du_An_1_Ban_Ao/src/repository/HoaDonRepository.java</file>
+            <file>file:/C:/DU1/Du_An_1_Ban_Ao/src/view/MainView.java</file>
+            <file>file:/C:/DU1/Du_An_1_Ban_Ao/src/view/KhachHangView.java</file>
+            <file>file:/C:/DU1/Du_An_1_Ban_Ao/src/view/NhanVienView.java</file>
+            <file>file:/C:/DU1/Du_An_1_Ban_Ao/src/view/DangNhapView.java</file>
         </group>
     </open-files>
 </project-private>
