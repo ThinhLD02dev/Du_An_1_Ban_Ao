@@ -123,4 +123,22 @@ public class KhachHangRepository {
 
         return list;
     }
+
+    public int getIdByName(String tenKhachHang) {
+        String sql = "SELECT id FROM khach_hang WHERE ten_khach_hang = ?";
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, tenKhachHang);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1; // Không tìm thấy
+    }
 }

@@ -71,7 +71,7 @@ public class HoaDonRepository {
                 + " FROM hoa_don hd "
                 + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " JOIN giam_gia gg ON hd.khuyen_mai_id = gg.id "
+                + " LEFT JOIN giam_gia gg ON hd.khuyen_mai_id = gg.id "
                 + " WHERE hd.id = ? ";
 
         try (Connection con = DbConnection.getConnection();
@@ -117,11 +117,11 @@ public class HoaDonRepository {
         return -1;
     }  
     
-    public boolean createInvoice(HoaDon hd) {
+    public int createInvoice(HoaDon hd) {
     String sql = """
             INSERT INTO hoa_don
             (khach_hang_id, nhan_vien_id, ngay_tao, trang_thai)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?); SELECT SCOPE_IDENTITY();
             """;
 
     try (Connection con = DbConnection.getConnection();
@@ -132,12 +132,29 @@ public class HoaDonRepository {
         ps.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
         ps.setInt(4, UNPAID); // mặc định "Chưa thanh toán"
 
-        return ps.executeUpdate() > 0;
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
 
     } catch (Exception e) {
         logger.log(Level.SEVERE, "Error in createInvoice", e);
     }
 
-    return false;
+    return -1;
 }
+
+    public boolean delete(int hoaDonId) {
+        String sql = "DELETE FROM hoa_don WHERE id = ?";
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, hoaDonId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in delete", e);
+        }
+
+        return false;
+    }
 }
