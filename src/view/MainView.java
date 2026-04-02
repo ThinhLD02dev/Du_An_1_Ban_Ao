@@ -10,24 +10,34 @@ import java.awt.CardLayout;
  *
  * @author ngocp
  */
-public class AdminView extends javax.swing.JFrame {
+public class MainView extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminView.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainView.class.getName());
 
     /**
      * Creates new form Admin
      */
-    
+    public void loadMain(){
+        if(vt == 2){
+            lblTaiKhoan.setText("NHÂN VIÊN");
+            btnNhanVien.setEnabled(false);
+        }
+    }
+    private int vt;
+    private int id;
     CardLayout cardLayout;
-    public AdminView() {
+    public MainView(Integer vaiTro, Integer idNhanVien) {
         initComponents();
+        this.vt = vaiTro;
+        this.id = idNhanVien;
+        loadMain();
         cardLayout = new CardLayout();
         pnMain.setLayout(cardLayout);
 
         pnMain.add(new SanPhamView(), "sanpham");
         pnMain.add(new NhanVienView(), "nhanvien");
         pnMain.add(new KhachHangView(), "khachhang");
-        pnMain.add(new BanHangView(), "banhang");
+        pnMain.add(new BanHangView(id), "banhang");
         setLayout(new java.awt.GridBagLayout());
         add(jPanel1);
         this.setSize(1300, 800);
@@ -47,18 +57,19 @@ public class AdminView extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         pnMenu = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblTaiKhoan = new javax.swing.JLabel();
         btnSanPham = new javax.swing.JButton();
         btnNhanVien = new javax.swing.JButton();
         btnHoaDon = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         pnMain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setText("ADMIN");
+        lblTaiKhoan.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblTaiKhoan.setText("ADMIN");
 
         btnSanPham.setText("SẢN PHẨM");
         btnSanPham.setPreferredSize(new java.awt.Dimension(150, 30));
@@ -70,11 +81,21 @@ public class AdminView extends javax.swing.JFrame {
 
         btnNhanVien.setText("NHÂN VIÊN");
         btnNhanVien.setPreferredSize(new java.awt.Dimension(150, 30));
+        btnNhanVien.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNhanVienActionPerformed(evt);
+            }
+        });
 
         btnHoaDon.setText("HÓA ĐƠN");
         btnHoaDon.setPreferredSize(new java.awt.Dimension(150, 30));
 
         jButton1.setText("KHÁCH HÀNG");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("BÁN HÀNG");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -83,14 +104,12 @@ public class AdminView extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("jLabel1");
+
         javax.swing.GroupLayout pnMenuLayout = new javax.swing.GroupLayout(pnMenu);
         pnMenu.setLayout(pnMenuLayout);
         pnMenuLayout.setHorizontalGroup(
             pnMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnMenuLayout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnMenuLayout.createSequentialGroup()
                 .addContainerGap(52, Short.MAX_VALUE)
                 .addGroup(pnMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -100,12 +119,21 @@ public class AdminView extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(48, 48, 48))
+            .addGroup(pnMenuLayout.createSequentialGroup()
+                .addGroup(pnMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnMenuLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(lblTaiKhoan))
+                    .addGroup(pnMenuLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnMenuLayout.setVerticalGroup(
             pnMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnMenuLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(lblTaiKhoan)
                 .addGap(50, 50, 50)
                 .addComponent(btnSanPham, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
@@ -116,7 +144,9 @@ public class AdminView extends javax.swing.JFrame {
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(285, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 263, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout pnMainLayout = new javax.swing.GroupLayout(pnMain);
@@ -170,13 +200,16 @@ public class AdminView extends javax.swing.JFrame {
         cardLayout.show(pnMain, "banhang");
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void btnNhanVienActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhanVienActionPerformed
+        // TODO add your handling code here:
         cardLayout.show(pnMain, "nhanvien");
-    }
+    }//GEN-LAST:event_btnNhanVienActionPerformed
 
-    private void btnKhachHangActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
         cardLayout.show(pnMain, "khachhang");
-    }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -200,7 +233,7 @@ public class AdminView extends javax.swing.JFrame {
         //</editor-fold>
         
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AdminView().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new MainView(0,0).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -211,6 +244,7 @@ public class AdminView extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblTaiKhoan;
     private javax.swing.JPanel pnMain;
     private javax.swing.JPanel pnMenu;
     // End of variables declaration//GEN-END:variables
