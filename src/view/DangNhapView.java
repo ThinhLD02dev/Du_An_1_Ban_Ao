@@ -46,7 +46,6 @@ public class DangNhapView extends javax.swing.JFrame {
         btnDangNhap = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 500));
         setSize(new java.awt.Dimension(600, 400));
 
         jPanel1.setName(""); // NOI18N
@@ -137,17 +136,17 @@ public class DangNhapView extends javax.swing.JFrame {
         ResultSet rs = ps.executeQuery();
 
         if (rs.next()) {
-            String vaiTro = rs.getString("vai_tro_id"); 
+            String vaiTro = rs.getString("vai_tro_id");
             if ("2".equalsIgnoreCase(vaiTro)) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập Nhân viên thành công!");
-                NhanVienView nv = new NhanVienView();
-                nv.setLocationRelativeTo(null);
-                nv.setVisible(true);
+                MainView main = new MainView(rs.getInt("vai_tro_id"),rs.getInt("nhan_vien_id"));
+                main.setLocationRelativeTo(null);
+                main.setVisible(true);
             }else if ("1".equalsIgnoreCase(vaiTro)) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập Admin thành công!");
-                AdminView admin = new AdminView();
-                admin.setLocationRelativeTo(null);
-                admin.setVisible(true);
+                MainView main = new MainView(rs.getInt("vai_tro_id"),rs.getInt("nhan_vien_id"));
+                main.setLocationRelativeTo(null);
+                main.setVisible(true);
             }
             
             this.dispose();

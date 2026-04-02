@@ -5,6 +5,9 @@
 package view;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jdbc.DbConnection;
 import model.HoaDon;
 import model.KhachHang;
 import repository.HoaDonChiTietRepository;
@@ -37,17 +41,38 @@ public class BanHangView extends javax.swing.JPanel {
     private List<Map<String, Object>> listCart = new ArrayList<>();
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
+    private Integer idNhanVien;
 
     /**
      * Creates new form BanHangView
      */
-    public BanHangView() {
+    public BanHangView(Integer id) {
         initComponents();
         loadTableProduct();
+        this.idNhanVien = id;
+        loadForm();
         loadTableUnpaid();
         btnAdd.setEnabled(false);
 //        saveCart();
     }
+    
+    public void loadForm(){
+    try {
+        Connection con = DbConnection.getConnection();
+        String sql = "SELECT ten_nhan_vien FROM nhan_vien WHERE id=?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, idNhanVien);
+
+        ResultSet rs = ps.executeQuery();
+
+        if(rs.next()){
+            txtUseCreate.setText(rs.getString("ten_nhan_vien"));
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 
     public void loadTableUnpaid() {
         DefaultTableModel model = (DefaultTableModel) tblUnpaid.getModel();
