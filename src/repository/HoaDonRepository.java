@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jdbc.DbConnection;
 import model.HoaDon;
 
@@ -21,63 +23,44 @@ import model.HoaDon;
  * @author nhocx
  */
 public class HoaDonRepository {
+    private static final Logger logger = Logger.getLogger(HoaDonRepository.class.getName());
+    private static final int UNPAID = 0;
+    private static final int PAID = 1;
+
     public List<Map<String, Object>> getAllToUnpaid() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT hd.id, hd.ngay_tao, kh.ten_khach_hang, nv.ten_nhan_vien "
-                + " FROM hoa_don hd "
-                + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
-                + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " WHERE hd.trang_thai = 0 ";
-
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Timestamp ts = rs.getTimestamp("ngay_tao");
-                LocalDateTime ngayTao = ts.toLocalDateTime();
-                
-                Map<String, Object> row = new HashMap<>();
-                row.put("id", rs.getInt("id"));                        
-                row.put("ngayTao", ngayTao);               
-                row.put("tenKhachHang",rs.getString("ten_khach_hang")); 
-                row.put("tenNhanVien", rs.getString("ten_nhan_vien"));       
-                list.add(row);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
+        return getHoaDonList(UNPAID, "ngay_tao", "ngayTao");
     }
     
     public List<Map<String, Object>> getAllToPaid() {
+        return getHoaDonList(PAID, "ngay_thanh_toan", "ngayThanhToan");
+    }
+
+    private List<Map<String, Object>> getHoaDonList(int status, String dateColumn, String dateKey) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT hd.id, hd.ngay_thanh_toan, kh.ten_khach_hang, nv.ten_nhan_vien "
+        String sql = "SELECT hd.id, hd." + dateColumn + ", kh.ten_khach_hang, nv.ten_nhan_vien "
                 + " FROM hoa_don hd "
                 + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " WHERE hd.trang_thai = 1 ";
+                + " WHERE hd.trang_thai = ? ";
 
         try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Timestamp ts = rs.getTimestamp("ngay_thanh_toan");
-                LocalDateTime ngayThanhToan = ts.toLocalDateTime();
-                
-                Map<String, Object> row = new HashMap<>();
-                row.put("id", rs.getInt("id"));                        
-                row.put("ngayThanhToan", ngayThanhToan);               
-                row.put("tenKhachHang",rs.getString("ten_khach_hang")); 
-                row.put("tenNhanVien", rs.getString("ten_nhan_vien"));       
-                list.add(row);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ts = rs.getTimestamp(dateColumn);
+                    LocalDateTime dateTime = ts.toLocalDateTime();
+                    
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getInt("id"));                        
+                    row.put(dateKey, dateTime);               
+                    row.put("tenKhachHang", rs.getString("ten_khach_hang")); 
+                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));       
+                    list.add(row);
+                }
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in getHoaDonList", e);
         }
 
         return list;
@@ -92,8 +75,7 @@ public class HoaDonRepository {
                 + " WHERE hd.id = ? ";
 
         try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ){
+             PreparedStatement ps = con.prepareStatement(sql)) {
              ps.setInt(1, hoaDonId);
              try(ResultSet rs = ps.executeQuery()){
                  if (rs.next()) {
@@ -107,10 +89,11 @@ public class HoaDonRepository {
                      row.put("tienThanhToan", rs.getBigDecimal("tien_thanh_toan"));
                      row.put("tienNhan", rs.getBigDecimal("tien_nhan"));
                      row.put("tienThua", rs.getBigDecimal("tien_thua"));
+                     return row;
                  }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in findById", e);
         }
 
         return null;
@@ -129,7 +112,7 @@ public class HoaDonRepository {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error in createHoaDon", e);
         }
         return -1;
     }  
@@ -147,12 +130,12 @@ public class HoaDonRepository {
         ps.setInt(1, hd.getKhachHangId());
         ps.setInt(2, hd.getNhanVienId());
         ps.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-        ps.setInt(4, 1); // ví dụ mặc định "Chưa thanh toán"
+        ps.setInt(4, UNPAID); // mặc định "Chưa thanh toán"
 
         return ps.executeUpdate() > 0;
 
     } catch (Exception e) {
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "Error in createInvoice", e);
     }
 
     return false;
