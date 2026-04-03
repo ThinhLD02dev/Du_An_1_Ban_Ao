@@ -157,4 +157,26 @@ public class HoaDonRepository {
 
         return false;
     }
+    
+    public boolean updateInvoice(int hoaDonId, String maGiamGia, java.math.BigDecimal tienThanhToan, 
+                                  java.math.BigDecimal tienNhan, java.math.BigDecimal tienThua) {
+        String sql = "UPDATE hoa_don SET khuyen_mai_id = CASE WHEN ? IS NOT NULL THEN (SELECT id FROM giam_gia WHERE ma_giam_gia = ?) ELSE NULL END, "
+                   + "tien_thanh_toan = ?, tien_nhan = ?, tien_thua = ? WHERE id = ?";
+        
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maGiamGia);
+            ps.setString(2, maGiamGia);
+            ps.setBigDecimal(3, tienThanhToan);
+            ps.setBigDecimal(4, tienNhan);
+            ps.setBigDecimal(5, tienThua);
+            ps.setInt(6, hoaDonId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in updateInvoice", e);
+        }
+        
+        return false;
+    }
 }

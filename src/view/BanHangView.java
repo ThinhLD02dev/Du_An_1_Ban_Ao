@@ -51,13 +51,14 @@ public class BanHangView extends javax.swing.JPanel {
         initComponents();
         loadTableProduct();
         this.idNhanVien = id;
-        loadForm();
+        loadUse();
         loadTableUnpaid();
         btnAdd.setEnabled(false);
+        btnSave.setEnabled(false);
 //        saveCart();
     }
     
-    public void loadForm(){
+    public void loadUse(){
     try {
         Connection con = DbConnection.getConnection();
         String sql = "SELECT ten_nhan_vien FROM nhan_vien WHERE id=?";
@@ -400,11 +401,21 @@ public class BanHangView extends javax.swing.JPanel {
         txtChange.setEnabled(false);
 
         btnRefresh.setText("Làm mới");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         jLabel6.setForeground(new java.awt.Color(255, 0, 0));
         jLabel6.setText("Chưa có mã!!!");
 
         btnSave.setText("Tạm lưu");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -726,8 +737,10 @@ public class BanHangView extends javax.swing.JPanel {
 
         if (hdctRepo.existsInCart(hoaDonId, sanPhamChiTietId)) {
             hdctRepo.updateCart(hoaDonId, sanPhamChiTietId, numberAdd);
+            loadFormInvoice(hoaDonId);
         } else {
             hdctRepo.insertToCart(hoaDonId, sanPhamChiTietId, numberAdd);
+            loadFormInvoice(hoaDonId);
         }
 
         loadTableCart(hoaDonId);
@@ -736,8 +749,10 @@ public class BanHangView extends javax.swing.JPanel {
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
         String tenKhachHang = txtClient.getText().trim();
         if (tenKhachHang.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khách hàng!");
-            return;
+            tenKhachHang = "Khách lẻ";
+            txtClient.setText(tenKhachHang);
+            txtSale.setEditable(false);
+            txtSale.setEnabled(false);
         }
 
         int khachHangId = khRepo.getIdByName(tenKhachHang);
@@ -770,7 +785,8 @@ public class BanHangView extends javax.swing.JPanel {
             loadFormInvoice(hoaDonId);
             currentHoaDonId = hoaDonId;
             btnAdd.setEnabled(true);
-
+            btnCreateInvoice.setEnabled(false);
+            btnSave.setEnabled(true);
         }
 
     }//GEN-LAST:event_tblUnPaidMouseClicked
@@ -821,6 +837,7 @@ public class BanHangView extends javax.swing.JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             hdctRepo.deleteAllCartItems(currentHoaDonId);
             loadTableCart(currentHoaDonId);
+            
         }
     }//GEN-LAST:event_btnClearActionPerformed
 
@@ -848,11 +865,72 @@ public class BanHangView extends javax.swing.JPanel {
                 loadFormInvoice(-1); // Hoặc reset manual
                 currentHoaDonId = -1;
                 btnAdd.setEnabled(false);
+                loadUse();
             } else {
                 JOptionPane.showMessageDialog(this, "Hủy hóa đơn thất bại!");
             }
         }
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // Kiểm tra xem có hoá đơn được chọn không
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để lưu!");
+            return;
+        }
+
+        try {
+            // Lấy giá trị từ các text field
+            String maGiamGia = txtSale.getText().trim();
+            String tienThanhToanStr = txtMoneyPaid.getText().trim();
+            String tienNhanStr = txtGiveMoney.getText().trim();
+            String tienThuaStr = txtChange.getText().trim();
+
+            // Validate và chuyển đổi sang BigDecimal
+            java.math.BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienThanhToanStr);
+            java.math.BigDecimal tienNhan = tienNhanStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienNhanStr);
+            java.math.BigDecimal tienThua = tienThuaStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienThuaStr);
+
+            // Gọi repository để cập nhật hoá đơn
+            boolean success = hdRepo.updateInvoice(currentHoaDonId, maGiamGia.isEmpty() ? null : maGiamGia, 
+                                                     tienThanhToan, tienNhan, tienThua);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Lưu thông tin hoá đơn thành công!");
+                // Reload form để hiển thị dữ liệu mới
+                loadFormInvoice(currentHoaDonId);
+            } else {
+                JOptionPane.showMessageDialog(this, "Lưu thông tin hoá đơn thất bại!");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho các trường tiền!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lưu thông tin: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        
+        txtIdInvoice.setText("");
+        txtClient.setText("");
+        txtTimeCreate.setText("");
+        txtSumMoney.setText("");
+        txtSale.setText("");
+        txtMoneyPaid.setText("");
+        txtGiveMoney.setText("");
+        txtChange.setText("");
+        
+        loadUse();
+        
+        currentHoaDonId = -1;
+        btnAdd.setEnabled(false);
+        btnCreateInvoice.setEnabled(true);
+        btnSave.setEnabled(false);
+        
+        loadTableCart(0);
+        tblUnPaid.setSelectionMode(0);
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
