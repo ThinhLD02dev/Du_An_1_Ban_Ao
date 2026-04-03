@@ -68,6 +68,7 @@ public class MainView extends javax.swing.JFrame {
         pnMain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
 
         pnMenu.setBackground(new java.awt.Color(102, 102, 255));
 
