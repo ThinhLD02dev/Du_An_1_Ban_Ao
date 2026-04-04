@@ -15,8 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.table.DefaultTableModel;
 import jdbc.DbConnection;
 import model.HoaDon;
@@ -24,6 +28,7 @@ import model.KhachHang;
 import repository.HoaDonChiTietRepository;
 import repository.HoaDonRepository;
 import repository.KhachHangRepository;
+import repository.NhanVienRepository;
 import repository.SanPhamChiTietRepository;
 import repository.SanPhamRepository;
 
@@ -38,14 +43,19 @@ public class BanHangView extends javax.swing.JPanel {
     HoaDonRepository hdRepo = new HoaDonRepository();
     KhachHangRepository khRepo = new KhachHangRepository();
     HoaDonChiTietRepository hdctRepo = new HoaDonChiTietRepository();
+    NhanVienRepository nvRepo = new NhanVienRepository();
     private int currentHoaDonId = -1;
     private List<Map<String, Object>> listSP = new ArrayList<>();
     private List<Map<String, Object>> listCart = new ArrayList<>();
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
     private Integer idNhanVien;
-    private boolean isUpdatingClientText = false;
-    private KhachHang selectedCustomer = null; // Lưu khách hàng đã chọn
+    
+    // Biến cho tìm kiếm khách hàng
+    private KhachHang kh = null;
+    private List<KhachHang> Listkh = new ArrayList<>();
+    private Timer searchTimer; // Timer để debounce tìm kiếm
+    private boolean isSelectingCustomer = false; // Flag khi đang chọn từ dropdown
 
     /**
      * Creates new form BanHangView
@@ -54,7 +64,6 @@ public class BanHangView extends javax.swing.JPanel {
         initComponents();
         loadTableProduct();
         this.idNhanVien = id;
-        loadUse();
         loadTableUnpaid();
         btnAdd.setEnabled(false);
         btnSave.setEnabled(false);
@@ -75,27 +84,47 @@ public class BanHangView extends javax.swing.JPanel {
             public void changedUpdate(DocumentEvent e) {
                 performSearch();
             }
-        });            
+        });
+        
+        // Khởi tạo Timer debounce (300ms)
+        searchTimer = new Timer(300, e -> doCustomerSearch());
+        searchTimer.setRepeats(false);
+
+        // Sử dụng KeyAdapter thay vì DocumentListener để tránh lỗi
+        javax.swing.JTextField editorField = (javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent();
+        editorField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Bỏ qua các phím điều hướng
+                if (e.getKeyCode() == KeyEvent.VK_UP ||
+                    e.getKeyCode() == KeyEvent.VK_DOWN ||
+                    e.getKeyCode() == KeyEvent.VK_ENTER ||
+                    e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    return;
+                }
+
+                if (!isSelectingCustomer) {
+                    // Reset timer mỗi khi gõ phím
+                    searchTimer.restart();
+                }
+            }
+        });
+
+        // Xử lý khi chọn item từ dropdown
+        cbbCustomer.addActionListener(e -> {
+            if ("comboBoxChanged".equals(e.getActionCommand())) {
+                int index = cbbCustomer.getSelectedIndex();
+                if (index >= 0 && index < Listkh.size()) {
+                    isSelectingCustomer = true;
+                    kh = Listkh.get(index);
+                    cbbCustomer.getEditor().setItem(kh.getTenKhachHang());
+                    cbbCustomer.hidePopup();
+                    isSelectingCustomer = false;
+                }
+            }
+        });
     }
     
-    public void loadUse(){
-    try {
-        Connection con = DbConnection.getConnection();
-        String sql = "SELECT ten_nhan_vien FROM nhan_vien WHERE id=?";
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, idNhanVien);
-
-        ResultSet rs = ps.executeQuery();
-
-        if(rs.next()){
-            txtUseCreate.setText(rs.getString("ten_nhan_vien"));
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
-
     public void loadTableUnpaid() {
         DefaultTableModel model = (DefaultTableModel) tblUnPaid.getModel();
         model.setRowCount(0);
@@ -172,7 +201,9 @@ public class BanHangView extends javax.swing.JPanel {
         Map<String, Object> hd = hdRepo.findById(hoaDonId);
         if (hd != null) {
             txtIdInvoice.setText(String.valueOf(hd.get("id")));
-            txtClient.setText((String) hd.get("tenKhachHang"));
+            isSelectingCustomer = true;
+            cbbCustomer.getEditor().setItem((String) hd.get("tenKhachHang"));
+            isSelectingCustomer = false;
             
             // Format thời gian tạo
             Timestamp ngayTao = (Timestamp) hd.get("ngayTao");
@@ -202,7 +233,9 @@ public class BanHangView extends javax.swing.JPanel {
         } else {
             // Reset form nếu không tìm thấy
             txtIdInvoice.setText("");
-            txtClient.setText("");
+            isSelectingCustomer = true;
+            cbbCustomer.getEditor().setItem("");
+            isSelectingCustomer = false;
             txtTimeCreate.setText("");
             txtUseCreate.setText("");
             txtSumMoney.setText("");
@@ -238,6 +271,54 @@ public class BanHangView extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Thực hiện tìm kiếm khách hàng (được gọi sau khi Timer hết hạn)
+     */
+    private void doCustomerSearch() {
+        javax.swing.JTextField editor = (javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent();
+        String keyword = editor.getText().trim();
+
+        if (keyword.isEmpty() || keyword.length() < 1) {
+            cbbCustomer.hidePopup();
+            Listkh.clear();
+            kh = null;
+            return;
+        }
+
+        // Tìm kiếm khách hàng theo tên
+        Listkh =khRepo.search(keyword);
+
+        if (Listkh.isEmpty()) {
+            cbbCustomer.hidePopup();
+            kh = null;
+            return;
+        }
+
+        // Tạo danh sách hiển thị
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (KhachHang kh : Listkh) {
+            String sdt = (kh.getSoDienThoai() != null && !kh.getSoDienThoai().isEmpty())
+                         ? " - " + kh.getSoDienThoai() : "";
+            model.addElement(kh.getTenKhachHang() + sdt);
+        }
+
+        // Lưu text và vị trí con trỏ
+        String currentText = editor.getText();
+        int caretPos = editor.getCaretPosition();
+
+        // Cập nhật model
+        isSelectingCustomer = true;
+        cbbCustomer.setModel(model);
+        cbbCustomer.setSelectedIndex(-1);
+        editor.setText(currentText);
+        if (caretPos <= currentText.length()) {
+            editor.setCaretPosition(caretPos);
+        }
+        isSelectingCustomer = false;
+
+        // Hiển thị dropdown
+        cbbCustomer.showPopup();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -281,8 +362,8 @@ public class BanHangView extends javax.swing.JPanel {
         btnRefresh = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
-        btnAddClien = new javax.swing.JButton();
-        txtClient = new javax.swing.JTextField();
+        btnAddCustomer = new javax.swing.JButton();
+        cbbCustomer = new javax.swing.JComboBox<>();
         jPanel8 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         btnIssueIvoice = new javax.swing.JButton();
@@ -458,9 +539,9 @@ public class BanHangView extends javax.swing.JPanel {
 
         btnSave.setText("Tạm lưu");
 
-        btnAddClien.setText("+");
+        btnAddCustomer.setText("+");
 
-        txtClient.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        cbbCustomer.setEditable(true);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -488,9 +569,9 @@ public class BanHangView extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addComponent(txtClient, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAddClien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
                             .addComponent(txtTimeCreate, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtUseCreate, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtSumMoney, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -515,8 +596,8 @@ public class BanHangView extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(btnAddClien)
-                    .addComponent(txtClient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAddCustomer)
+                    .addComponent(cbbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -796,18 +877,31 @@ public class BanHangView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
-        String tenKhachHang = txtClient.getText().trim();
-        if (tenKhachHang.isEmpty()) {
-            tenKhachHang = "Khách lẻ";
-            txtClient.setText(tenKhachHang);
-            txtSale.setEditable(false);
-            txtSale.setEnabled(false);
-        }
+        // Ưu tiên lấy từ selectedCustomer nếu đã chọn
+        int khachHangId;
+        String tenKhachHang;
 
-        int khachHangId = khRepo.getIdByName(tenKhachHang);
-        if (khachHangId == -1) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với tên: " + tenKhachHang);
-            return;
+        if (kh != null) {
+            khachHangId = kh.getId();
+            tenKhachHang = kh.getTenKhachHang();
+        } else {
+            // Lấy text từ combobox
+            tenKhachHang = ((javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent()).getText().trim();
+
+            // Nếu trống, mặc định là "Khách lẻ"
+            if (tenKhachHang.isEmpty()) {
+                tenKhachHang = "Khách lẻ";
+                isSelectingCustomer = true;
+                cbbCustomer.getEditor().setItem(tenKhachHang);
+                isSelectingCustomer = false;
+            }
+
+            // Tìm ID từ tên
+            khachHangId = khRepo.getIdByName(tenKhachHang);
+            if (khachHangId == -1) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với tên: " + tenKhachHang + "\nVui lòng chọn khách hàng từ danh sách hoặc thêm khách hàng mới.");
+                return;
+            }
         }
 
         HoaDon hd = new HoaDon();
@@ -914,7 +1008,6 @@ public class BanHangView extends javax.swing.JPanel {
                 loadFormInvoice(-1); // Hoặc reset manual
                 currentHoaDonId = -1;
                 btnAdd.setEnabled(false);
-                loadUse();
             } else {
                 JOptionPane.showMessageDialog(this, "Hủy hóa đơn thất bại!");
             }
@@ -962,7 +1055,9 @@ public class BanHangView extends javax.swing.JPanel {
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         
         txtIdInvoice.setText("");
-        txtClient.setText("");
+        isSelectingCustomer = true;
+        cbbCustomer.getEditor().setItem("");
+        isSelectingCustomer = false;
         txtTimeCreate.setText("");
         txtSumMoney.setText("");
         txtSale.setText("");
@@ -970,7 +1065,8 @@ public class BanHangView extends javax.swing.JPanel {
         txtGiveMoney.setText("");
         txtChange.setText("");
         
-        loadUse();
+        kh = null;
+        cbbCustomer.setModel(new DefaultComboBoxModel<>());
         
         currentHoaDonId = -1;
         btnAdd.setEnabled(false);
@@ -984,7 +1080,7 @@ public class BanHangView extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnAddClien;
+    private javax.swing.JButton btnAddCustomer;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCreateInvoice;
@@ -993,6 +1089,7 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
+    private javax.swing.JComboBox<String> cbbCustomer;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -1026,7 +1123,6 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JTable tblProduct;
     private javax.swing.JTable tblUnPaid;
     private javax.swing.JTextField txtChange;
-    private javax.swing.JTextField txtClient;
     private javax.swing.JTextField txtGiveMoney;
     private javax.swing.JTextField txtIdInvoice;
     private javax.swing.JTextField txtMoneyPaid;

@@ -275,9 +275,9 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="txtClient" min="-2" pref="119" max="-2" attributes="0"/>
+                                      <Component id="cbbCustomer" min="-2" pref="119" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnAddClien" max="32767" attributes="0"/>
+                                      <Component id="btnAddCustomer" pref="42" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="txtTimeCreate" alignment="1" max="32767" attributes="0"/>
                                   <Component id="txtUseCreate" alignment="1" max="32767" attributes="0"/>
@@ -310,8 +310,8 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnAddClien" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtClient" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAddCustomer" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbbCustomer" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -467,17 +467,21 @@
                 <Property name="text" type="java.lang.String" value="T&#x1ea1;m l&#x1b0;u"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="btnAddClien">
+            <Component class="javax.swing.JButton" name="btnAddCustomer">
               <Properties>
                 <Property name="text" type="java.lang.String" value="+"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtClient">
+            <Component class="javax.swing.JComboBox" name="cbbCustomer">
               <Properties>
-                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-                  <Color id="Text Cursor"/>
+                <Property name="editable" type="boolean" value="true"/>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="0"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>

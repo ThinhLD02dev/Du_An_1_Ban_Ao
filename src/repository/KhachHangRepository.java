@@ -95,7 +95,9 @@ public class KhachHangRepository {
 
     public List<KhachHang> search(String keyword) {
         List<KhachHang> list = new ArrayList<>();
-        String sql = "SELECT * FROM khach_hang WHERE ten_khach_hang LIKE ? OR so_dien_thoai LIKE ? OR email LIKE ?";
+        String sql = "SELECT * FROM khach_hang WHERE LOWER (ten_khach_hang) LIKE LOWER(?) "
+                + " OR LOWER (so_dien_thoai) LIKE LOWER (?) "
+                + " OR LOWER (email) LIKE LOWER (?) ";
 
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

@@ -127,4 +127,24 @@ public class NhanVienRepository {
 
         return list;
     }
+
+    public String getNameById(int id) {
+        String sql = "SELECT ten_nhan_vien FROM nhan_vien WHERE id = ?";
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("ten_nhan_vien");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
