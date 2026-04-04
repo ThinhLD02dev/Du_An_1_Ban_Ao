@@ -272,24 +272,28 @@
                                   <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtTimeCreate" pref="140" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="txtClient" min="-2" pref="119" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="btnAddClien" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="txtTimeCreate" alignment="1" max="32767" attributes="0"/>
                                   <Component id="txtUseCreate" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtChange" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtGiveMoney" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtSale" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtMoneyPaid" alignment="1" max="32767" attributes="0"/>
                                   <Component id="txtSumMoney" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="txtClient" max="32767" attributes="0"/>
-                                  <Component id="txtIdInvoice" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtGiveMoney" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtChange" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtMoneyPaid" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtSale" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="txtIdInvoice" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="64" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="jLabel6" min="-2" pref="152" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                   </Group>
@@ -306,6 +310,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAddClien" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtClient" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -457,11 +462,21 @@
                 <Property name="text" type="java.lang.String" value="Ch&#x1b0;a c&#xf3; m&#xe3;!!!"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtClient">
-            </Component>
             <Component class="javax.swing.JButton" name="btnSave">
               <Properties>
                 <Property name="text" type="java.lang.String" value="T&#x1ea1;m l&#x1b0;u"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnAddClien">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="+"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtClient">
+              <Properties>
+                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                  <Color id="Text Cursor"/>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>
@@ -474,7 +489,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="13" max="32767" attributes="0"/>
+                      <EmptySpace pref="40" max="32767" attributes="0"/>
                       <Component id="btnIssueIvoice" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   </Group>
@@ -664,7 +679,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="114" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="115" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -712,7 +727,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane2" alignment="0" pref="114" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" alignment="0" pref="115" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>

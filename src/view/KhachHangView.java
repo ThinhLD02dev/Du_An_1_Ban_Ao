@@ -409,7 +409,7 @@ public class KhachHangView extends javax.swing.JPanel {
         jPanel1.setPreferredSize(new java.awt.Dimension(657, 50));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Tìm kIếm :");
+        jLabel6.setText("Tìm kiếm :");
 
         txtTimKiem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 

@@ -23,7 +23,6 @@ public class SanPhamChiTiet {
     private int soLuong;
     private int mauSacId;
     private BigDecimal giaBan;
-    private int trangThai;
     private int kichThuocId;
     private int quanAoId;
 }
