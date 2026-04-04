@@ -14,8 +14,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import jdbc.DbConnection;
 import model.HoaDon;
@@ -43,6 +44,8 @@ public class BanHangView extends javax.swing.JPanel {
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
     private Integer idNhanVien;
+    private boolean isUpdatingClientText = false;
+    private KhachHang selectedCustomer = null; // Lưu khách hàng đã chọn
 
     /**
      * Creates new form BanHangView
@@ -55,7 +58,24 @@ public class BanHangView extends javax.swing.JPanel {
         loadTableUnpaid();
         btnAdd.setEnabled(false);
         btnSave.setEnabled(false);
-//        saveCart();
+
+        // Add DocumentListener to txtSearch for real-time search
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });            
     }
     
     public void loadUse(){
@@ -193,6 +213,31 @@ public class BanHangView extends javax.swing.JPanel {
         }
     }
 
+    private void performSearch() {
+        String searchText = txtSearch.getText().trim().toLowerCase();
+        DefaultTableModel model = (DefaultTableModel) tblProduct.getModel();
+        model.setRowCount(0);
+
+        if (searchText.isEmpty()) {
+            // Nếu không có từ khóa tìm kiếm, load lại toàn bộ sản phẩm
+            loadTableProduct();
+        } else {
+            // Tìm kiếm qua repository
+            listSP = spctRepo.searchByKeyword(searchText);
+            for (Map<String, Object> sp : listSP) {
+                Object[] row = {
+                    sp.get("tenAo"),
+                    sp.get("tenKichThuoc"),
+                    sp.get("tenMau"),
+                    sp.get("moTa"),
+                    sp.get("soLuong"),
+                    sp.get("giaBan")
+                };
+                model.addRow(row);
+            }
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -235,8 +280,9 @@ public class BanHangView extends javax.swing.JPanel {
         txtChange = new javax.swing.JTextField();
         btnRefresh = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        txtClient = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
+        btnAddClien = new javax.swing.JButton();
+        txtClient = new javax.swing.JTextField();
         jPanel8 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         btnIssueIvoice = new javax.swing.JButton();
@@ -411,11 +457,10 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel6.setText("Chưa có mã!!!");
 
         btnSave.setText("Tạm lưu");
-        btnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveActionPerformed(evt);
-            }
-        });
+
+        btnAddClien.setText("+");
+
+        txtClient.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -440,20 +485,23 @@ public class BanHangView extends javax.swing.JPanel {
                             .addComponent(jLabel9)
                             .addComponent(jLabel8)
                             .addComponent(jLabel10))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtTimeCreate, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(txtClient, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnAddClien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(txtTimeCreate, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtUseCreate, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtChange, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtGiveMoney, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtSale, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtMoneyPaid, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtSumMoney, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtClient)
-                            .addComponent(txtIdInvoice, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(txtGiveMoney, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtChange, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtMoneyPaid, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtSale, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtIdInvoice))))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(64, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
         );
@@ -467,6 +515,7 @@ public class BanHangView extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
+                    .addComponent(btnAddClien)
                     .addComponent(txtClient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -516,7 +565,7 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(btnIssueIvoice)
                 .addGap(27, 27, 27))
         );
@@ -643,7 +692,7 @@ public class BanHangView extends javax.swing.JPanel {
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
         );
 
         tblPaid.addTab("Chưa thanh toán", jPanel9);
@@ -666,7 +715,7 @@ public class BanHangView extends javax.swing.JPanel {
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
         );
 
         tblPaid.addTab("Đã thanh toán", jPanel10);
@@ -935,6 +984,7 @@ public class BanHangView extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnAddClien;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCreateInvoice;
