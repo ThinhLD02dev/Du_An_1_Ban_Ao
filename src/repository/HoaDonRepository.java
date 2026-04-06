@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jdbc.DbConnection;
+import java.math.BigDecimal;
 import model.HoaDon;
 
 /**
@@ -158,7 +159,7 @@ public class HoaDonRepository {
         return false;
     }
     
-    public boolean updateInvoice(int hoaDonId, String maGiamGia, java.math.BigDecimal tienThanhToan, 
+    public boolean updateInvoice(int hoaDonId, String maGiamGia, java.math.BigDecimal tienThanhToan,
                                   java.math.BigDecimal tienNhan, java.math.BigDecimal tienThua) {
         String sql = "UPDATE hoa_don SET khuyen_mai_id = CASE WHEN ? IS NOT NULL THEN (SELECT id FROM giam_gia WHERE ma_giam_gia = ?) ELSE NULL END, "
                    + "tien_thanh_toan = ?, tien_nhan = ?, tien_thua = ? WHERE id = ?";
@@ -176,7 +177,43 @@ public class HoaDonRepository {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in updateInvoice", e);
         }
-        
+
+        return false;
+    }
+
+    /**
+     * Thanh toán hoá đơn - cập nhật tất cả thông tin và đổi trạng thái sang đã thanh toán
+     */
+    public boolean payInvoice(int hoaDonId, String maGiamGia, BigDecimal tongTien,
+                              BigDecimal tienThanhToan, BigDecimal tienNhan,
+                              BigDecimal tienThua) {
+        String sql = "UPDATE hoa_don SET "
+                   + "khuyen_mai_id = CASE WHEN ? IS NOT NULL AND ? != '' THEN (SELECT id FROM giam_gia WHERE ma_giam_gia = ?) ELSE NULL END, "
+                   + "tong_tien = ?, "
+                   + "tien_thanh_toan = ?, "
+                   + "tien_nhan = ?, "
+                   + "tien_thua = ?, "
+                   + "ngay_thanh_toan = GETDATE(), "
+                   + "trang_thai = ? "
+                   + "WHERE id = ?";
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maGiamGia);
+            ps.setString(2, maGiamGia);
+            ps.setString(3, maGiamGia);
+            ps.setBigDecimal(4, tongTien);
+            ps.setBigDecimal(5, tienThanhToan);
+            ps.setBigDecimal(6, tienNhan);
+            ps.setBigDecimal(7, tienThua);
+            ps.setInt(8, PAID); // trạng thái = 1 (đã thanh toán)
+            ps.setInt(9, hoaDonId);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in payInvoice", e);
+        }
+
         return false;
     }
 }

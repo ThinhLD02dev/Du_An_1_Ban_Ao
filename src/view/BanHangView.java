@@ -31,6 +31,7 @@ import repository.KhachHangRepository;
 import repository.NhanVienRepository;
 import repository.SanPhamChiTietRepository;
 import repository.SanPhamRepository;
+import javax.swing.JTextField;
 
 /**
  *
@@ -65,6 +66,7 @@ public class BanHangView extends javax.swing.JPanel {
         loadTableProduct();
         this.idNhanVien = id;
         loadTableUnpaid();
+        loadTablePaid();
         btnAdd.setEnabled(false);
         btnSave.setEnabled(false);
 
@@ -91,7 +93,7 @@ public class BanHangView extends javax.swing.JPanel {
         searchTimer.setRepeats(false);
 
         // Sử dụng KeyAdapter thay vì DocumentListener để tránh lỗi
-        javax.swing.JTextField editorField = (javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent();
+        JTextField editorField = (JTextField) cbbCustomer.getEditor().getEditorComponent();
         editorField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -123,6 +125,49 @@ public class BanHangView extends javax.swing.JPanel {
                 }
             }
         });
+
+        // Tự động tính tiền thừa khi nhập tiền khách đưa
+        txtGiveMoney.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                calculateChange();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                calculateChange();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                calculateChange();
+            }
+        });
+    }
+
+    /**
+     * Tính tiền thừa = tiền khách đưa - tiền cần thanh toán
+     */
+    private void calculateChange() {
+        try {
+            String tienNhanStr = txtGiveMoney.getText().trim();
+            String tienThanhToanStr = txtMoneyPaid.getText().trim();
+
+            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
+            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
+
+            BigDecimal tienThua = tienNhan.subtract(tienThanhToan);
+
+            // Nếu tiền thừa âm thì set về 0
+            if (tienThua.compareTo(BigDecimal.ZERO) < 0) {
+                tienThua = BigDecimal.ZERO;
+            }
+
+            txtChange.setText(String.valueOf(tienThua));
+        } catch (NumberFormatException e) {
+            // Nếu nhập không phải số, set tiền thừa về 0
+            txtChange.setText("0");
+        }
     }
     
     public void loadTableUnpaid() {
@@ -143,7 +188,7 @@ public class BanHangView extends javax.swing.JPanel {
     }
 
     public void loadTablePaid() {
-        DefaultTableModel model = (DefaultTableModel) tblPaid.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setRowCount(0);
 
         listHD = hdRepo.getAllToPaid();
@@ -218,18 +263,34 @@ public class BanHangView extends javax.swing.JPanel {
             
             // Handle null cho các field số
             BigDecimal tongTien = (BigDecimal) hd.get("tongTien");
-            txtSumMoney.setText(tongTien != null ? String.valueOf(tongTien) : "0");
-            
-            txtSale.setText((String) hd.get("maGiamGia"));
-            
-            BigDecimal tienThanhToan = (BigDecimal) hd.get("tienThanhToan");
-            txtMoneyPaid.setText(tienThanhToan != null ? String.valueOf(tienThanhToan) : "0");
-            
+            tongTien = tongTien != null ? tongTien : BigDecimal.ZERO;
+            txtSumMoney.setText(String.valueOf(tongTien));
+
+            String maGiamGia = (String) hd.get("maGiamGia");
+            txtSale.setText(maGiamGia != null ? maGiamGia : "");
+
+            // Tính tiền cần thanh toán: nếu không có mã giảm giá thì bằng tổng tiền
+            BigDecimal tienThanhToan;
+            if (maGiamGia == null || maGiamGia.trim().isEmpty()) {
+                tienThanhToan = tongTien;
+            } else {
+                // Tạm thời chưa xử lý giảm giá, vẫn bằng tổng tiền
+                tienThanhToan = tongTien;
+            }
+            txtMoneyPaid.setText(String.valueOf(tienThanhToan));
+
+            // Tiền khách đưa
             BigDecimal tienNhan = (BigDecimal) hd.get("tienNhan");
-            txtGiveMoney.setText(tienNhan != null ? String.valueOf(tienNhan) : "0");
-            
-            BigDecimal tienThua = (BigDecimal) hd.get("tienThua");
-            txtChange.setText(tienThua != null ? String.valueOf(tienThua) : "0");
+            tienNhan = tienNhan != null ? tienNhan : BigDecimal.ZERO;
+            txtGiveMoney.setText(String.valueOf(tienNhan));
+
+            // Tính tiền thừa = tiền khách đưa - tiền cần thanh toán
+            BigDecimal tienThua = tienNhan.subtract(tienThanhToan);
+            // Nếu tiền thừa âm thì set về 0
+            if (tienThua.compareTo(BigDecimal.ZERO) < 0) {
+                tienThua = BigDecimal.ZERO;
+            }
+            txtChange.setText(String.valueOf(tienThua));
         } else {
             // Reset form nếu không tìm thấy
             txtIdInvoice.setText("");
@@ -365,7 +426,7 @@ public class BanHangView extends javax.swing.JPanel {
         btnAddCustomer = new javax.swing.JButton();
         cbbCustomer = new javax.swing.JComboBox<>();
         jPanel8 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
+        btnPaid = new javax.swing.JButton();
         btnIssueIvoice = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -398,9 +459,14 @@ public class BanHangView extends javax.swing.JPanel {
 
         jLabel11.setText("Tìm kiếm");
 
-        btnSearch.setText("Tìm");
+         btnSearch.setText("Tìm");
+         btnSearch.addActionListener(new java.awt.event.ActionListener() {
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                 btnSearchActionPerformed(evt);
+             }
+         });
 
-        btnAdd.setText("Thêm");
+         btnAdd.setText("Thêm");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddActionPerformed(evt);
@@ -539,9 +605,14 @@ public class BanHangView extends javax.swing.JPanel {
 
         btnSave.setText("Tạm lưu");
 
-        btnAddCustomer.setText("+");
+         btnAddCustomer.setText("+");
+         btnAddCustomer.addActionListener(new java.awt.event.ActionListener() {
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                 btnAddCustomerActionPerformed(evt);
+             }
+         });
 
-        cbbCustomer.setEditable(true);
+         cbbCustomer.setEditable(true);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -635,17 +706,28 @@ public class BanHangView extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jButton3.setText("Thanh toán");
+        btnPaid.setText("Thanh toán");
+        btnPaid.setEnabled(false);
+        btnPaid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPaidActionPerformed(evt);
+            }
+        });
 
-        btnIssueIvoice.setText("Xuất hoá đơn");
+         btnIssueIvoice.setText("Xuất hoá đơn");
+         btnIssueIvoice.addActionListener(new java.awt.event.ActionListener() {
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                 btnIssueIvoiceActionPerformed(evt);
+             }
+         });
 
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
-                .addComponent(jButton3)
+                .addComponent(btnPaid)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(btnIssueIvoice)
                 .addGap(27, 27, 27))
@@ -655,7 +737,7 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(btnPaid)
                     .addComponent(btnIssueIvoice))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -786,6 +868,11 @@ public class BanHangView extends javax.swing.JPanel {
                 "Mã hoá đơn", "Ngày thanh toán", "Khách hàng", "Người tạo"
             }
         ));
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable2);
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
@@ -930,6 +1017,7 @@ public class BanHangView extends javax.swing.JPanel {
             btnAdd.setEnabled(true);
             btnCreateInvoice.setEnabled(false);
             btnSave.setEnabled(true);
+            btnPaid.setEnabled(true);
         }
 
     }//GEN-LAST:event_tblUnPaidMouseClicked
@@ -1029,9 +1117,9 @@ public class BanHangView extends javax.swing.JPanel {
             String tienThuaStr = txtChange.getText().trim();
 
             // Validate và chuyển đổi sang BigDecimal
-            java.math.BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienThanhToanStr);
-            java.math.BigDecimal tienNhan = tienNhanStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienNhanStr);
-            java.math.BigDecimal tienThua = tienThuaStr.isEmpty() ? java.math.BigDecimal.ZERO : new java.math.BigDecimal(tienThuaStr);
+            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
+            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
+            BigDecimal tienThua = tienThuaStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThuaStr);
 
             // Gọi repository để cập nhật hoá đơn
             boolean success = hdRepo.updateInvoice(currentHoaDonId, maGiamGia.isEmpty() ? null : maGiamGia, 
@@ -1072,13 +1160,142 @@ public class BanHangView extends javax.swing.JPanel {
         btnAdd.setEnabled(false);
         btnCreateInvoice.setEnabled(true);
         btnSave.setEnabled(false);
+        btnPaid.setEnabled(false);
         
         loadTableCart(0);
         tblUnPaid.setSelectionMode(0);
     }//GEN-LAST:event_btnRefreshActionPerformed
 
+    private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
+        // Kiểm tra xem có hoá đơn được chọn không
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để thanh toán!");
+            return;
+        }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+        // Kiểm tra giỏ hàng có sản phẩm không
+        if (listCart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
+            return;
+        }
+
+        try {
+            // Lấy giá trị từ các text field
+            String maGiamGia = txtSale.getText().trim();
+            String tongTienStr = txtSumMoney.getText().trim();
+            String tienThanhToanStr = txtMoneyPaid.getText().trim();
+            String tienNhanStr = txtGiveMoney.getText().trim();
+            String tienThuaStr = txtChange.getText().trim();
+
+            // Validate và chuyển đổi sang BigDecimal
+            BigDecimal tongTien = tongTienStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tongTienStr);
+            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
+            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
+            BigDecimal tienThua = tienThuaStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThuaStr);
+
+            // Kiểm tra tiền khách đưa >= tiền cần thanh toán
+            if (tienNhan.compareTo(tienThanhToan) < 0) {
+                JOptionPane.showMessageDialog(this, "Tiền khách đưa phải lớn hơn hoặc bằng tiền cần thanh toán!");
+                return;
+            }
+
+            // Xác nhận thanh toán
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Xác nhận thanh toán hoá đơn #" + currentHoaDonId + "?\n"
+                    + "Tổng tiền: " + tongTien + "\n"
+                    + "Tiền thanh toán: " + tienThanhToan + "\n"
+                    + "Tiền khách đưa: " + tienNhan + "\n"
+                    + "Tiền thừa: " + tienThua,
+                    "Xác nhận thanh toán",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Gọi repository để thanh toán hoá đơn
+                boolean success = hdRepo.payInvoice(currentHoaDonId,
+                        maGiamGia.isEmpty() ? null : maGiamGia,
+                        tongTien, tienThanhToan, tienNhan, tienThua);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thành công!");
+
+                    // Reload các bảng
+                    loadTableUnpaid();
+                    loadTablePaid();
+                    loadTableCart(0);
+
+                    // Reset form
+                    txtIdInvoice.setText("");
+                    isSelectingCustomer = true;
+                    cbbCustomer.getEditor().setItem("");
+                    isSelectingCustomer = false;
+                    txtTimeCreate.setText("");
+                    txtSumMoney.setText("");
+                    txtSale.setText("");
+                    txtMoneyPaid.setText("");
+                    txtGiveMoney.setText("");
+                    txtChange.setText("");
+
+                    // Reset các biến và trạng thái nút
+                    currentHoaDonId = -1;
+                    kh = null;
+                    cbbCustomer.setModel(new DefaultComboBoxModel<>());
+                    btnAdd.setEnabled(false);
+                    btnCreateInvoice.setEnabled(true);
+                    btnSave.setEnabled(false);
+                    btnPaid.setEnabled(false);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thất bại!");
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho các trường tiền!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi thanh toán: " + e.getMessage());
+            e.printStackTrace();
+        }
+     }//GEN-LAST:event_btnPaidActionPerformed
+
+     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+         performSearch();
+     }//GEN-LAST:event_btnSearchActionPerformed
+
+     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
+         // Mở cửa sổ thêm khách hàng mới
+         // Tạm thời hiển thị thông báo
+         JOptionPane.showMessageDialog(this, "Chức năng thêm khách hàng mới sẽ được mở từ menu chính.");
+     }//GEN-LAST:event_btnAddCustomerActionPerformed
+
+     private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIssueIvoiceActionPerformed
+         if (currentHoaDonId <= 0) {
+             JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để xuất!");
+             return;
+         }
+
+         // Kiểm tra giỏ hàng có sản phẩm không
+         if (listCart.isEmpty()) {
+             JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi xuất hóa đơn.");
+             return;
+         }
+
+         JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
+     }//GEN-LAST:event_btnIssueIvoiceActionPerformed
+
+     private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+         int row = jTable2.getSelectedRow();
+         if (row >= 0) {
+             int hoaDonId = (int) jTable2.getValueAt(row, 0);
+             loadTableCart(hoaDonId);
+             loadFormInvoice(hoaDonId);
+             currentHoaDonId = hoaDonId;
+             btnAdd.setEnabled(false);
+             btnCreateInvoice.setEnabled(false);
+             btnSave.setEnabled(false);
+             btnPaid.setEnabled(false);
+         }
+     }//GEN-LAST:event_jTable2MouseClicked
+
+
+     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnAddCustomer;
     private javax.swing.JButton btnCancel;
@@ -1086,11 +1303,11 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JButton btnCreateInvoice;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnIssueIvoice;
+    private javax.swing.JButton btnPaid;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbbCustomer;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
