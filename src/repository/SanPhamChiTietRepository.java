@@ -183,4 +183,16 @@ public class SanPhamChiTietRepository {
         }
         return list;
     }
+
+    public boolean updateQuantity(int id, int quantityChange) {
+        String sql = "UPDATE quan_ao_chi_tiet SET so_luong = so_luong + ? WHERE id = ?";
+        try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, quantityChange);
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

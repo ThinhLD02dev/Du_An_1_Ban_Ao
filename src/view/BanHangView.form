@@ -115,7 +115,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btnSearch" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="txtNumberAdd" min="-2" pref="40" max="-2" attributes="0"/>
+                      <Component id="spnNumberAdd" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnAdd" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -131,7 +131,7 @@
                           <Component id="txtSearch" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnSearch" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnAdd" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtNumberAdd" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spnNumberAdd" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -159,7 +159,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNumberAdd">
+            <Component class="javax.swing.JSpinner" name="spnNumberAdd">
             </Component>
           </SubComponents>
         </Container>
@@ -471,6 +471,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="+"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddCustomerActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JComboBox" name="cbbCustomer">
               <Properties>
@@ -595,8 +598,8 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnDelete" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtNumberDelete" min="-2" pref="40" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="spnNumberDelete" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnClear" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -609,7 +612,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnClear" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtNumberDelete" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spnNumberDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -633,7 +636,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClearActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNumberDelete">
+            <Component class="javax.swing.JSpinner" name="spnNumberDelete">
             </Component>
           </SubComponents>
         </Container>
@@ -656,17 +659,17 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="tblPaid" alignment="0" max="32767" attributes="0"/>
+              <Component id="tbbInvoice" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="tblPaid" alignment="0" max="32767" attributes="0"/>
+              <Component id="tbbInvoice" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JTabbedPane" name="tblPaid">
+        <Container class="javax.swing.JTabbedPane" name="tbbInvoice">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
@@ -747,7 +750,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="jTable2">
+                    <Component class="javax.swing.JTable" name="tblPaid">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                           <Table columnCount="4" rowCount="0">
@@ -758,6 +761,9 @@
                           </Table>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tblPaidMouseClicked"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

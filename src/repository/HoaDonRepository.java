@@ -42,7 +42,8 @@ public class HoaDonRepository {
                 + " FROM hoa_don hd "
                 + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " WHERE hd.trang_thai = ? ";
+                + " WHERE hd.trang_thai = ? "
+                + " AND CAST(hd."+ dateColumn +" AS DATE) = CAST(GETDATE() AS DATE)";
 
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
