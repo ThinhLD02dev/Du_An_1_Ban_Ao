@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -314,12 +315,14 @@ public class SanPhamView extends javax.swing.JPanel {
     /**
      * Creates new form ProductView
      */
+    java.util.Date date = java.sql.Date.valueOf(LocalDate.now());
     public SanPhamView() {
         initComponents();
         setupUI();
         loadChatLieu();
         loadThuongHieu();
         loadTable();
+        dateNgayTao.setDate(date);
     }
 
     /**
@@ -560,36 +563,45 @@ public class SanPhamView extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        if (!validateForm()) {
-            return;
-        }
-        try {
-            Connection con = DbConnection.getConnection();
+        int confirm = JOptionPane.showConfirmDialog(
+                null,
+                "Bạn có chắc chắn muốn thêm sản phẩm này không?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-            String sql = "INSERT INTO quan_ao(ma_sp, ten_ao, mo_ta, trang_thai, ngay_tao, chat_lieu_id, thuong_hieu_id) VALUES (?,?,?,?,?,?,?)";
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (!validateForm()) {
+                return;
+            }
+            try {
+                Connection con = DbConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(sql);
+                String sql = "INSERT INTO quan_ao(ma_sp, ten_ao, mo_ta, trang_thai, ngay_tao, chat_lieu_id, thuong_hieu_id) VALUES (?,?,?,?,?,?,?)";
 
-            ps.setString(1, txtMasp.getText());
-            ps.setString(2, txtTensp.getText());
-            ps.setString(3, txtMoTa.getText());
+                PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setInt(4, 2);
+                ps.setString(1, txtMasp.getText());
+                ps.setString(2, txtTensp.getText());
+                ps.setString(3, txtMoTa.getText());
 
-            java.util.Date utilDate = dateNgayTao.getDate();
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-            ps.setDate(5, sqlDate);
+                ps.setInt(4, 2);
 
-            ps.setInt(6, cbChatLieu.getSelectedIndex() + 1);
-            ps.setInt(7, cbThuongHieu.getSelectedIndex() + 1);
+                java.util.Date utilDate = dateNgayTao.getDate();
+                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                ps.setDate(5, sqlDate);
 
-            ps.executeUpdate();
+                ps.setInt(6, cbChatLieu.getSelectedIndex() + 1);
+                ps.setInt(7, cbThuongHieu.getSelectedIndex() + 1);
 
-            JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công");
-            loadTable();
+                ps.executeUpdate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công");
+                loadTable();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
@@ -646,7 +658,17 @@ public class SanPhamView extends javax.swing.JPanel {
     }//GEN-LAST:event_tblSanPhamMouseClicked
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-        suaQuanAo();
+        int confirm = JOptionPane.showConfirmDialog(
+                null,
+                "Bạn có chắc muốn sửa sản phẩm này không?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            suaQuanAo();
+            JOptionPane.showMessageDialog(null, "Sửa sản phẩm thành công!");
+        }
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnSanPhamChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSanPhamChiTietActionPerformed

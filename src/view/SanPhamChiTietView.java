@@ -26,6 +26,24 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
      */
     private int sanPhamId;
 
+    public void loadMaSp() {
+        String sql = "SELECT ma_sp FROM quan_ao WHERE id=?";
+        try {
+            Connection con = DbConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, sanPhamId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                txtMasp.setText(rs.getString("ma_sp"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean validateForm() {
 
         if (txtSoLuong.getText().trim().isEmpty()) {
@@ -97,7 +115,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         String sql = """
     SELECT 
     spct.id,
-    qa.ma_sp,
+    spct.ma_spct,
     spct.so_luong,
     ms.ten_mau,
     spct.gia_ban,
@@ -119,7 +137,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             while (rs.next()) {
                 model.addRow(new Object[]{
                     rs.getInt("id"),
-                    rs.getString("ma_sp"),
+                    rs.getString("ma_spct"),
                     rs.getInt("so_luong"),
                     rs.getString("ten_mau"),
                     rs.getDouble("gia_ban"),
@@ -136,7 +154,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         String sql = """
             SELECT 
             spct.id,
-            qa.ma_sp,
+            spct.ma_spct,
             spct.so_luong,
             ms.ten_mau,
             spct.gia_ban,
@@ -156,7 +174,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                txtMasp.setText(rs.getString("ma_sp"));
+                txtMasp.setText(rs.getString("ma_spct"));
                 txtSoLuong.setText(rs.getString("so_luong"));
                 txtGiaBan.setText(rs.getString("gia_ban"));
                 cbKichThuoc.setSelectedItem(rs.getString("ten_kich_thuoc"));
@@ -168,20 +186,130 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         }
     }
 
-    private void designUI() {
+    private void suaSpct() {
+        int row = tblSpct.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm cần sửa!");
+            return;
+        }
 
-       
+        int id = (int) tblSpct.getValueAt(row, 0);
+        int soLuong = Integer.parseInt(txtSoLuong.getText());
+        int mauSac = cbMauSac.getSelectedIndex() + 1;
+        int giaBan = Integer.parseInt(txtGiaBan.getText());
+        int kichThuoc = cbKichThuoc.getSelectedIndex() + 1;
+
+        String sql = "UPDATE quan_ao_chi_tiet SET so_luong=?, mau_sac_id=?, gia_ban=?, kich_thuoc_id=? WHERE id=?";
+
+        try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, soLuong);
+            ps.setInt(2, mauSac);
+            ps.setInt(3, giaBan);
+            ps.setInt(4, kichThuoc);
+            ps.setInt(5, id);
+
+            int kq = ps.executeUpdate();
+            if (kq > 0) {
+                JOptionPane.showMessageDialog(this, "Sửa thành công!");
+                loadTableSPCT();
+            } else {
+                JOptionPane.showMessageDialog(this, "Sửa thất bại!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkTrungMaSP(String maSP) {
+        try {
+            Connection con = DbConnection.getConnection();
+            String sql = "SELECT COUNT(*) FROM quan_ao_chi_tiet WHERE ma_spct = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, maSP);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                if (rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public boolean validateFormSpct() {
+
+        if (checkTrungMaSP(txtMasp.getText())) {
+            JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại");
+            return false;
+        }
+        if (txtGiaBan.getText() == null) {
+            JOptionPane.showMessageDialog(this, "Không được để trống giá bán");
+        }
+
+        try {
+            double giaBan = Double.parseDouble(txtGiaBan.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Giá bán phải là số, không được nhập chữ");
+        }
+
+        double gia = Double.parseDouble(txtGiaBan.getText());
+        if (gia <= 0) {
+            JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
+            txtGiaBan.requestFocus();
+        }
+
+        try {
+            double soLuong = Double.parseDouble(txtSoLuong.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Số lượng phải là số, không được nhập chữ");
+        }
+
+        double sl = Double.parseDouble(txtSoLuong.getText());
+        if (sl < 0) {
+            JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
+            txtGiaBan.requestFocus();
+        }
+
+        if (cbMauSac.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn màu sắc");
+            return false;
+        }
+
+        if (cbKichThuoc.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn kích thước");
+            return false;
+        }
+
+        return true;
     }
 
     public SanPhamChiTietView(Frame parent, boolean modal, int id) {
         super(parent, modal);
         initComponents();
-        designUI();
         this.sanPhamId = id;
         loadForm();
         loadTableSPCT();
         loadKichThuoc();
         loadMauSac();
+        loadMaSp();
     }
 
     /**
@@ -374,31 +502,54 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        try {
-            Connection con = DbConnection.getConnection();
+        int confirm = JOptionPane.showConfirmDialog(
+                null,
+                "Bạn có chắc chắn muốn thêm sản phẩm này không?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-            String sql = "INSERT INTO quan_ao_chi_tiet(so_luong,mau_sac_id,gia_ban,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)";
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (!validateFormSpct()) {
+                return;
+            }
+            try {
+                Connection con = DbConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(sql);
+                String sql = "INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,gia_ban,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?,?)";
 
-            ps.setInt(1, Integer.parseInt(txtSoLuong.getText()));
-            ps.setInt(2, cbMauSac.getSelectedIndex() + 1);
-            ps.setDouble(3, Integer.parseInt(txtGiaBan.getText()));
-            ps.setInt(4, cbKichThuoc.getSelectedIndex() + 1);
-            ps.setInt(5, sanPhamId);
+                PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.executeUpdate();
+                ps.setString(1, txtMasp.getText());
+                ps.setInt(2, Integer.parseInt(txtSoLuong.getText()));
+                ps.setInt(3, cbMauSac.getSelectedIndex() + 1);
+                ps.setDouble(4, Integer.parseInt(txtGiaBan.getText()));
+                ps.setInt(5, cbKichThuoc.getSelectedIndex() + 1);
+                ps.setInt(6, sanPhamId);
 
-            JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công");
-            loadTableSPCT();
+                ps.executeUpdate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công");
+                loadTableSPCT();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
-        // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(
+                null,
+                "Bạn có chắc muốn sửa sản phẩm này không?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            suaSpct();
+            JOptionPane.showMessageDialog(null, "Sửa sản phẩm thành công!");
+        }
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
