@@ -109,10 +109,10 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
     private void loadTableSPCT() {
 
-        DefaultTableModel model = (DefaultTableModel) tblSpct.getModel();
-        model.setRowCount(0);
+    DefaultTableModel model = (DefaultTableModel) tblSpct.getModel();
+    model.setRowCount(0);
 
-        String sql = """
+    String sql = """
     SELECT 
     spct.id,
     spct.ma_spct,
@@ -127,28 +127,28 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     WHERE spct.quan_ao_id = ?
     """;
 
-        try {
-            Connection con = DbConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, sanPhamId);
+    try {
+        Connection con = DbConnection.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, sanPhamId);
 
-            ResultSet rs = ps.executeQuery();
+        ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("ma_spct"),
-                    rs.getInt("so_luong"),
-                    rs.getString("ten_mau"),
-                    rs.getDouble("gia_ban"),
-                    rs.getString("ten_kich_thuoc")
-                });
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("ma_spct"),
+                rs.getInt("so_luong"),
+                rs.getString("ten_mau"),
+                rs.getDouble("gia_ban"),
+                rs.getString("ten_kich_thuoc")
+            });
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
 
     public void loadForm() {
         String sql = """
