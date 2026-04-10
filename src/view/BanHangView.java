@@ -5,9 +5,6 @@
 package view;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +19,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.table.DefaultTableModel;
-import jdbc.DbConnection;
 import model.HoaDon;
 import model.KhachHang;
 import repository.HoaDonChiTietRepository;
@@ -40,24 +36,22 @@ import javax.swing.SpinnerNumberModel;
  */
 public class BanHangView extends javax.swing.JPanel {
 
-    SanPhamRepository spRepo = new SanPhamRepository();
     SanPhamChiTietRepository spctRepo = new SanPhamChiTietRepository();
     HoaDonRepository hdRepo = new HoaDonRepository();
     KhachHangRepository khRepo = new KhachHangRepository();
     HoaDonChiTietRepository hdctRepo = new HoaDonChiTietRepository();
-    NhanVienRepository nvRepo = new NhanVienRepository();
     private int currentHoaDonId = -1;
     private List<Map<String, Object>> listSP = new ArrayList<>();
     private List<Map<String, Object>> listCart = new ArrayList<>();
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
     SpinnerNumberModel SpnModel = new SpinnerNumberModel(1, 1, 1000, 1);
-    private Integer idNhanVien;
+    private final Integer idNhanVien;
 
     // Biến cho tìm kiếm khách hàng
     private KhachHang kh = null;
     private List<KhachHang> Listkh = new ArrayList<>();
-    private Timer searchTimer; // Timer để debounce tìm kiếm
+    private final Timer searchTimer; // Timer để debounce tìm kiếm
     private boolean isSelectingCustomer = false; // Flag khi đang chọn từ dropdown
 
     /**
@@ -267,7 +261,7 @@ public class BanHangView extends javax.swing.JPanel {
         if (hd != null) {
             txtIdInvoice.setText(String.valueOf(hd.get("id")));
             isSelectingCustomer = true;
-            cbbCustomer.getEditor().setItem((String) hd.get("tenKhachHang"));
+            cbbCustomer.getEditor().setItem(hd.get("tenKhachHang"));
             isSelectingCustomer = false;
 
             // Format thời gian tạo
@@ -359,7 +353,7 @@ public class BanHangView extends javax.swing.JPanel {
         JTextField editor = (JTextField) cbbCustomer.getEditor().getEditorComponent();
         String keyword = editor.getText().trim();
 
-        if (keyword.isEmpty() || keyword.length() < 1) {
+        if (keyword.isEmpty()) {
             cbbCustomer.hidePopup();
             Listkh.clear();
             kh = null;
@@ -419,6 +413,7 @@ public class BanHangView extends javax.swing.JPanel {
         btnSearch = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
         btnLamMoi = new javax.swing.JButton();
+        spnNumberAdd = new javax.swing.JSpinner();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         btnCreateInvoice = new javax.swing.JButton();
@@ -524,7 +519,8 @@ public class BanHangView extends javax.swing.JPanel {
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch)
                     .addComponent(btnAdd)
-                    .addComponent(btnLamMoi))
+                    .addComponent(btnLamMoi)
+                    .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
