@@ -27,6 +27,6 @@ public class HoaDon {
     private BigDecimal tienThua;
     private boolean trangThai;    
     private int khuyenMaiId;
-    private int khachHangId;
+    private Integer khachHangId;
     private int nhanVienId;
 }

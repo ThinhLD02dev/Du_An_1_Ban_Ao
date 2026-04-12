@@ -3,6 +3,7 @@ package repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import jdbc.DbConnection;
@@ -36,24 +37,31 @@ public class KhachHangRepository {
         return list;
     }
 
-    public boolean add(KhachHang kh) {
+    public int add(KhachHang kh) {
         String sql = "INSERT INTO khach_hang(ten_khach_hang, so_dien_thoai, email, dia_chi) VALUES (?, ?, ?, ?)";
 
         try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, kh.getTenKhachHang());
             ps.setString(2, kh.getSoDienThoai());
             ps.setString(3, kh.getEmail());
             ps.setString(4, kh.getDiaChi());
 
-            return ps.executeUpdate() > 0;
+            if (ps.executeUpdate() > 0) {
+                // Lấy ID được generate tự động
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);  // Return ID mới
+                    }
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return false;
+        return -1;  // Return -1 nếu thêm thất bại
     }
 
     public boolean update(KhachHang kh) {

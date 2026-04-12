@@ -32,7 +32,7 @@ import javax.swing.SpinnerNumberModel;
 import java.awt.CardLayout;
 import java.awt.Frame;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
+ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 /**
@@ -399,6 +399,30 @@ public class BanHangView extends javax.swing.JPanel {
         // Hiển thị dropdown
         cbbCustomer.showPopup();
     }
+    private void clearForm(){
+        txtIdInvoice.setText("");
+        isSelectingCustomer = true;
+        cbbCustomer.getEditor().setItem("");
+        isSelectingCustomer = false;
+        txtTimeCreate.setText("");
+        txtSumMoney.setText("");
+        txtSale.setText("");
+        txtMoneyPaid.setText("");
+        txtGiveMoney.setText("");
+        txtChange.setText("");
+
+        kh = null;
+        cbbCustomer.setModel(new DefaultComboBoxModel<>());
+
+        currentHoaDonId = -1;
+        btnAdd.setEnabled(false);
+        btnCreateInvoice.setEnabled(true);
+        btnSave.setEnabled(false);
+        btnPaid.setEnabled(false);
+
+        loadTableCart(0);
+        tblUnPaid.setSelectionMode(0);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -668,9 +692,9 @@ public class BanHangView extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addComponent(cbbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbbCustomer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
+                                .addComponent(btnAddCustomer))
                             .addComponent(txtTimeCreate, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtUseCreate, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtSumMoney, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -713,7 +737,7 @@ public class BanHangView extends javax.swing.JPanel {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(txtSale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addComponent(jLabel6)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -751,7 +775,7 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(btnPaid)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 133, Short.MAX_VALUE)
                 .addComponent(btnIssueIvoice)
                 .addGap(27, 27, 27))
         );
@@ -780,7 +804,7 @@ public class BanHangView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 0, 204));
@@ -874,7 +898,7 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -902,7 +926,7 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -927,9 +951,9 @@ public class BanHangView extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -980,7 +1004,7 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
         // Ưu tiên lấy từ selectedCustomer nếu đã chọn
-        int khachHangId;
+        Integer khachHangId = null;  // ✅ Integer thay vì int để cho phép null
         String tenKhachHang;
 
         if (kh != null) {
@@ -993,21 +1017,22 @@ public class BanHangView extends javax.swing.JPanel {
             // Nếu trống, mặc định là "Khách lẻ"
             if (tenKhachHang.isEmpty()) {
                 tenKhachHang = "Khách lẻ";
+                khachHangId = null;  // ✅ Khách lẻ không có ID
                 isSelectingCustomer = true;
                 cbbCustomer.getEditor().setItem(tenKhachHang);
                 isSelectingCustomer = false;
-            }
-
-            // Tìm ID từ tên
-            khachHangId = khRepo.getIdByName(tenKhachHang);
-            if (khachHangId == -1) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với tên: " + tenKhachHang + "\nVui lòng chọn khách hàng từ danh sách hoặc thêm khách hàng mới.");
-                return;
+            } else {
+                // Tìm ID từ tên khách hàng đã nhập
+                khachHangId = khRepo.getIdByName(tenKhachHang);
+                if (khachHangId == -1) {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với tên: " + tenKhachHang + "\nVui lòng chọn khách hàng từ danh sách hoặc thêm khách hàng mới.");
+                    return;
+                }
             }
         }
 
         HoaDon hd = new HoaDon();
-        hd.setKhachHangId(khachHangId);
+        hd.setKhachHangId(khachHangId);  // ✅ Có thể null cho khách lẻ
         hd.setNhanVienId(idNhanVien);
 
         int id = hdRepo.createInvoice(hd);
@@ -1118,7 +1143,7 @@ public class BanHangView extends javax.swing.JPanel {
                 loadTableCart(0);
                 loadTableProduct(); // Reload bảng sản phẩm để hiển thị số lượng mới
                 // Reset form
-                loadFormInvoice(-1); // Hoặc reset manual
+                clearForm(); // Hoặc reset manual
                 currentHoaDonId = -1;
                 btnAdd.setEnabled(false);
             } else {
@@ -1166,29 +1191,7 @@ public class BanHangView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
-
-        txtIdInvoice.setText("");
-        isSelectingCustomer = true;
-        cbbCustomer.getEditor().setItem("");
-        isSelectingCustomer = false;
-        txtTimeCreate.setText("");
-        txtSumMoney.setText("");
-        txtSale.setText("");
-        txtMoneyPaid.setText("");
-        txtGiveMoney.setText("");
-        txtChange.setText("");
-
-        kh = null;
-        cbbCustomer.setModel(new DefaultComboBoxModel<>());
-
-        currentHoaDonId = -1;
-        btnAdd.setEnabled(false);
-        btnCreateInvoice.setEnabled(true);
-        btnSave.setEnabled(false);
-        btnPaid.setEnabled(false);
-
-        loadTableCart(0);
-        tblUnPaid.setSelectionMode(0);
+        clearForm();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
@@ -1285,17 +1288,37 @@ public class BanHangView extends javax.swing.JPanel {
      }//GEN-LAST:event_btnSearchActionPerformed
 
      private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
+          // Nếu dialog đã tồn tại, dispose nó trước
+          if (customerDialog != null) {
+              customerDialog.dispose();
+          }
 
-         // Nếu dialog đã tồn tại, dispose nó trước
-         if (customerDialog != null) {
-             customerDialog.dispose();
-         }
-
-         // Tạo dialog mới
-         customerDialog = new CreateCustomerView();
-         customerDialog.setLocationRelativeTo(null);
-         customerDialog.setVisible(true);
-     }//GEN-LAST:event_btnAddCustomerActionPerformed
+          // Tạo dialog mới
+          customerDialog = new CreateCustomerView();
+          
+          // Set callback để cập nhật cbbCustomer và biến kh khi khách hàng được thêm
+          customerDialog.setOnCustomerAddedListener(khachHangMoi -> {
+              //  Cập nhật biến kh với object có ID chính xác từ database
+              kh = khachHangMoi;
+              
+              //  Cập nhật Listkh để ActionListener có thể tìm thấy
+              Listkh.clear();
+              Listkh.add(khachHangMoi);
+              
+              //  Cập nhật text trong cbbCustomer
+              isSelectingCustomer = true;
+              JTextField editor = (JTextField) cbbCustomer.getEditor().getEditorComponent();
+              if (khachHangMoi.getSoDienThoai() != null && !khachHangMoi.getSoDienThoai().isEmpty()) {
+                  editor.setText(khachHangMoi.getTenKhachHang() + " - " + khachHangMoi.getSoDienThoai());
+              } else {
+                  editor.setText(khachHangMoi.getTenKhachHang());
+              }
+              isSelectingCustomer = false;
+          });
+          
+          customerDialog.setLocationRelativeTo(null);
+          customerDialog.setVisible(true);
+      }//GEN-LAST:event_btnAddCustomerActionPerformed
 
      private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIssueIvoiceActionPerformed
          if (currentHoaDonId <= 0) {
