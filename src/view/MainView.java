@@ -62,8 +62,8 @@ public class MainView extends javax.swing.JFrame {
         btnSanPham = new javax.swing.JButton();
         btnNhanVien = new javax.swing.JButton();
         btnHoaDon = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnKhachHang = new javax.swing.JButton();
+        btnBanHang = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
         pnMain = new javax.swing.JPanel();
 
@@ -94,17 +94,17 @@ public class MainView extends javax.swing.JFrame {
         btnHoaDon.setText("HÓA ĐƠN");
         btnHoaDon.setPreferredSize(new java.awt.Dimension(150, 30));
 
-        jButton1.setText("KHÁCH HÀNG");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnKhachHang.setText("KHÁCH HÀNG");
+        btnKhachHang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnKhachHangActionPerformed(evt);
             }
         });
 
-        jButton2.setText("BÁN HÀNG");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnBanHang.setText("BÁN HÀNG");
+        btnBanHang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnBanHangActionPerformed(evt);
             }
         });
 
@@ -130,8 +130,8 @@ public class MainView extends javax.swing.JFrame {
                             .addComponent(btnHoaDon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnSanPham, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnNhanVien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnKhachHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnBanHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnLogOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(48, 48, 48))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnMenuLayout.createSequentialGroup()
@@ -148,9 +148,9 @@ public class MainView extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(btnNhanVien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnKhachHang, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBanHang, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addComponent(btnHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 163, Short.MAX_VALUE)
@@ -204,20 +204,20 @@ public class MainView extends javax.swing.JFrame {
         cardLayout.show(pnMain, "sanpham");
     }//GEN-LAST:event_btnSanPhamActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnBanHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanHangActionPerformed
         // TODO add your handling code here:
         cardLayout.show(pnMain, "banhang");
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnBanHangActionPerformed
 
     private void btnNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhanVienActionPerformed
         // TODO add your handling code here:
         cardLayout.show(pnMain, "nhanvien");
     }//GEN-LAST:event_btnNhanVienActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKhachHangActionPerformed
         // TODO add your handling code here:
         cardLayout.show(pnMain, "khachhang");
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnKhachHangActionPerformed
 
     private void btnLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogOutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
@@ -260,12 +260,12 @@ public class MainView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBanHang;
     private javax.swing.JButton btnHoaDon;
+    private javax.swing.JButton btnKhachHang;
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnNhanVien;
     private javax.swing.JButton btnSanPham;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblTaiKhoan;
     private javax.swing.JPanel pnMain;

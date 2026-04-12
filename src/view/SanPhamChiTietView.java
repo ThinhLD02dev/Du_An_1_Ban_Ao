@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jdbc.DbConnection;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,7 +20,7 @@ import jdbc.DbConnection;
  */
 public class SanPhamChiTietView extends javax.swing.JDialog {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SanPhamChiTietView.class.getName());
+    private static final Logger logger = Logger.getLogger(SanPhamChiTietView.class.getName());
 
     /**
      * Creates new form SanPhamChiTietView
