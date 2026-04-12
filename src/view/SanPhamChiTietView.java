@@ -53,12 +53,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             return false;
         }
 
-        if (txtGiaBan.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Giá bán không được để trống");
-            txtMasp.requestFocus();
-            return false;
-        }
-
         if (cbKichThuoc.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn chất liệu");
             return false;
@@ -119,7 +113,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     spct.ma_spct,
     spct.so_luong,
     ms.ten_mau,
-    spct.gia_ban,
     kt.ten_kich_thuoc
     FROM quan_ao_chi_tiet spct
     JOIN quan_ao qa ON spct.quan_ao_id = qa.id
@@ -141,7 +134,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
                     rs.getString("ma_spct"),
                     rs.getInt("so_luong"),
                     rs.getString("ten_mau"),
-                    rs.getDouble("gia_ban"),
                     rs.getString("ten_kich_thuoc")
                 });
             }
@@ -158,7 +150,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             spct.ma_spct,
             spct.so_luong,
             ms.ten_mau,
-            spct.gia_ban,
             kt.ten_kich_thuoc
             FROM quan_ao_chi_tiet spct
             JOIN quan_ao qa ON spct.quan_ao_id = qa.id
@@ -177,7 +168,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             while (rs.next()) {
                 txtMasp.setText(rs.getString("ma_spct"));
                 txtSoLuong.setText(rs.getString("so_luong"));
-                txtGiaBan.setText(rs.getString("gia_ban"));
                 cbKichThuoc.setSelectedItem(rs.getString("ten_kich_thuoc"));
                 cbMauSac.setSelectedItem(rs.getString("ten_mau"));
             }
@@ -197,18 +187,16 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         int id = (int) tblSpct.getValueAt(row, 0);
         int soLuong = Integer.parseInt(txtSoLuong.getText());
         int mauSac = cbMauSac.getSelectedIndex() + 1;
-        int giaBan = Integer.parseInt(txtGiaBan.getText());
         int kichThuoc = cbKichThuoc.getSelectedIndex() + 1;
 
-        String sql = "UPDATE quan_ao_chi_tiet SET so_luong=?, mau_sac_id=?, gia_ban=?, kich_thuoc_id=? WHERE id=?";
+        String sql = "UPDATE quan_ao_chi_tiet SET so_luong=?, mau_sac_id=?, kich_thuoc_id=? WHERE id=?";
 
         try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, soLuong);
             ps.setInt(2, mauSac);
-            ps.setInt(3, giaBan);
-            ps.setInt(4, kichThuoc);
-            ps.setInt(5, id);
+            ps.setInt(3, kichThuoc);
+            ps.setInt(4, id);
 
             int kq = ps.executeUpdate();
             if (kq > 0) {
@@ -261,21 +249,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại");
             return false;
         }
-        if (txtGiaBan.getText() == null) {
-            JOptionPane.showMessageDialog(this, "Không được để trống giá bán");
-        }
-
-        try {
-            double giaBan = Double.parseDouble(txtGiaBan.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Giá bán phải là số, không được nhập chữ");
-        }
-
-        double gia = Double.parseDouble(txtGiaBan.getText());
-        if (gia <= 0) {
-            JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
-            txtGiaBan.requestFocus();
-        }
 
         try {
             double soLuong = Double.parseDouble(txtSoLuong.getText());
@@ -286,7 +259,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         double sl = Double.parseDouble(txtSoLuong.getText());
         if (sl < 0) {
             JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
-            txtGiaBan.requestFocus();
+            txtSoLuong.requestFocus();
         }
 
         if (cbMauSac.getSelectedIndex() == -1) {
@@ -301,6 +274,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
         return true;
     }
+
 
     public SanPhamChiTietView(Frame parent, boolean modal, int id) {
         super(parent, modal);
@@ -331,8 +305,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         cbMauSac = new javax.swing.JComboBox<>();
         cbKichThuoc = new javax.swing.JComboBox<>();
-        jLabel5 = new javax.swing.JLabel();
-        txtGiaBan = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtSoLuong = new javax.swing.JTextField();
         btnThem = new javax.swing.JButton();
@@ -375,6 +347,8 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
         jLabel2.setText("Mã Sản Phẩm :");
 
+        txtMasp.setEditable(false);
+
         jLabel3.setText("Màu Sắc :");
 
         jLabel4.setText("Kích Thước :");
@@ -382,8 +356,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         cbMauSac.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         cbKichThuoc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jLabel5.setText("Giá Bán :");
 
         jLabel6.setText("Số Lượng :");
 
@@ -413,29 +385,26 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         pnLeftLayout.setHorizontalGroup(
             pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnLeftLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(cbMauSac, javax.swing.GroupLayout.Alignment.TRAILING, 0, 210, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addComponent(txtMasp)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel4)
+                        .addComponent(cbKichThuoc, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel6)
+                        .addComponent(txtSoLuong))
                     .addGroup(pnLeftLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cbMauSac, javax.swing.GroupLayout.Alignment.TRAILING, 0, 210, Short.MAX_VALUE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtMasp)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(cbKichThuoc, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5)
-                            .addComponent(txtGiaBan)
-                            .addComponent(jLabel6)
-                            .addComponent(txtSoLuong))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pnLeftLayout.createSequentialGroup()
-                        .addGap(0, 16, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
                         .addComponent(btnThem)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnXoa)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSua)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnLeftLayout.setVerticalGroup(
             pnLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -453,10 +422,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbKichThuoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtGiaBan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSoLuong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -465,20 +430,20 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
                     .addComponent(btnThem)
                     .addComponent(btnXoa)
                     .addComponent(btnSua))
-                .addContainerGap(228, Short.MAX_VALUE))
+                .addContainerGap(290, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnLeft, java.awt.BorderLayout.LINE_START);
 
         tblSpct.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "ID", "Mã Sản Phẩm ", "Số Lượng", "Màu Sắc", "Giá Bán", "Kích Thước"
+                "ID", "Mã Sản Phẩm ", "Số Lượng", "Màu Sắc", "Kích Thước"
             }
         ));
         jScrollPane1.setViewportView(tblSpct);
@@ -517,16 +482,15 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             try {
                 Connection con = DbConnection.getConnection();
 
-                String sql = "INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,gia_ban,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?,?)";
+                String sql = "INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)";
 
                 PreparedStatement ps = con.prepareStatement(sql);
 
                 ps.setString(1, txtMasp.getText());
                 ps.setInt(2, Integer.parseInt(txtSoLuong.getText()));
                 ps.setInt(3, cbMauSac.getSelectedIndex() + 1);
-                ps.setDouble(4, Integer.parseInt(txtGiaBan.getText()));
-                ps.setInt(5, cbKichThuoc.getSelectedIndex() + 1);
-                ps.setInt(6, sanPhamId);
+                ps.setInt(4, cbKichThuoc.getSelectedIndex() + 1);
+                ps.setInt(5, sanPhamId);
 
                 ps.executeUpdate();
 
@@ -646,14 +610,12 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnHeader;
     private javax.swing.JPanel pnLeft;
     private javax.swing.JPanel pnMain;
     private javax.swing.JTable tblSpct;
-    private javax.swing.JTextField txtGiaBan;
     private javax.swing.JTextField txtMasp;
     private javax.swing.JTextField txtSoLuong;
     // End of variables declaration//GEN-END:variables
