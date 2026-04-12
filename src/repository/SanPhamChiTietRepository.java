@@ -125,7 +125,7 @@ public class SanPhamChiTietRepository {
     }
     public List<Map<String, Object>> getAllbySell() {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qact.gia_ban "
+        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qa.gia_ban "
                 + " FROM quan_ao_chi_tiet qact "
                 + " JOIN quan_ao qa ON qact.quan_ao_id = qa.id "
                 + " JOIN kich_thuoc kt ON qact.kich_thuoc_id = kt.id "
