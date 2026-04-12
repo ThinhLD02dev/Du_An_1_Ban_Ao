@@ -5,13 +5,32 @@
 package view;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import model.KhachHang;
+import repository.KhachHangRepository;
 
 /**
  *
  * @author nhocx
  */
 public class CreateCustomerView extends javax.swing.JDialog {
-
+    KhachHangRepository khRepo = new KhachHangRepository();
+    private OnCustomerAddedListener onCustomerAdded; // Callback interface
+    
+    /**
+     * Interface cho callback khi khách hàng được thêm thành công
+     */
+    public interface OnCustomerAddedListener {
+        void onCustomerAdded(KhachHang khachHang);
+    }
+    
+    /**
+     * Set listener cho khi khách hàng được thêm
+     */
+    public void setOnCustomerAddedListener(OnCustomerAddedListener listener) {
+        this.onCustomerAdded = listener;
+    }
+    
     /**
      * Creates new form CreateCustomerView
      */
@@ -19,10 +38,43 @@ public class CreateCustomerView extends javax.swing.JDialog {
         initComponents();
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setModal(true);
-        this.setSize(500, 300); // ✅ Đặt kích thước cố định thay vì pack()
+        this.setSize(700, 300); // ✅ Đặt kích thước cố định thay vì pack()
         this.setLocationRelativeTo(null);
     }
-
+    public boolean validateForm() {
+        if (txtTenKH.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên khách hàng không được để trống");
+            txtTenKH.requestFocus();
+            return false;
+        }
+        if (txtSDT.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống");
+            txtSDT.requestFocus();
+            return false;
+        }
+        if (!txtSDT.getText().trim().matches("\\d{10,11}")) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (10-11 chữ số)");
+            txtSDT.requestFocus();
+            return false;
+        }
+        if (txtEmail.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email không được để trống");
+            txtEmail.requestFocus();
+            return false;
+        }
+        if (!txtEmail.getText().trim().contains("@")) {
+            JOptionPane.showMessageDialog(this, "Email không hợp lệ");
+            txtEmail.requestFocus();
+            return false;
+        }
+        if (txtDiaChi.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
+            txtDiaChi.requestFocus();
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,25 +85,95 @@ public class CreateCustomerView extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        txtTenKH = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtSDT = new javax.swing.JTextField();
+        txtDiaChi = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtEmail = new javax.swing.JTextField();
+        btnThem = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
 
-        jLabel1.setText("CustomerView");
+        jPanel1.setBackground(new java.awt.Color(255, 255, 204));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Thêm mới khách hàng", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+
+        txtTenKH.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("Tên Khách Hàng :");
+
+        txtSDT.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        txtDiaChi.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("Số Điện Thoại ;");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setText("Email :");
+
+        txtEmail.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        btnThem.setBackground(new java.awt.Color(40, 167, 69));
+        btnThem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setText("Địa Chỉ");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(163, 163, 163)
-                .addComponent(jLabel1)
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(txtTenKH, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSDT, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(223, 223, 223)
+                .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(91, 91, 91)
-                .addComponent(jLabel1)
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addGap(30, 30, 30)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTenKH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtSDT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addComponent(btnThem)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -66,10 +188,52 @@ public class CreateCustomerView extends javax.swing.JDialog {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        if (!validateForm()) {
+            return;
+        }
+        KhachHang kh = new KhachHang(0, txtTenKH.getText().trim(), txtSDT.getText().trim(), txtEmail.getText().trim(), txtDiaChi.getText().trim());
+        
+        // add() giờ return int (ID), không phải boolean
+        int newId = khRepo.add(kh);
+        if (newId > 0) {
+            JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+            
+            // Cập nhật ID vào object
+            kh.setId(newId);
+            
+            // Gọi callback với object đã có ID chính xác
+            if (onCustomerAdded != null) {
+                onCustomerAdded.onCustomerAdded(kh);
+            }
+            
+            // Xóa dữ liệu form
+            txtTenKH.setText("");
+            txtSDT.setText("");
+            txtEmail.setText("");
+            txtDiaChi.setText("");
+            
+            // Đóng dialog sau 1 giây
+            javax.swing.Timer timer = new javax.swing.Timer(1000, e -> dispose());
+            timer.setRepeats(false);
+            timer.start();
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!");
+        }
+    }//GEN-LAST:event_btnThemActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton btnThem;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField txtDiaChi;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtSDT;
+    private javax.swing.JTextField txtTenKH;
     // End of variables declaration//GEN-END:variables
 
     void setLocationRelativeTo(Object object) {
