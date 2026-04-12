@@ -38,9 +38,9 @@ public class HoaDonRepository {
 
     private List<Map<String, Object>> getHoaDonList(int status, String dateColumn, String dateKey) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT hd.id, hd." + dateColumn + ", kh.ten_khach_hang, nv.ten_nhan_vien "
+        String sql = "SELECT hd.id, hd." + dateColumn + ", ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien "
                 + " FROM hoa_don hd "
-                + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
+                + " LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
                 + " WHERE hd.trang_thai = ? "
                 + " AND CAST(hd."+ dateColumn +" AS DATE) = CAST(GETDATE() AS DATE)";
@@ -129,7 +129,13 @@ public class HoaDonRepository {
     try (Connection con = DbConnection.getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
 
-        ps.setInt(1, hd.getKhachHangId());
+        // Cho phép khachHangId null (khách lẻ)
+        if (hd.getKhachHangId() != null && hd.getKhachHangId() > 0) {
+            ps.setInt(1, hd.getKhachHangId());
+        } else {
+            ps.setNull(1, java.sql.Types.INTEGER);
+        }
+        
         ps.setInt(2, hd.getNhanVienId());
         ps.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
         ps.setInt(4, UNPAID); // mặc định "Chưa thanh toán"

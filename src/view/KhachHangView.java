@@ -146,7 +146,10 @@ public class KhachHangView extends javax.swing.JPanel {
             return;
         }
         KhachHang kh = new KhachHang(0, txtTenKH.getText().trim(), txtSDT.getText().trim(), txtEmail.getText().trim(), txtDiaChi.getText().trim());
-        if (khRepo.add(kh)) {
+        
+        // add() giờ return int (ID mới), không phải boolean
+        int newId = khRepo.add(kh);
+        if (newId > 0) {
             JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
             loadTable();
             clearForm();
