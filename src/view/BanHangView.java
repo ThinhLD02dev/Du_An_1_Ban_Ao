@@ -52,7 +52,7 @@ public class BanHangView extends javax.swing.JPanel {
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
     SpinnerNumberModel SpnModel = new SpinnerNumberModel(1, 1, 1000, 1);
     private final Integer idNhanVien;
-
+    private CreateCustomerView customerDialog = null;
     // Biến cho tìm kiếm khách hàng
     private KhachHang kh = null;
     private List<KhachHang> Listkh = new ArrayList<>();
@@ -65,14 +65,14 @@ public class BanHangView extends javax.swing.JPanel {
     public BanHangView(Integer id) {
         initComponents();
         this.idNhanVien = id;
-        
-        loadTableProduct();        
+
+        loadTableProduct();
         loadTableUnpaid();
         loadTablePaid();
-        
+
         btnAdd.setEnabled(false);
         btnSave.setEnabled(false);
-                
+
         spnNumberAdd.setModel(SpnModel);
         spnNumberDelete.setModel(SpnModel);
 
@@ -102,7 +102,7 @@ public class BanHangView extends javax.swing.JPanel {
         JTextField editorField = (JTextField) cbbCustomer.getEditor().getEditorComponent();
         editorField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e) {               
+            public void keyReleased(KeyEvent e) {
                 if (!isSelectingCustomer) {
                     // Reset timer mỗi khi gõ phím
                     searchTimer.restart();
@@ -1285,11 +1285,16 @@ public class BanHangView extends javax.swing.JPanel {
      }//GEN-LAST:event_btnSearchActionPerformed
 
      private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-        JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
 
-        CreateCustomerView nK = new CreateCustomerView();
-        nK.setLocationRelativeTo(null);
-        nK.setVisible(true);
+         // Nếu dialog đã tồn tại, dispose nó trước
+         if (customerDialog != null) {
+             customerDialog.dispose();
+         }
+
+         // Tạo dialog mới
+         customerDialog = new CreateCustomerView();
+         customerDialog.setLocationRelativeTo(null);
+         customerDialog.setVisible(true);
      }//GEN-LAST:event_btnAddCustomerActionPerformed
 
      private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIssueIvoiceActionPerformed
@@ -1309,15 +1314,15 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPaidMouseClicked
         int row = tblPaid.getSelectedRow();
-         if (row >= 0) {
-             int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-             loadTableCart(hoaDonId);
-             loadFormInvoice(hoaDonId);
-             currentHoaDonId = hoaDonId;
-             btnAdd.setEnabled(false);
-             btnCreateInvoice.setEnabled(false);
-             btnSave.setEnabled(false);
-             btnPaid.setEnabled(false);
+        if (row >= 0) {
+            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
+            loadTableCart(hoaDonId);
+            loadFormInvoice(hoaDonId);
+            currentHoaDonId = hoaDonId;
+            btnAdd.setEnabled(false);
+            btnCreateInvoice.setEnabled(false);
+            btnSave.setEnabled(false);
+            btnPaid.setEnabled(false);
         }
     }//GEN-LAST:event_tblPaidMouseClicked
 
