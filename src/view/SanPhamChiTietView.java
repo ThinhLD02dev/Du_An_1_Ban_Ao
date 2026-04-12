@@ -211,28 +211,28 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         }
     }
 
-    public boolean checkTrungMaSP(String maSP) {
-        try {
-            Connection con = DbConnection.getConnection();
-            String sql = "SELECT COUNT(*) FROM quan_ao_chi_tiet WHERE ma_spct = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-
-            ps.setString(1, maSP);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                if (rs.getInt(1) > 0) {
-                    return true;
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
+//    public boolean checkTrungMaSP(String maSP) {
+//        try {
+//            Connection con = DbConnection.getConnection();
+//            String sql = "SELECT COUNT(*) FROM quan_ao_chi_tiet WHERE ma_spct = ?";
+//            PreparedStatement ps = con.prepareStatement(sql);
+//
+//            ps.setString(1, maSP);
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            if (rs.next()) {
+//                if (rs.getInt(1) > 0) {
+//                    return true;
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return false;
+//    }
 
     public boolean isNumeric(String str) {
         try {
@@ -245,10 +245,10 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
     public boolean validateFormSpct() {
 
-        if (checkTrungMaSP(txtMasp.getText())) {
-            JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại");
-            return false;
-        }
+//        if (checkTrungMaSP(txtMasp.getText())) {
+//            JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại");
+//            return false;
+//        }
 
         try {
             double soLuong = Double.parseDouble(txtSoLuong.getText());
@@ -273,6 +273,12 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         }
 
         return true;
+    }
+    
+    public void resetForm(){
+        txtSoLuong.setText("");
+        cbKichThuoc.setSelectedIndex(0);
+        cbMauSac.setSelectedIndex(0);
     }
 
 
