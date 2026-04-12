@@ -39,6 +39,7 @@ public class MainView extends javax.swing.JFrame {
         pnMain.add(new NhanVienView(), "nhanvien");
         pnMain.add(new KhachHangView(), "khachhang");
         pnMain.add(new BanHangView(id), "banhang");
+        pnMain.add(new GiamGiaView(), "giamgia");
         setLayout(new java.awt.GridBagLayout());
         add(jPanel1);
         this.setSize(1300, 800);
@@ -65,6 +66,7 @@ public class MainView extends javax.swing.JFrame {
         btnKhachHang = new javax.swing.JButton();
         btnBanHang = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
+        btnHoaDon1 = new javax.swing.JButton();
         pnMain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -118,6 +120,14 @@ public class MainView extends javax.swing.JFrame {
             }
         });
 
+        btnHoaDon1.setText("GIẢM GIÁ");
+        btnHoaDon1.setPreferredSize(new java.awt.Dimension(150, 30));
+        btnHoaDon1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHoaDon1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnMenuLayout = new javax.swing.GroupLayout(pnMenu);
         pnMenu.setLayout(pnMenuLayout);
         pnMenuLayout.setHorizontalGroup(
@@ -132,7 +142,8 @@ public class MainView extends javax.swing.JFrame {
                             .addComponent(btnNhanVien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnKhachHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnBanHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnLogOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btnLogOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnHoaDon1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(48, 48, 48))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnMenuLayout.createSequentialGroup()
                         .addComponent(lblTaiKhoan)
@@ -153,7 +164,9 @@ public class MainView extends javax.swing.JFrame {
                 .addComponent(btnBanHang, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addComponent(btnHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 163, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
+                .addComponent(btnHoaDon1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
                 .addComponent(btnLogOut)
                 .addGap(46, 46, 46))
         );
@@ -233,6 +246,10 @@ public class MainView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnLogOutActionPerformed
 
+    private void btnHoaDon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDon1ActionPerformed
+        cardLayout.show(pnMain, "giamgia");
+    }//GEN-LAST:event_btnHoaDon1ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -262,6 +279,7 @@ public class MainView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBanHang;
     private javax.swing.JButton btnHoaDon;
+    private javax.swing.JButton btnHoaDon1;
     private javax.swing.JButton btnKhachHang;
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnNhanVien;
