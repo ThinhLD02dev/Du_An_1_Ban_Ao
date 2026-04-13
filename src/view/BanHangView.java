@@ -311,18 +311,7 @@ public class BanHangView extends javax.swing.JPanel {
             }
             txtChange.setText(String.valueOf(tienThua));
         } else {
-            // Reset form nếu không tìm thấy
-            txtIdInvoice.setText("");
-            isSelectingCustomer = true;
-            cbbCustomer.getEditor().setItem("");
-            isSelectingCustomer = false;
-            txtTimeCreate.setText("");
-            txtUseCreate.setText("");
-            txtSumMoney.setText("");
-            txtSale.setText("");
-            txtMoneyPaid.setText("");
-            txtGiveMoney.setText("");
-            txtChange.setText("");
+            clearForm();
         }
     }
 
@@ -439,7 +428,6 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel11 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
         spnNumberAdd = new javax.swing.JSpinner();
         btnLamMoi = new javax.swing.JButton();
@@ -506,8 +494,6 @@ public class BanHangView extends javax.swing.JPanel {
 
         jLabel11.setText("Tìm kiếm");
 
-        btnSearch.setText("Tìm");
-
         btnAdd.setText("Thêm");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -531,9 +517,7 @@ public class BanHangView extends javax.swing.JPanel {
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnSearch)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(102, 102, 102)
                 .addComponent(btnLamMoi)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -548,7 +532,6 @@ public class BanHangView extends javax.swing.JPanel {
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch)
                     .addComponent(btnAdd)
                     .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnLamMoi))
@@ -804,7 +787,7 @@ public class BanHangView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 0, 204));
@@ -939,7 +922,7 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tbbInvoice)
+            .addComponent(tbbInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1283,10 +1266,6 @@ public class BanHangView extends javax.swing.JPanel {
         }
      }//GEN-LAST:event_btnPaidActionPerformed
 
-     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-         performSearch();
-     }//GEN-LAST:event_btnSearchActionPerformed
-
      private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
           // Nếu dialog đã tồn tại, dispose nó trước
           if (customerDialog != null) {
@@ -1366,7 +1345,6 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JButton btnPaid;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbbCustomer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

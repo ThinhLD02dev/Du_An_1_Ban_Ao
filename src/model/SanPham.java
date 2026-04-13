@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +24,10 @@ public class SanPham {
     private String maSP;
     private String tenAo;
     private String moTa;
-    private int trangThai;
+    private int trangThai;    
+    private BigDecimal giaBan;
     private Date ngayTao;
+    private Integer dotGiamGiaId;
     private int chatLieuId;
     private int thuongHieuId;
 }
