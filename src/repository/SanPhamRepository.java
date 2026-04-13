@@ -19,36 +19,37 @@ import model.VaiTro;
  * @author ngocp
  */
 public class SanPhamRepository {
-    public List<SanPham> getAll(){
-        List<SanPham> list = new ArrayList<>();
-        String sql = "SELECT * FROM quan_ao";
-
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-
-                SanPham sp = new SanPham(
-                        rs.getInt("id"),
-                        rs.getString("ma_sp"),
-                        rs.getString("ten_ao"),
-                        rs.getString("mo_ta"),
-                        rs.getInt("trang_thai"),
-                        rs.getDate("ngay_tao"),
-                        rs.getInt("chat_lieu_id"),
-                        rs.getInt("thuong_hieu_id")
-                );
-
-                list.add(sp);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
+//    public List<SanPham> getAll(){
+//        List<SanPham> list = new ArrayList<>();
+//        String sql = "SELECT * FROM quan_ao";
+//
+//        try (Connection con = DbConnection.getConnection();
+//             PreparedStatement ps = con.prepareStatement(sql);
+//             ResultSet rs = ps.executeQuery()) {
+//
+//            while (rs.next()) {
+//
+//                SanPham sp = new SanPham(
+//                        rs.getInt("id"),
+//                        rs.getString("ma_sp"),
+//                        rs.getString("ten_ao"),
+//                        rs.getString("mo_ta"),
+//                        rs.getBigDecimal("gia_ban"),
+//                        rs.getInt("trang_thai"),
+//                        rs.getDate("ngay_tao"),
+//                        rs.getInt("chat_lieu_id"),
+//                        rs.getInt("thuong_hieu_id")
+//                );
+//
+//                list.add(sp);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return list;
+//    }
 
     public boolean add(SanPham sp) {
 

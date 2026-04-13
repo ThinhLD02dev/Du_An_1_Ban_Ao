@@ -37,7 +37,6 @@ public class SanPhamChiTietRepository {
                         rs.getInt("id"),
                         rs.getInt("so_luong"),
                         rs.getInt("mau_sac_id"),
-                        rs.getBigDecimal("gia_ban"),
                         rs.getInt("kich_thuoc_id"),
                         rs.getInt("quan_ao_id")
                 );
@@ -65,7 +64,6 @@ public class SanPhamChiTietRepository {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
-            ps.setBigDecimal(3, sp.getGiaBan());
             ps.setInt(4, sp.getKichThuocId());
             ps.setInt(5, sp.getQuanAoId());
 
@@ -92,7 +90,6 @@ public class SanPhamChiTietRepository {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
-            ps.setBigDecimal(3, sp.getGiaBan());
             ps.setInt(4, sp.getKichThuocId());
             ps.setInt(5, sp.getQuanAoId());
             ps.setInt(6, sp.getId());
@@ -155,7 +152,7 @@ public class SanPhamChiTietRepository {
 
     public List<Map<String, Object>> searchByKeyword(String keyword) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qact.gia_ban "
+        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qa.gia_ban "
                 + " FROM quan_ao_chi_tiet qact "
                 + " JOIN quan_ao qa ON qact.quan_ao_id = qa.id "
                 + " JOIN kich_thuoc kt ON qact.kich_thuoc_id = kt.id "

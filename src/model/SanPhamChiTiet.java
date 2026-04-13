@@ -22,7 +22,6 @@ public class SanPhamChiTiet {
     private int id;
     private int soLuong;
     private int mauSacId;
-    private BigDecimal giaBan;
     private int kichThuocId;
     private int quanAoId;
 }
