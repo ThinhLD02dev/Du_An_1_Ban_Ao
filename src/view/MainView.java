@@ -40,6 +40,7 @@ public class MainView extends javax.swing.JFrame {
         pnMain.add(new KhachHangView(), "khachhang");
         pnMain.add(new BanHangView(id), "banhang");
         pnMain.add(new GiamGiaView(), "giamgia");
+        pnMain.add(new HoaDonView(),"hoadon");
         setLayout(new java.awt.GridBagLayout());
         add(jPanel1);
         this.setSize(1300, 800);
@@ -95,6 +96,11 @@ public class MainView extends javax.swing.JFrame {
 
         btnHoaDon.setText("HÓA ĐƠN");
         btnHoaDon.setPreferredSize(new java.awt.Dimension(150, 30));
+        btnHoaDon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHoaDonActionPerformed(evt);
+            }
+        });
 
         btnKhachHang.setText("KHÁCH HÀNG");
         btnKhachHang.addActionListener(new java.awt.event.ActionListener() {
@@ -249,6 +255,10 @@ public class MainView extends javax.swing.JFrame {
     private void btnHoaDon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDon1ActionPerformed
         cardLayout.show(pnMain, "giamgia");
     }//GEN-LAST:event_btnHoaDon1ActionPerformed
+
+    private void btnHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDonActionPerformed
+        cardLayout.show(pnMain, "hoadon");
+    }//GEN-LAST:event_btnHoaDonActionPerformed
 
 
     /**
