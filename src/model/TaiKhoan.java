@@ -21,4 +21,5 @@ public class TaiKhoan {
     private int id;
     private String ten;
     private String matKhau;
+    private int nhanVienId; // thêm trường này
 }
