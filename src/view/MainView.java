@@ -5,6 +5,8 @@
 package view;
 
 import java.awt.CardLayout;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -41,11 +43,14 @@ public class MainView extends javax.swing.JFrame {
         pnMain.add(new BanHangView(id), "banhang");
         pnMain.add(new GiamGiaView(), "giamgia");
         pnMain.add(new HoaDonView(),"hoadon");
+        pnMain.add(new ThongKeView(),"thongke");
         setLayout(new java.awt.GridBagLayout());
         add(jPanel1);
-        this.setSize(1600, 800);
+        this.setSize(1600, 900);
         this.setLocationRelativeTo(null);
+
     }
+
     
     
 
@@ -67,7 +72,8 @@ public class MainView extends javax.swing.JFrame {
         btnKhachHang = new javax.swing.JButton();
         btnBanHang = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
-        btnHoaDon1 = new javax.swing.JButton();
+        btnGiamGia = new javax.swing.JButton();
+        btnThongKe = new javax.swing.JButton();
         pnMain = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -126,11 +132,19 @@ public class MainView extends javax.swing.JFrame {
             }
         });
 
-        btnHoaDon1.setText("GIẢM GIÁ");
-        btnHoaDon1.setPreferredSize(new java.awt.Dimension(150, 30));
-        btnHoaDon1.addActionListener(new java.awt.event.ActionListener() {
+        btnGiamGia.setText("GIẢM GIÁ");
+        btnGiamGia.setPreferredSize(new java.awt.Dimension(150, 30));
+        btnGiamGia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnHoaDon1ActionPerformed(evt);
+                btnGiamGiaActionPerformed(evt);
+            }
+        });
+
+        btnThongKe.setText("Thống Kê");
+        btnThongKe.setPreferredSize(new java.awt.Dimension(150, 30));
+        btnThongKe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThongKeActionPerformed(evt);
             }
         });
 
@@ -149,7 +163,8 @@ public class MainView extends javax.swing.JFrame {
                             .addComponent(btnKhachHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnBanHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnLogOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnHoaDon1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btnGiamGia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnThongKe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(48, 48, 48))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnMenuLayout.createSequentialGroup()
                         .addComponent(lblTaiKhoan)
@@ -160,19 +175,21 @@ public class MainView extends javax.swing.JFrame {
             .addGroup(pnMenuLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(lblTaiKhoan)
-                .addGap(47, 47, 47)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSanPham, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
                 .addComponent(btnNhanVien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
                 .addComponent(btnKhachHang, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addGap(18, 18, 18)
                 .addComponent(btnBanHang, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addGap(18, 18, 18)
                 .addComponent(btnHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
-                .addComponent(btnHoaDon1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(btnGiamGia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnThongKe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 149, Short.MAX_VALUE)
                 .addComponent(btnLogOut)
                 .addGap(46, 46, 46))
         );
@@ -218,47 +235,51 @@ public class MainView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSanPhamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSanPhamActionPerformed
-        // TODO add your handling code here:
-        cardLayout.show(pnMain, "sanpham");
-    }//GEN-LAST:event_btnSanPhamActionPerformed
+    private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
+        cardLayout.show(pnMain, "thongke");
+    }//GEN-LAST:event_btnThongKeActionPerformed
 
-    private void btnBanHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanHangActionPerformed
-        // TODO add your handling code here:
-        cardLayout.show(pnMain, "banhang");
-    }//GEN-LAST:event_btnBanHangActionPerformed
-
-    private void btnNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhanVienActionPerformed
-        // TODO add your handling code here:
-        cardLayout.show(pnMain, "nhanvien");
-    }//GEN-LAST:event_btnNhanVienActionPerformed
-
-    private void btnKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKhachHangActionPerformed
-        // TODO add your handling code here:
-        cardLayout.show(pnMain, "khachhang");
-    }//GEN-LAST:event_btnKhachHangActionPerformed
+    private void btnGiamGiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGiamGiaActionPerformed
+        cardLayout.show(pnMain, "giamgia");
+    }//GEN-LAST:event_btnGiamGiaActionPerformed
 
     private void btnLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogOutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn Có Chắc Muốn Đăng Xuất?",
-                "Xác Nhận",
-                JOptionPane.YES_NO_OPTION
+            this,
+            "Bạn Có Chắc Muốn Đăng Xuất?",
+            "Xác Nhận",
+            JOptionPane.YES_NO_OPTION
         );
-        
+
         if (confirm == JOptionPane.YES_OPTION){
             new DangNhapView().setVisible(true);
             dispose();
         }
     }//GEN-LAST:event_btnLogOutActionPerformed
 
-    private void btnHoaDon1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDon1ActionPerformed
-        cardLayout.show(pnMain, "giamgia");
-    }//GEN-LAST:event_btnHoaDon1ActionPerformed
+    private void btnBanHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanHangActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(pnMain, "banhang");
+    }//GEN-LAST:event_btnBanHangActionPerformed
+
+    private void btnKhachHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKhachHangActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(pnMain, "khachhang");
+    }//GEN-LAST:event_btnKhachHangActionPerformed
 
     private void btnHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoaDonActionPerformed
         cardLayout.show(pnMain, "hoadon");
     }//GEN-LAST:event_btnHoaDonActionPerformed
+
+    private void btnNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhanVienActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(pnMain, "nhanvien");
+    }//GEN-LAST:event_btnNhanVienActionPerformed
+
+    private void btnSanPhamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSanPhamActionPerformed
+        // TODO add your handling code here:
+        cardLayout.show(pnMain, "sanpham");
+    }//GEN-LAST:event_btnSanPhamActionPerformed
 
 
     /**
@@ -288,12 +309,13 @@ public class MainView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBanHang;
+    private javax.swing.JButton btnGiamGia;
     private javax.swing.JButton btnHoaDon;
-    private javax.swing.JButton btnHoaDon1;
     private javax.swing.JButton btnKhachHang;
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnNhanVien;
     private javax.swing.JButton btnSanPham;
+    private javax.swing.JButton btnThongKe;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblTaiKhoan;
     private javax.swing.JPanel pnMain;
