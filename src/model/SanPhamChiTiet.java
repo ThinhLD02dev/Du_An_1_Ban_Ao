@@ -20,6 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SanPhamChiTiet {
     private Integer id;
+    private String maSpct;
     private Integer soLuong;
     private Integer mauSacId;
     private Integer kichThuocId;
