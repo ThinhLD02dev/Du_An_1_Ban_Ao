@@ -36,9 +36,45 @@ public class HoaDonRepository {
         return getHoaDonList(PAID, "ngay_thanh_toan", "ngayThanhToan");
     }
 
+    public List<Map<String, Object>> getAllPaidForInvoiceView() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT hd.id, hd.ngay_tao, hd.ngay_thanh_toan, hd.tong_tien, "
+                + "ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien "
+                + "FROM hoa_don hd "
+                + "LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
+                + "JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
+                + "WHERE hd.trang_thai = ?";
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, PAID);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ngayTaoTs = rs.getTimestamp("ngay_tao");
+                    Timestamp ngayThanhToanTs = rs.getTimestamp("ngay_thanh_toan");
+                    LocalDateTime ngayTao = ngayTaoTs != null ? ngayTaoTs.toLocalDateTime() : null;
+                    LocalDateTime ngayThanhToan = ngayThanhToanTs != null ? ngayThanhToanTs.toLocalDateTime() : null;
+
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getInt("id"));
+                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));
+                    row.put("tenKhachHang", rs.getString("ten_khach_hang"));
+                    row.put("tongTien", rs.getBigDecimal("tong_tien"));
+                    row.put("ngayTao", ngayTao);
+                    row.put("ngayThanhToan", ngayThanhToan);
+                    list.add(row);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in getAllPaidForTable", e);
+        }
+
+        return list;
+    }
+
     private List<Map<String, Object>> getHoaDonList(int status, String dateColumn, String dateKey) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT hd.id, hd." + dateColumn + ", ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien "
+        String sql = "SELECT hd.id, hd." + dateColumn + ", ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien, hd.tong_tien "
                 + " FROM hoa_don hd "
                 + " LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
@@ -51,6 +87,8 @@ public class HoaDonRepository {
 
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+            con.setAutoCommit(false);
+            con.commit();
             ps.setInt(1, status);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -61,7 +99,8 @@ public class HoaDonRepository {
                     row.put("id", rs.getInt("id"));                        
                     row.put(dateKey, dateTime);               
                     row.put("tenKhachHang", rs.getString("ten_khach_hang")); 
-                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));       
+                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));  
+                    row.put("tongTien", rs.getBigDecimal("tong_tien"));     
                     list.add(row);
                 }
             }

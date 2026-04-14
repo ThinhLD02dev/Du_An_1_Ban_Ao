@@ -19,9 +19,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SanPhamChiTiet {
-    private int id;
-    private int soLuong;
-    private int mauSacId;
-    private int kichThuocId;
-    private int quanAoId;
+    private Integer id;
+    private Integer soLuong;
+    private Integer mauSacId;
+    private Integer kichThuocId;
+    private Integer quanAoId;
 }

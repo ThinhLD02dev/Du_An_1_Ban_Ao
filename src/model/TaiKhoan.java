@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaiKhoan {
-    private int id;
+    private Integer id;
     private String ten;
     private String matKhau;
     private int nhanVienId; // thêm trường này

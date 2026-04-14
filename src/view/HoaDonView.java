@@ -4,7 +4,14 @@
  */
 package view;
 
+import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.security.Timestamp;
+import java.util.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +36,8 @@ public class HoaDonView extends javax.swing.JPanel {
     
     private List<Map<String, Object>> listHD = new ArrayList<>();
     
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
+    Date date = new Date();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
 
     /**
      * Creates new form HoaDonView
@@ -37,6 +45,21 @@ public class HoaDonView extends javax.swing.JPanel {
     public HoaDonView() {
         initComponents();
         loadTableInvoice();
+        dateEnd.setDate(date);
+        dateEnd.setMaxSelectableDate(date);
+        dateEnd.setDateFormatString("dd/MM/yyyy");
+        dateStart.setMaxSelectableDate(date);
+        dateStart.setDateFormatString("dd/MM/yyyy");        
+        
+        this.addComponentListener(new ComponentAdapter(){
+        
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadTableInvoice();
+            }
+        });
+
+        
         tblHoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblHoaDonMouseClicked(evt);
@@ -47,6 +70,7 @@ public class HoaDonView extends javax.swing.JPanel {
                 btnTimKiemActionPerformed(evt);
             }
         });
+        
     }
     
     public void loadTableInvoice() {
@@ -54,14 +78,17 @@ public class HoaDonView extends javax.swing.JPanel {
         tblHoaDon.setDefaultEditor(Object.class, null);
         model.setRowCount(0);
 
-        listHD = hdRepo.getAllToPaid(); 
+        listHD = hdRepo.getAllPaidForInvoiceView(); 
         for (Map<String, Object> hd : listHD) {
+            LocalDateTime ngayTao = (LocalDateTime) hd.get("ngayTao");
             LocalDateTime ngayThanhToan = (LocalDateTime) hd.get("ngayThanhToan");
             Object[] row = {
                 hd.get("id"),
-                ngayThanhToan.format(format),
+                hd.get("tenNhanVien"),
                 hd.get("tenKhachHang"),
-                hd.get("tenNhanVien")
+                hd.get("tongTien"),
+                ngayTao != null ? ngayTao.format(format) : "",
+                ngayThanhToan != null ? ngayThanhToan.format(format) : ""
             };
             model.addRow(row);
         }
@@ -77,8 +104,6 @@ public class HoaDonView extends javax.swing.JPanel {
             Object[] row = {
                 hdct.get("id"),
                 hdct.get("tenAo"),
-                "", // Thương hiệu - cần thêm nếu có
-                "", // Danh mục - cần thêm nếu có
                 hdct.get("tenMau"),
                 hdct.get("tenKichThuoc"),
                 hdct.get("soLuong"),
@@ -110,7 +135,6 @@ public class HoaDonView extends javax.swing.JPanel {
         dateEnd = new com.toedter.calendar.JDateChooser();
         txtTimKiem = new javax.swing.JTextField();
         btnTimKiem = new javax.swing.JButton();
-        btnLamMoi = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         tblHoaDonKH = new javax.swing.JScrollPane();
         tblHoaDon = new javax.swing.JTable();
@@ -164,11 +188,9 @@ public class HoaDonView extends javax.swing.JPanel {
         jLabel3.setText("Đến :");
 
         btnTimKiem.setText("Tìm Kiếm");
-
-        btnLamMoi.setText("Làm Mới");
-        btnLamMoi.addActionListener(new java.awt.event.ActionListener() {
+        btnTimKiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLamMoiActionPerformed(evt);
+                btnTimKiemActionPerformed(evt);
             }
         });
 
@@ -193,8 +215,6 @@ public class HoaDonView extends javax.swing.JPanel {
                 .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnLamMoi)
                 .addContainerGap(25, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -209,8 +229,7 @@ public class HoaDonView extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnTimKiem)
-                        .addComponent(btnLamMoi))
+                        .addComponent(btnTimKiem))
                     .addComponent(dateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(dateStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -224,13 +243,13 @@ public class HoaDonView extends javax.swing.JPanel {
 
         tblHoaDon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Ngày Thanh Toán", "Tên Khách Hàng", "Tên Nhân Viên"
+                "ID", "Tên Nhân Viên", "Tên Khách Hàng", "Tổng tiền", "Ngày Tạo", "Ngày thanh toán"
             }
         ));
         tblHoaDonKH.setViewportView(tblHoaDon);
@@ -276,13 +295,13 @@ public class HoaDonView extends javax.swing.JPanel {
 
         tblHoaDonChiTiet.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Tên Sản Phẩm ", "Thương Hiệu", "Danh Mục", "Màu Sắc", "Kích Thước", "Số Lượng", "Đơn Giá", "Thành Tiền"
+                "ID", "Tên Sản Phẩm ", "Màu Sắc", "Kích Thước", "Số Lượng", "Đơn Giá", "Thành Tiền"
             }
         ));
         tblSanPhamKH.setViewportView(tblHoaDonChiTiet);
@@ -324,8 +343,8 @@ public class HoaDonView extends javax.swing.JPanel {
         model.setRowCount(0);
 
         String searchText = txtTimKiem.getText().trim().toLowerCase();
-        java.util.Date startDate = dateStart.getDate();
-        java.util.Date endDate = dateEnd.getDate();
+        Date startDate = dateStart.getDate();
+        Date endDate = dateEnd.getDate();       
 
         List<Map<String, Object>> filteredList = new ArrayList<>();
         for (Map<String, Object> hd : listHD) {
@@ -341,13 +360,19 @@ public class HoaDonView extends javax.swing.JPanel {
             }
 
             // Filter by date
-            if (startDate != null || endDate != null) {
-                LocalDateTime ngayThanhToan = (LocalDateTime) hd.get("ngayThanhToan");
-                java.util.Date hdDate = java.sql.Timestamp.valueOf(ngayThanhToan);
-                if (startDate != null && hdDate.before(startDate)) {
+            LocalDateTime ngayThanhToan = (LocalDateTime) hd.get("ngayThanhToan");
+            LocalDate hdLocalDate = ngayThanhToan.toLocalDate();
+            if (startDate != null) {
+                LocalDate startLocal = startDate.toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalDate();
+                if (hdLocalDate.isBefore(startLocal)) {
                     matches = false;
                 }
-                if (endDate != null && hdDate.after(endDate)) {
+            }
+            if (endDate != null) {
+                LocalDate endLocal = endDate.toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalDate();
+                if (hdLocalDate.isAfter(endLocal)) {
                     matches = false;
                 }
             }
@@ -358,12 +383,15 @@ public class HoaDonView extends javax.swing.JPanel {
         }
 
         for (Map<String, Object> hd : filteredList) {
+            LocalDateTime ngayTao = (LocalDateTime) hd.get("ngayTao");
             LocalDateTime ngayThanhToan = (LocalDateTime) hd.get("ngayThanhToan");
             Object[] row = {
                 hd.get("id"),
-                ngayThanhToan.format(format),
+                hd.get("tenNhanVien"),
                 hd.get("tenKhachHang"),
-                hd.get("tenNhanVien")
+                hd.get("tongTien"),
+                ngayTao != null ? ngayTao.format(format) : "",
+                ngayThanhToan != null ? ngayThanhToan.format(format) : ""
             };
             model.addRow(row);
         }
@@ -379,7 +407,6 @@ public class HoaDonView extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInHD;
-    private javax.swing.JButton btnLamMoi;
     private javax.swing.JButton btnTimKiem;
     private javax.swing.JButton btnXuatHD;
     private com.toedter.calendar.JDateChooser dateEnd;

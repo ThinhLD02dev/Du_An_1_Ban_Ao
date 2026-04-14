@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GiamGia {
-    private int id;
+    private Integer id;
     private String maGiamGia;
     private LocalDate ngayHieuLuc;
     private LocalDate ngayKetThuc;
     private boolean trangThai;
-    private int soLanApDung;
-    private int kieuGiamId;
+    private Integer soLanApDung;
+    private Integer kieuGiamId;
     
-    public boolean isValid() {
+    public Boolean isValid() {
         LocalDate today = LocalDate.now();
         return trangThai &&
                (soLanApDung > 0) &&

@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HoaDonChiTiet {
-    private int id;
-    private int soLuong;
+    private Integer id;
+    private Integer soLuong;
     private BigDecimal tongGia;
-    private int quanAoChiTietId;
-    private int hoaDonId;
+    private Integer quanAoChiTietId;
+    private Integer hoaDonId;
 }

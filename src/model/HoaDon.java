@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HoaDon {
-    private int id;
+    private Integer id;
     private LocalDateTime ngayTao;
     private LocalDateTime ngayThanhToan;
     private BigDecimal tongTien;
     private BigDecimal tienThanhToan;
     private BigDecimal tienNhan;
     private BigDecimal tienThua;
-    private boolean trangThai;    
-    private int khuyenMaiId;
+    private Boolean trangThai;    
+    private Integer khuyenMaiId;
     private Integer khachHangId;
-    private int nhanVienId;
+    private Integer nhanVienId;
 }

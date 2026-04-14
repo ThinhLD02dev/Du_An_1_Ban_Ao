@@ -4,17 +4,52 @@
  */
 package view;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.table.DefaultTableModel;
+import repository.DotGiamGiaRepository;
+
 /**
  *
  * @author LHH05
  */
 public class GiamGiaView extends javax.swing.JPanel {
-
-    /**
-     * Creates new form GiamGiaView
-     */
+    private final DotGiamGiaRepository dotGiamGiaRepo = new DotGiamGiaRepository();
+    private final List<Map<String, Object>> listDotGiamGia = new ArrayList<>();
+    private Integer selectedSanPhamId;
+    private Integer selectedDotGiamGiaId;
+    
+    SpinnerNumberModel SpnModel = new SpinnerNumberModel();
+    
     public GiamGiaView() {
         initComponents();
+        dcNgayBatDau.getJCalendar().setMinSelectableDate(new Date());
+        dcNgayKetThuc.getJCalendar().setMinSelectableDate(new Date());
+        
+        spnGiaTri1.setModel(new SpinnerNumberModel(1, 1, 100, 1));
+        loadDotGiamGiaTable();
+        clearDotGiamGiaForm();
+        jButton1.addActionListener(evt -> onCreateDotGiamGia());
+        jButton2.addActionListener(evt -> clearDotGiamGiaForm());
+        jButton4.addActionListener(evt -> {
+            clearDotGiamGiaForm();
+            loadDotGiamGiaTable();
+        });
+        
+        rdbPhanTram.addActionListener(e -> {
+            // Nếu chọn "Phần Trăm" thì giới hạn từ 1 đến 100
+            spnGiaTri2.setModel(new SpinnerNumberModel(1, 1, 100, 1));
+        });
+
+        rdbCoDinh.addActionListener(e -> {
+            // Nếu chọn "Cố Định" thì có thể để giới hạn khác, ví dụ từ 1 đến 100_000_000
+            spnGiaTri2.setModel(new SpinnerNumberModel(100_000, 1, 100_000_000, 100_000));
+        });
+
     }
 
     /**
@@ -42,7 +77,7 @@ public class GiamGiaView extends javax.swing.JPanel {
         txtTenDotGiam = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        spnGiaTri = new javax.swing.JSpinner();
+        spnGiaTri1 = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jRadioButton1 = new javax.swing.JRadioButton();
@@ -55,19 +90,19 @@ public class GiamGiaView extends javax.swing.JPanel {
         dcNgayKetThuc = new com.toedter.calendar.JDateChooser();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblDotGiamGia = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tblMaGiamGia = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
-        jSpinner2 = new javax.swing.JSpinner();
+        rdbPhanTram = new javax.swing.JRadioButton();
+        rdbCoDinh = new javax.swing.JRadioButton();
+        spnGiaTri2 = new javax.swing.JSpinner();
         jLabel11 = new javax.swing.JLabel();
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton6 = new javax.swing.JRadioButton();
@@ -160,7 +195,7 @@ public class GiamGiaView extends javax.swing.JPanel {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTenDotGiam)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(spnGiaTri)
+                    .addComponent(spnGiaTri1)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
@@ -192,7 +227,7 @@ public class GiamGiaView extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(spnGiaTri, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(spnGiaTri1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -220,7 +255,7 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         jPanel1.add(jPanel4, java.awt.BorderLayout.LINE_START);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblDotGiamGia.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -231,7 +266,12 @@ public class GiamGiaView extends javax.swing.JPanel {
                 "Tên Sản Phẩm ", "Tên Đợt Giảm Giá", "Giá Trị ", "Ngày Bắt Đầu", "Ngày Kết Thúc", "Trạng Thái"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblDotGiamGia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDotGiamGiaMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblDotGiamGia);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -252,7 +292,7 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tblMaGiamGia.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
@@ -263,7 +303,12 @@ public class GiamGiaView extends javax.swing.JPanel {
                 "Mã", "Giá Trị", "Đang Giảm", "Loại Áp Dụng", "Start Date", "End Date", "Số Lần Dùng", "Trạng Thái"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        tblMaGiamGia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblMaGiamGiaMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblMaGiamGia);
 
         jPanel3.setBackground(new java.awt.Color(245, 247, 250));
         jPanel3.setMinimumSize(new java.awt.Dimension(100, 100));
@@ -275,12 +320,12 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         jLabel10.setText("Đang Giảm :");
 
-        buttonGroup2.add(jRadioButton2);
-        jRadioButton2.setSelected(true);
-        jRadioButton2.setText("Phần Trăm");
+        buttonGroup2.add(rdbPhanTram);
+        rdbPhanTram.setSelected(true);
+        rdbPhanTram.setText("Phần Trăm");
 
-        buttonGroup2.add(jRadioButton4);
-        jRadioButton4.setText("Cố Định");
+        buttonGroup2.add(rdbCoDinh);
+        rdbCoDinh.setText("Cố Định");
 
         jLabel11.setText("Loại Áp Dụng :");
 
@@ -348,13 +393,13 @@ public class GiamGiaView extends javax.swing.JPanel {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jButton8))
                                 .addComponent(jTextField5)
-                                .addComponent(jSpinner2)
+                                .addComponent(spnGiaTri2)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                    .addComponent(jRadioButton2)
+                                    .addComponent(rdbPhanTram)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jRadioButton6)
-                                        .addComponent(jRadioButton4))
+                                        .addComponent(rdbCoDinh))
                                     .addGap(19, 19, 19))))))
                 .addGap(14, 14, 14))
         );
@@ -368,13 +413,13 @@ public class GiamGiaView extends javax.swing.JPanel {
                 .addGap(6, 6, 6)
                 .addComponent(jLabel9)
                 .addGap(6, 6, 6)
-                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(spnGiaTri2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6)
                 .addComponent(jLabel10)
                 .addGap(6, 6, 6)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton4))
+                    .addComponent(rdbPhanTram)
+                    .addComponent(rdbCoDinh))
                 .addGap(6, 6, 6)
                 .addComponent(jLabel11)
                 .addGap(6, 6, 6)
@@ -451,6 +496,114 @@ public class GiamGiaView extends javax.swing.JPanel {
         add(pnMain, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void tblDotGiamGiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDotGiamGiaMouseClicked
+        int row = tblDotGiamGia.getSelectedRow();
+        if (row < 0 || row >= listDotGiamGia.size()) {
+            return;
+        }
+
+        Map<String, Object> data = listDotGiamGia.get(row);
+        selectedDotGiamGiaId = (Integer) data.get("dotGiamId");
+        selectedSanPhamId = (Integer) data.get("sanPhamId");
+        txtTenSP.setText((String) data.get("tenSanPham"));
+        txtTenDotGiam.setText(data.get("tenDot") != null ? (String) data.get("tenDot") : "");
+        Integer giaTriValue = (Integer) data.get("giaTri");
+        spnGiaTri1.setValue(giaTriValue != null ? giaTriValue : 1);
+        dcNgayBatDau.setDate((Date) data.get("ngayBatDau"));
+        dcNgayKetThuc.setDate((Date) data.get("ngayKetThuc"));
+        Boolean tt = (Boolean) data.get("trangThai");
+        if (Boolean.TRUE.equals(tt)) {
+            jRadioButton1.setSelected(true);
+        } else {
+            jRadioButton3.setSelected(true);
+        }
+    }//GEN-LAST:event_tblDotGiamGiaMouseClicked
+
+    private void tblMaGiamGiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMaGiamGiaMouseClicked
+        
+    }//GEN-LAST:event_tblMaGiamGiaMouseClicked
+
+    private void loadDotGiamGiaTable() {
+        DefaultTableModel model = (DefaultTableModel) tblDotGiamGia.getModel();
+        model.setRowCount(0);
+        listDotGiamGia.clear();
+        listDotGiamGia.addAll(dotGiamGiaRepo.getAllWithProductName());
+
+        for (Map<String, Object> rowData : listDotGiamGia) {
+            Object trangThai = rowData.get("trangThai");
+            String status = "";
+            if (rowData.get("dotGiamId") != null) {
+                status = "Không Khả Dụng";
+                if (trangThai instanceof Boolean && (Boolean) trangThai) {
+                    status = "Khả Dụng";
+                }
+            }
+            model.addRow(new Object[]{
+                rowData.get("tenSanPham"),
+                rowData.get("tenDot"),
+                rowData.get("giaTri"),
+                rowData.get("ngayBatDau"),
+                rowData.get("ngayKetThuc"),
+                status
+            });
+        }
+    }
+
+    private void clearDotGiamGiaForm() {
+        selectedDotGiamGiaId = null;
+        selectedSanPhamId = null;
+        txtTenSP.setText("");
+        txtTenDotGiam.setText("");
+        spnGiaTri1.setValue(1);
+        dcNgayBatDau.setDate(null);
+        dcNgayKetThuc.setDate(null);
+        jRadioButton1.setSelected(true);
+        tblDotGiamGia.clearSelection();
+    }
+
+    private void onCreateDotGiamGia() {
+        if (selectedSanPhamId == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm từ bảng trước khi tạo đợt giảm giá.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String tenDot = txtTenDotGiam.getText().trim();
+        if (tenDot.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên đợt giảm không được để trống.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Date ngayBatDau = dcNgayBatDau.getDate();
+        Date ngayKetThuc = dcNgayKetThuc.getDate();
+        if (ngayBatDau == null || ngayKetThuc == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày bắt đầu và ngày kết thúc.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (ngayKetThuc.before(ngayBatDau)) {
+            JOptionPane.showMessageDialog(this, "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int giaTri = (Integer) spnGiaTri1.getValue();
+        boolean trangThai = jRadioButton1.isSelected();
+
+        int newDotGiamId = dotGiamGiaRepo.insert(
+                selectedSanPhamId,
+                tenDot,
+                giaTri,
+                new java.sql.Date(ngayBatDau.getTime()),
+                new java.sql.Date(ngayKetThuc.getTime()),
+                trangThai
+        );
+
+        if (newDotGiamId > 0 && dotGiamGiaRepo.attachDiscountToProduct(selectedSanPhamId, newDotGiamId)) {
+            JOptionPane.showMessageDialog(this, "Tạo đợt giảm giá thành công.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            loadDotGiamGiaTable();
+            clearDotGiamGiaForm();
+        } else {
+            JOptionPane.showMessageDialog(this, "Tạo đợt giảm giá thất bại. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
@@ -491,24 +644,24 @@ public class GiamGiaView extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
     private javax.swing.JRadioButton jRadioButton5;
     private javax.swing.JRadioButton jRadioButton6;
     private javax.swing.JRadioButton jRadioButton7;
     private javax.swing.JRadioButton jRadioButton8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JPanel pnHeader;
     private javax.swing.JPanel pnMain;
-    private javax.swing.JSpinner spnGiaTri;
+    private javax.swing.JRadioButton rdbCoDinh;
+    private javax.swing.JRadioButton rdbPhanTram;
+    private javax.swing.JSpinner spnGiaTri1;
+    private javax.swing.JSpinner spnGiaTri2;
+    private javax.swing.JTable tblDotGiamGia;
+    private javax.swing.JTable tblMaGiamGia;
     private javax.swing.JTextField txtTenDotGiam;
     private javax.swing.JTextField txtTenSP;
     // End of variables declaration//GEN-END:variables

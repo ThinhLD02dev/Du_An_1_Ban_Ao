@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KichThuoc {
-    private int id;
+    private Integer id;
     private String tenKichThuoc;
 
 }

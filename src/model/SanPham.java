@@ -20,14 +20,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SanPham {
-    private int id;
+    private Integer id;
     private String maSP;
     private String tenAo;
     private String moTa;
-    private int trangThai;    
+    private Integer trangThai;    
     private BigDecimal giaBan;
     private Date ngayTao;
     private Integer dotGiamGiaId;
-    private int chatLieuId;
-    private int thuongHieuId;
+    private Integer chatLieuId;
+    private Integer thuongHieuId;
 }
