@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class KieuGiam {
-    private int id;
-    private int kieuGiamGia;    
+public class DotGiamGia {
+    private Integer id;
+    private String tenDot;
+    private Integer giaTri;
+    private Date ngayBatDau;
+    private Date ngayKetThuc;
+    private String trangThai;
 }

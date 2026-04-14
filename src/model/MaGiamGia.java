@@ -4,7 +4,7 @@
  */
 package model;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,12 +14,16 @@ import lombok.NoArgsConstructor;
  * @author nhocx
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class HoaDonChiTiet {
+@NoArgsConstructor
+public class MaGiamGia {
     private Integer id;
-    private Integer soLuong;
-    private BigDecimal tongGia;
-    private Integer quanAoChiTietId;
-    private Integer hoaDonId;
+    private String ma;
+    private Integer giaTri;
+    private String dangGiam;
+    private String loaiApDung;    
+    private Date ngayBatDau;
+    private Date ngayKetThuc;
+    private Integer gioiHanSuDung;
+    private String trangThai;
 }

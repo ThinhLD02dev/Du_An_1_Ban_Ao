@@ -58,22 +58,22 @@ public class SanPhamChiTietRepository {
                 INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)
                 """;
 
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+         try (Connection con = DbConnection.getConnection();
+              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
             ps.setInt(4, sp.getKichThuocId());
             ps.setInt(5, sp.getQuanAoId());
 
-            return ps.executeUpdate() > 0;
+             return ps.executeUpdate() > 0;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
 
-        return false;
-    }
+         return false;
+     }
 
     public boolean update(SanPhamChiTiet sp) {
 
@@ -84,8 +84,8 @@ public class SanPhamChiTietRepository {
                 WHERE id=?
                 """;
 
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+         try (Connection con = DbConnection.getConnection();
+              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
@@ -93,14 +93,14 @@ public class SanPhamChiTietRepository {
             ps.setInt(5, sp.getQuanAoId());
             ps.setInt(6, sp.getId());
 
-            return ps.executeUpdate() > 0;
+             return ps.executeUpdate() > 0;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
 
-        return false;
-    }
+         return false;
+     }
 
     public boolean delete(int id) {
 
@@ -151,7 +151,7 @@ public class SanPhamChiTietRepository {
 
     public List<Map<String, Object>> searchByKeyword(String keyword) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qact.gia_ban "
+        String sql = " SELECT qact.id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, qa.mo_ta, qact.so_luong, qa.gia_ban "
                 + " FROM quan_ao_chi_tiet qact "
                 + " JOIN quan_ao qa ON qact.quan_ao_id = qa.id "
                 + " JOIN kich_thuoc kt ON qact.kich_thuoc_id = kt.id "

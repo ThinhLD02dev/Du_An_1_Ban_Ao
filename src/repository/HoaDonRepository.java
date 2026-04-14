@@ -36,17 +36,59 @@ public class HoaDonRepository {
         return getHoaDonList(PAID, "ngay_thanh_toan", "ngayThanhToan");
     }
 
-    private List<Map<String, Object>> getHoaDonList(int status, String dateColumn, String dateKey) {
+    public List<Map<String, Object>> getAllPaidForInvoiceView() {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT hd.id, hd." + dateColumn + ", ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien "
-                + " FROM hoa_don hd "
-                + " LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
-                + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " WHERE hd.trang_thai = ? "
-                + " AND CAST(hd."+ dateColumn +" AS DATE) = CAST(GETDATE() AS DATE)";
+        String sql = "SELECT hd.id, hd.ngay_tao, hd.ngay_thanh_toan, hd.tong_tien, "
+                + "ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien "
+                + "FROM hoa_don hd "
+                + "LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
+                + "JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
+                + "WHERE hd.trang_thai = ?";
 
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, PAID);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ngayTaoTs = rs.getTimestamp("ngay_tao");
+                    Timestamp ngayThanhToanTs = rs.getTimestamp("ngay_thanh_toan");
+                    LocalDateTime ngayTao = ngayTaoTs != null ? ngayTaoTs.toLocalDateTime() : null;
+                    LocalDateTime ngayThanhToan = ngayThanhToanTs != null ? ngayThanhToanTs.toLocalDateTime() : null;
+
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getInt("id"));
+                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));
+                    row.put("tenKhachHang", rs.getString("ten_khach_hang"));
+                    row.put("tongTien", rs.getBigDecimal("tong_tien"));
+                    row.put("ngayTao", ngayTao);
+                    row.put("ngayThanhToan", ngayThanhToan);
+                    list.add(row);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error in getAllPaidForTable", e);
+        }
+
+        return list;
+    }
+
+    private List<Map<String, Object>> getHoaDonList(int status, String dateColumn, String dateKey) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT hd.id, hd." + dateColumn + ", ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien, hd.tong_tien "
+                + " FROM hoa_don hd "
+                + " LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
+                + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
+                + " WHERE hd.trang_thai = ? ";
+        
+        // Chỉ filter ngày cho hóa đơn chưa thanh toán
+        if (status == UNPAID) {
+            sql += " AND CAST(hd." + dateColumn + " AS DATE) = CAST(GETDATE() AS DATE)";
+        }
+
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            con.setAutoCommit(false);
+            con.commit();
             ps.setInt(1, status);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -57,7 +99,8 @@ public class HoaDonRepository {
                     row.put("id", rs.getInt("id"));                        
                     row.put(dateKey, dateTime);               
                     row.put("tenKhachHang", rs.getString("ten_khach_hang")); 
-                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));       
+                    row.put("tenNhanVien", rs.getString("ten_nhan_vien"));  
+                    row.put("tongTien", rs.getBigDecimal("tong_tien"));     
                     list.add(row);
                 }
             }
@@ -69,12 +112,12 @@ public class HoaDonRepository {
     }
     
     public Map<String, Object> findById(int hoaDonId) {
-        String sql = "SELECT hd.id, hd.ngay_tao, kh.ten_khach_hang, nv.ten_nhan_vien, hd.tong_tien, gg.ma_giam_gia, hd.tien_thanh_toan, hd.tien_nhan, hd.tien_thua "
-                + " FROM hoa_don hd "
-                + " JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
-                + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
-                + " LEFT JOIN giam_gia gg ON hd.khuyen_mai_id = gg.id "
-                + " WHERE hd.id = ? ";
+         String sql = "SELECT hd.id, hd.ngay_tao, ISNULL(kh.ten_khach_hang, 'Khách lẻ') as ten_khach_hang, nv.ten_nhan_vien, hd.tong_tien, mgg.ma, hd.tien_thanh_toan, hd.tien_nhan, hd.tien_thua "
+                 + " FROM hoa_don hd "
+                 + " LEFT JOIN khach_hang kh ON hd.khach_hang_id = kh.id "
+                 + " JOIN nhan_vien nv ON hd.nhan_vien_id = nv.id "
+                 + " LEFT JOIN ma_giam_gia mgg ON hd.khuyen_mai_id = mgg.id "
+                 + " WHERE hd.id = ? ";
 
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -87,7 +130,7 @@ public class HoaDonRepository {
                      row.put("ngayTao", rs.getTimestamp("ngay_tao"));
                      row.put("tenNhanVien", rs.getString("ten_nhan_vien"));
                      row.put("tongTien", rs.getBigDecimal("tong_tien"));
-                     row.put("maGiamGia", rs.getString("ma_giam_gia"));
+                     row.put("ma", rs.getString("ma"));
                      row.put("tienThanhToan", rs.getBigDecimal("tien_thanh_toan"));
                      row.put("tienNhan", rs.getBigDecimal("tien_nhan"));
                      row.put("tienThua", rs.getBigDecimal("tien_thua"));
@@ -168,7 +211,7 @@ public class HoaDonRepository {
     
     public boolean updateInvoice(int hoaDonId, String maGiamGia, java.math.BigDecimal tienThanhToan,
                                   java.math.BigDecimal tienNhan, java.math.BigDecimal tienThua) {
-        String sql = "UPDATE hoa_don SET khuyen_mai_id = CASE WHEN ? IS NOT NULL THEN (SELECT id FROM giam_gia WHERE ma_giam_gia = ?) ELSE NULL END, "
+        String sql = "UPDATE hoa_don SET khuyen_mai_id = CASE WHEN ? IS NOT NULL THEN (SELECT id FROM ma_giam_gia WHERE ma = ?) ELSE NULL END, "
                    + "tien_thanh_toan = ?, tien_nhan = ?, tien_thua = ? WHERE id = ?";
         
         try (Connection con = DbConnection.getConnection();
@@ -195,7 +238,7 @@ public class HoaDonRepository {
                               BigDecimal tienThanhToan, BigDecimal tienNhan,
                               BigDecimal tienThua) {
         String sql = "UPDATE hoa_don SET "
-                   + "khuyen_mai_id = CASE WHEN ? IS NOT NULL AND ? != '' THEN (SELECT id FROM giam_gia WHERE ma_giam_gia = ?) ELSE NULL END, "
+                   + "khuyen_mai_id = CASE WHEN ? IS NOT NULL AND ? != '' THEN (SELECT id FROM ma_giam_gia WHERE ma = ?) ELSE NULL END, "
                    + "tong_tien = ?, "
                    + "tien_thanh_toan = ?, "
                    + "tien_nhan = ?, "

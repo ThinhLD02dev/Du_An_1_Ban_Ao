@@ -19,6 +19,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VaiTro {
-    private int id;
+    private Integer id;
     private String tenVaiTro;
 }
