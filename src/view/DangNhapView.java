@@ -242,7 +242,7 @@ public class DangNhapView extends javax.swing.JFrame {
     }
 
     private void setImage() {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/view/ChatGPT Image Apr 14, 2026, 01_00_05 AM.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("/Img/ChatGPT Image Apr 14, 2026, 01_00_05 AM.png"));
         Image img = icon.getImage();
 
         int lblW = jLabel1.getWidth();
