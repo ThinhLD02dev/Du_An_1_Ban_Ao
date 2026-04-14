@@ -5,21 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4015c771-ea6b-4cbb-9d35-1f4b8f774999" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/view/BanHangView.form" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/view/BanHangView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/view/HoaDonView.form" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/view/HoaDonView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/view/MainView.form" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/view/MainView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nbproject/private/private.properties" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/private/private.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nbproject/private/private.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/private/private.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repository/HoaDonChiTietRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/HoaDonChiTietRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repository/HoaDonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/HoaDonRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repository/SanPhamChiTietRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/SanPhamChiTietRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/BanHangView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/BanHangView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/BanHangView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/BanHangView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/HoaDonView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/HoaDonView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/HoaDonView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/HoaDonView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/MainView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/MainView.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/MainView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,19 +35,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;update__hoaDon&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-  }
-}</component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Fpoly/sp26block2-master/sd20306sof3062/luyentap" />
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -79,10 +59,7 @@
       <updated>1775800470324</updated>
       <workItem from="1775800478553" duration="1138000" />
       <workItem from="1776020547569" duration="13000" />
-      <workItem from="1776044733845" duration="2237000" />
-      <workItem from="1776061673966" duration="1128000" />
-      <workItem from="1776064203347" duration="2311000" />
-      <workItem from="1776070382348" duration="606000" />
+      <workItem from="1776154454355" duration="202000" />
     </task>
     <servers />
   </component>

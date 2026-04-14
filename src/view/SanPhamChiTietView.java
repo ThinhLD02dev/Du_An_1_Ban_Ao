@@ -6,13 +6,18 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jdbc.DbConnection;
 import java.util.logging.Logger;
+import model.SanPhamChiTiet;
+import repository.SanPhamChiTietRepository;
 
 /**
  *
@@ -25,6 +30,8 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     /**
      * Creates new form SanPhamChiTietView
      */
+    
+    SanPhamChiTietRepository spctRepository = new SanPhamChiTietRepository();
     private int sanPhamId;
 
     public void loadMaSp() {
@@ -242,6 +249,8 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             return false;
         }
     }
+    
+    List<SanPhamChiTiet> list = spctRepository.getAll();
 
     public boolean validateFormSpct() {
 
@@ -271,7 +280,23 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn kích thước");
             return false;
         }
-
+        
+        boolean trung = false;
+        String maDangChon = txtMasp.getText();
+        for (SanPhamChiTiet spct : list){
+            if(spct.getMaSpct().equals(maDangChon) 
+                && spct.getMauSacId() == cbMauSac.getSelectedIndex()+1
+                && spct.getKichThuocId() == cbKichThuoc.getSelectedIndex()+1)
+            {
+                trung = true;
+                break;
+            }
+        }
+        if (trung) {
+            JOptionPane.showMessageDialog(null, "Sản phẩm này đã tồn tại!");
+            return false;
+        }
+        
         return true;
     }
     
@@ -291,6 +316,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         loadKichThuoc();
         loadMauSac();
         loadMaSp();
+
     }
 
     /**
@@ -452,6 +478,11 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
                 "ID", "Mã Sản Phẩm ", "Số Lượng", "Màu Sắc", "Kích Thước"
             }
         ));
+        tblSpct.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSpctMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblSpct);
 
         javax.swing.GroupLayout pnMainLayout = new javax.swing.GroupLayout(pnMain);
@@ -507,6 +538,8 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
                 e.printStackTrace();
             }
         }
+        
+        list = spctRepository.getAll();
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
@@ -560,6 +593,14 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void tblSpctMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSpctMouseClicked
+        int row = tblSpct.getSelectedRow();
+        
+        txtSoLuong.setText(tblSpct.getValueAt(row, 2).toString());
+        cbMauSac.setSelectedItem(tblSpct.getValueAt(row, 3).toString());
+        cbKichThuoc.setSelectedItem(tblSpct.getValueAt(row, 4).toString());
+    }//GEN-LAST:event_tblSpctMouseClicked
 
     /**
      * @param args the command line arguments

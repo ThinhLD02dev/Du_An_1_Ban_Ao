@@ -35,6 +35,7 @@ public class SanPhamChiTietRepository {
 
                 SanPhamChiTiet sp = new SanPhamChiTiet(
                         rs.getInt("id"),
+                        rs.getString("ma_spct"),
                         rs.getInt("so_luong"),
                         rs.getInt("mau_sac_id"),
                         rs.getInt("kich_thuoc_id"),
@@ -53,20 +54,17 @@ public class SanPhamChiTietRepository {
 
     public boolean add(SanPhamChiTiet sp) {
 
-         String sql = """
-                 INSERT INTO quan_ao_chi_tiet
-                 (so_luong, mau_sac_id, gia_ban, kich_thuoc_id, quan_ao_id)
-                 VALUES (?, ?, ?, ?, ?)
-                 """;
+        String sql = """
+                INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)
+                """;
 
          try (Connection con = DbConnection.getConnection();
               PreparedStatement ps = con.prepareStatement(sql)) {
 
-             ps.setInt(1, sp.getSoLuong());
-             ps.setInt(2, sp.getMauSacId());
-             ps.setInt(3, 0); // gia_ban có thể cập nhật sau, để 0 tạm thời
-             ps.setInt(4, sp.getKichThuocId());
-             ps.setInt(5, sp.getQuanAoId());
+            ps.setInt(1, sp.getSoLuong());
+            ps.setInt(2, sp.getMauSacId());
+            ps.setInt(4, sp.getKichThuocId());
+            ps.setInt(5, sp.getQuanAoId());
 
              return ps.executeUpdate() > 0;
 
@@ -79,22 +77,21 @@ public class SanPhamChiTietRepository {
 
     public boolean update(SanPhamChiTiet sp) {
 
-         String sql = """
-                 UPDATE quan_ao_chi_tiet
-                 SET so_luong=?, mau_sac_id=?, gia_ban=?,
-                     kich_thuoc_id=?, quan_ao_id=?
-                 WHERE id=?
-                 """;
+        String sql = """
+                UPDATE quan_ao_chi_tiet
+                SET so_luong=?, mau_sac_id=?,
+                    kich_thuoc_id=?, quan_ao_id=?
+                WHERE id=?
+                """;
 
          try (Connection con = DbConnection.getConnection();
               PreparedStatement ps = con.prepareStatement(sql)) {
 
-             ps.setInt(1, sp.getSoLuong());
-             ps.setInt(2, sp.getMauSacId());
-             ps.setInt(3, 0); // gia_ban có thể cập nhật sau, để 0 tạm thời
-             ps.setInt(4, sp.getKichThuocId());
-             ps.setInt(5, sp.getQuanAoId());
-             ps.setInt(6, sp.getId());
+            ps.setInt(1, sp.getSoLuong());
+            ps.setInt(2, sp.getMauSacId());
+            ps.setInt(4, sp.getKichThuocId());
+            ps.setInt(5, sp.getQuanAoId());
+            ps.setInt(6, sp.getId());
 
              return ps.executeUpdate() > 0;
 
