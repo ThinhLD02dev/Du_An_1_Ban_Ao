@@ -233,7 +233,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 //
 //        return false;
 //    }
-
     public boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
@@ -249,7 +248,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 //            JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại");
 //            return false;
 //        }
-
         try {
             double soLuong = Double.parseDouble(txtSoLuong.getText());
         } catch (NumberFormatException e) {
@@ -274,13 +272,12 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
         return true;
     }
-    
-    public void resetForm(){
+
+    public void resetForm() {
         txtSoLuong.setText("");
         cbKichThuoc.setSelectedIndex(0);
         cbMauSac.setSelectedIndex(0);
     }
-
 
     public SanPhamChiTietView(Frame parent, boolean modal, int id) {
         super(parent, modal);
@@ -485,22 +482,44 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             if (!validateFormSpct()) {
                 return;
             }
-            try {
-                Connection con = DbConnection.getConnection();
+            try (Connection con = DbConnection.getConnection()) {
 
-                String sql = "INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)";
+                // Kiểm tra xem sản phẩm chi tiết đã tồn tại chưa
+                String checkSql = "SELECT id, so_luong FROM quan_ao_chi_tiet "
+                        + "WHERE quan_ao_id=? AND mau_sac_id=? AND kich_thuoc_id=?";
+                PreparedStatement psCheck = con.prepareStatement(checkSql);
+                psCheck.setInt(1, sanPhamId);
+                psCheck.setInt(2, cbMauSac.getSelectedIndex() + 1);
+                psCheck.setInt(3, cbKichThuoc.getSelectedIndex() + 1);
 
-                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = psCheck.executeQuery();
+                if (rs.next()) {
+                    // Nếu đã tồn tại thì cộng dồn số lượng
+                    int id = rs.getInt("id");
+                    int soLuongCu = rs.getInt("so_luong");
+                    int soLuongMoi = soLuongCu + Integer.parseInt(txtSoLuong.getText());
 
-                ps.setString(1, txtMasp.getText());
-                ps.setInt(2, Integer.parseInt(txtSoLuong.getText()));
-                ps.setInt(3, cbMauSac.getSelectedIndex() + 1);
-                ps.setInt(4, cbKichThuoc.getSelectedIndex() + 1);
-                ps.setInt(5, sanPhamId);
+                    String updateSql = "UPDATE quan_ao_chi_tiet SET so_luong=? WHERE id=?";
+                    PreparedStatement psUpdate = con.prepareStatement(updateSql);
+                    psUpdate.setInt(1, soLuongMoi);
+                    psUpdate.setInt(2, id);
+                    psUpdate.executeUpdate();
 
-                ps.executeUpdate();
+                    JOptionPane.showMessageDialog(this, "Đã cộng dồn số lượng sản phẩm!");
+                } else {
+                    // Nếu chưa có thì thêm mới
+                    String insertSql = "INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)";
+                    PreparedStatement psInsert = con.prepareStatement(insertSql);
+                    psInsert.setString(1, txtMasp.getText());
+                    psInsert.setInt(2, Integer.parseInt(txtSoLuong.getText()));
+                    psInsert.setInt(3, cbMauSac.getSelectedIndex() + 1);
+                    psInsert.setInt(4, cbKichThuoc.getSelectedIndex() + 1);
+                    psInsert.setInt(5, sanPhamId);
+                    psInsert.executeUpdate();
 
-                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công");
+                    JOptionPane.showMessageDialog(this, "Thêm sản phẩm mới thành công!");
+                }
+
                 loadTableSPCT();
 
             } catch (Exception e) {

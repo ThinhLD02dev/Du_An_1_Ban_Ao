@@ -99,9 +99,9 @@ public class BanHangView extends javax.swing.JPanel {
                 performSearch();
             }
         });
-        
-        this.addComponentListener(new ComponentAdapter(){
-        
+
+        this.addComponentListener(new ComponentAdapter() {
+
             @Override
             public void componentShown(ComponentEvent e) {
                 loadTableProduct();
@@ -222,16 +222,18 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(74, 144, 226));
         jPanel1.setPreferredSize(new java.awt.Dimension(1078, 60));
 
-        jLabel1.setText("Bán Hàng");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("BÁN HÀNG");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(353, 353, 353)
+                .addGap(430, 430, 430)
                 .addComponent(jLabel1)
-                .addContainerGap(434, Short.MAX_VALUE))
+                .addContainerGap(505, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -314,6 +316,8 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel9.setText("Tiền Khách Đưa :");
 
         jLabel10.setText("Tiền Thừa :");
+
+        cbbCustomer.setEditable(true);
 
         jLabel14.setText("Người Tạo :");
 
@@ -629,11 +633,6 @@ public class BanHangView extends javax.swing.JPanel {
                 "Mã Hóa Đơn", "Ngày Thanh Toán", "Khách Hàng", "Người Tạo"
             }
         ));
-        tblPaid.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblPaidMouseClicked(evt);
-            }
-        });
         jScrollPane2.setViewportView(tblPaid);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -945,74 +944,6 @@ public class BanHangView extends javax.swing.JPanel {
         tblUnPaid.setSelectionMode(0);
     }
 
-    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = tblProduct.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
-            return;
-        }
-
-        if (currentHoaDonId <= 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng tạo hoặc chọn một hóa đơn trước khi thêm sản phẩm!");
-            return;
-        }
-
-        int sanPhamChiTietId = (Integer) listSP.get(row).get("id");
-        int numberAdd = (Integer) spnNumberAdd.getValue();
-        if (numberAdd <= 0) {
-            JOptionPane.showMessageDialog(this, "Số lượng thêm phải lớn hơn 0!");
-            return;
-        }
-
-        if (hdctRepo.existsInCart(currentHoaDonId, sanPhamChiTietId)) {
-            hdctRepo.updateCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
-        } else {
-            hdctRepo.insertToCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
-        }
-
-        // Cập nhật số lượng sản phẩm trong kho
-        spctRepo.updateQuantity(sanPhamChiTietId, -numberAdd);
-
-        loadTableCart(currentHoaDonId);
-        loadTableProduct();
-        loadFormInvoice(currentHoaDonId);
-    }
-
-    private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {
-        Integer khachHangId = null;
-        String tenKhachHang = ((javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent()).getText().trim();
-
-        if (kh != null) {
-            khachHangId = kh.getId();
-            tenKhachHang = kh.getTenKhachHang();
-        }
-
-        HoaDon hd = new HoaDon();
-        hd.setKhachHangId(khachHangId);
-        hd.setNhanVienId(idNhanVien);
-
-        int id = hdRepo.createInvoice(hd);
-        if (id > 0) {
-            JOptionPane.showMessageDialog(this, "Tạo hoá đơn thành công!");
-            currentHoaDonId = id;
-            loadTableUnpaid();
-            loadFormInvoice(id);
-            btnAdd.setEnabled(true);
-            btnCreateInvoice.setEnabled(false);
-            btnSave.setEnabled(true);
-            btnPaid.setEnabled(true);
-
-            if (tenKhachHang.isEmpty()) {
-                tenKhachHang = "Khách lẻ";
-                isSelectingCustomer = true;
-                cbbCustomer.getEditor().setItem(tenKhachHang);
-                isSelectingCustomer = false;
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Tạo hoá đơn thất bại!");
-        }
-    }
-
     private void initializeUI() {
         // 1. Cài đặt Font chung cho toàn bộ ứng dụng
         setupFonts();
@@ -1236,7 +1167,7 @@ public class BanHangView extends javax.swing.JPanel {
         styleButton(btnPaid, successColor, buttonFont);
 
         // Nút Xuất Hóa Đơn - Xanh dương
-        styleButton(btnIssueIvoice, primaryColor, buttonFont);      
+        styleButton(btnIssueIvoice, primaryColor, buttonFont);
 
         // Nút Thêm khách hàng - Nhỏ, xanh dương
         styleButton(btnAddCustomer, primaryColor, new Font("Segoe UI", Font.BOLD, 10));
@@ -1420,7 +1351,7 @@ public class BanHangView extends javax.swing.JPanel {
             // Xóa chi tiết hóa đơn trước
             hdctRepo.deleteAllCartItems(currentHoaDonId);
             // Xóa hóa đơn
-            boolean deleted = hdRepo.delete(currentHoaDonId); 
+            boolean deleted = hdRepo.delete(currentHoaDonId);
             if (deleted) {
                 JOptionPane.showMessageDialog(this, "Hủy hóa đơn thành công!");
                 loadTableUnpaid();
@@ -1478,7 +1409,75 @@ public class BanHangView extends javax.swing.JPanel {
         clearForm();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
-    private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {                                        
+    private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
+        Integer khachHangId = null;
+        String tenKhachHang = ((javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent()).getText().trim();
+
+        if (kh != null) {
+            khachHangId = kh.getId();
+            tenKhachHang = kh.getTenKhachHang();
+        }
+
+        HoaDon hd = new HoaDon();
+        hd.setKhachHangId(khachHangId);
+        hd.setNhanVienId(idNhanVien);
+
+        int id = hdRepo.createInvoice(hd);
+        if (id > 0) {
+            JOptionPane.showMessageDialog(this, "Tạo hoá đơn thành công!");
+            currentHoaDonId = id;
+            loadTableUnpaid();
+            loadFormInvoice(id);
+            btnAdd.setEnabled(true);
+            btnCreateInvoice.setEnabled(false);
+            btnSave.setEnabled(true);
+            btnPaid.setEnabled(true);
+
+            if (tenKhachHang.isEmpty()) {
+                tenKhachHang = "Khách lẻ";
+                isSelectingCustomer = true;
+                cbbCustomer.getEditor().setItem(tenKhachHang);
+                isSelectingCustomer = false;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Tạo hoá đơn thất bại!");
+        }
+    }//GEN-LAST:event_btnCreateInvoiceActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        int row = tblProduct.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
+            return;
+        }
+
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng tạo hoặc chọn một hóa đơn trước khi thêm sản phẩm!");
+            return;
+        }
+
+        int sanPhamChiTietId = (Integer) listSP.get(row).get("id");
+        int numberAdd = (Integer) spnNumberAdd.getValue();
+        if (numberAdd <= 0) {
+            JOptionPane.showMessageDialog(this, "Số lượng thêm phải lớn hơn 0!");
+            return;
+        }
+
+        if (hdctRepo.existsInCart(currentHoaDonId, sanPhamChiTietId)) {
+            hdctRepo.updateCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
+        } else {
+            hdctRepo.insertToCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
+        }
+
+        // Cập nhật số lượng sản phẩm trong kho
+        spctRepo.updateQuantity(sanPhamChiTietId, -numberAdd);
+
+        loadTableCart(currentHoaDonId);
+        loadTableProduct();
+        loadFormInvoice(currentHoaDonId);
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
         // Kiểm tra xem có hoá đơn được chọn không
         if (currentHoaDonId <= 0) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để thanh toán!");
@@ -1565,7 +1564,22 @@ public class BanHangView extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Lỗi khi thanh toán: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    }//GEN-LAST:event_btnPaidActionPerformed
+
+    private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIssueIvoiceActionPerformed
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để xuất!");
+            return;
+        }
+
+        // Kiểm tra giỏ hàng có sản phẩm không
+        if (listCart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi xuất hóa đơn.");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
+    }//GEN-LAST:event_btnIssueIvoiceActionPerformed
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         // Nếu dialog đã tồn tại, dispose nó trước
@@ -1598,21 +1612,6 @@ public class BanHangView extends javax.swing.JPanel {
 
         customerDialog.setLocationRelativeTo(null);
         customerDialog.setVisible(true);
-    }
-
-    private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {
-        if (currentHoaDonId <= 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để xuất!");
-            return;
-        }
-
-        // Kiểm tra giỏ hàng có sản phẩm không
-        if (listCart.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi xuất hóa đơn.");
-            return;
-        }
-
-        JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
     }
 
     private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
