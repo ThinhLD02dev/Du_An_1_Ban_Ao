@@ -35,9 +35,9 @@ public class SanPhamChiTietRepository {
 
                 SanPhamChiTiet sp = new SanPhamChiTiet(
                         rs.getInt("id"),
+                        rs.getString("ma_spct"),
                         rs.getInt("so_luong"),
                         rs.getInt("mau_sac_id"),
-                        rs.getBigDecimal("gia_ban"),
                         rs.getInt("kich_thuoc_id"),
                         rs.getInt("quan_ao_id")
                 );
@@ -55,9 +55,7 @@ public class SanPhamChiTietRepository {
     public boolean add(SanPhamChiTiet sp) {
 
         String sql = """
-                INSERT INTO quan_ao_chi_tiet
-                (so_luong, mau_sac_id, gia_ban, kich_thuoc_id, quan_ao_id)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO quan_ao_chi_tiet(ma_spct,so_luong,mau_sac_id,kich_thuoc_id,quan_ao_id) VALUES (?,?,?,?,?)
                 """;
 
         try (Connection con = DbConnection.getConnection();
@@ -65,7 +63,6 @@ public class SanPhamChiTietRepository {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
-            ps.setBigDecimal(3, sp.getGiaBan());
             ps.setInt(4, sp.getKichThuocId());
             ps.setInt(5, sp.getQuanAoId());
 
@@ -82,7 +79,7 @@ public class SanPhamChiTietRepository {
 
         String sql = """
                 UPDATE quan_ao_chi_tiet
-                SET so_luong=?, mau_sac_id=?, gia_ban=?,
+                SET so_luong=?, mau_sac_id=?,
                     kich_thuoc_id=?, quan_ao_id=?
                 WHERE id=?
                 """;
@@ -92,7 +89,6 @@ public class SanPhamChiTietRepository {
 
             ps.setInt(1, sp.getSoLuong());
             ps.setInt(2, sp.getMauSacId());
-            ps.setBigDecimal(3, sp.getGiaBan());
             ps.setInt(4, sp.getKichThuocId());
             ps.setInt(5, sp.getQuanAoId());
             ps.setInt(6, sp.getId());
