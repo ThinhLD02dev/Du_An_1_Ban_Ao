@@ -18,6 +18,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MauSac {
-    private int id;
+    private Integer id;
     private String tenMau;
 }

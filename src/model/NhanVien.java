@@ -10,10 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NhanVien {
-    private int id;
+    private Integer id;
     private String tenNhanVien;
     private String soDienThoai;
     private String email;
     private String diaChi;
-    private int trangThai;
+    private Integer trangThai;
 }

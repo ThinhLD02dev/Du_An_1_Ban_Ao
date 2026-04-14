@@ -15,7 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -429,7 +429,7 @@ public class SanPhamView extends javax.swing.JPanel {
     /**
      * Creates new form ProductView
      */
-    java.util.Date date = java.sql.Date.valueOf(LocalDate.now());
+    Date date = Date.valueOf(LocalDate.now());
     public SanPhamView() {
         initComponents();
         loadChatLieu();

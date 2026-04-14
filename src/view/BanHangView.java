@@ -31,6 +31,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import java.awt.CardLayout;
 import java.awt.Frame;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import javax.swing.JDialog;
  import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -91,6 +93,14 @@ public class BanHangView extends javax.swing.JPanel {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 performSearch();
+            }
+        });
+        
+        this.addComponentListener(new ComponentAdapter(){
+        
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadTableProduct();
             }
         });
 
@@ -433,7 +443,6 @@ public class BanHangView extends javax.swing.JPanel {
         txtSearch = new javax.swing.JTextField();
         btnAdd = new javax.swing.JButton();
         spnNumberAdd = new javax.swing.JSpinner();
-        btnLamMoi = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         btnCreateInvoice = new javax.swing.JButton();
@@ -504,13 +513,6 @@ public class BanHangView extends javax.swing.JPanel {
             }
         });
 
-        btnLamMoi.setText("Làm Mới");
-        btnLamMoi.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLamMoiActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
@@ -520,8 +522,6 @@ public class BanHangView extends javax.swing.JPanel {
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(102, 102, 102)
-                .addComponent(btnLamMoi)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -536,8 +536,7 @@ public class BanHangView extends javax.swing.JPanel {
                     .addComponent(jLabel11)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd)
-                    .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLamMoi))
+                    .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -991,7 +990,7 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
         // Ưu tiên lấy từ selectedCustomer nếu đã chọn
-        Integer khachHangId = null;  // ✅ Integer thay vì int để cho phép null
+        Integer khachHangId = null;  //  Integer thay vì int để cho phép null
         String tenKhachHang;
 
         if (kh != null) {
@@ -1004,7 +1003,7 @@ public class BanHangView extends javax.swing.JPanel {
             // Nếu trống, mặc định là "Khách lẻ"
             if (tenKhachHang.isEmpty()) {
                 tenKhachHang = "Khách lẻ";
-                khachHangId = null;  // ✅ Khách lẻ không có ID
+                khachHangId = null;  //  Khách lẻ không có ID
                 isSelectingCustomer = true;
                 cbbCustomer.getEditor().setItem(tenKhachHang);
                 isSelectingCustomer = false;
@@ -1019,7 +1018,7 @@ public class BanHangView extends javax.swing.JPanel {
         }
 
         HoaDon hd = new HoaDon();
-        hd.setKhachHangId(khachHangId);  // ✅ Có thể null cho khách lẻ
+        hd.setKhachHangId(khachHangId);  //  Có thể null cho khách lẻ
         hd.setNhanVienId(idNhanVien);
 
         int id = hdRepo.createInvoice(hd);
@@ -1029,6 +1028,18 @@ public class BanHangView extends javax.swing.JPanel {
             loadTableUnpaid();
             loadFormInvoice(id);
             btnAdd.setEnabled(true);
+            
+            // Chọn ngay dòng vừa tạo trong bảng
+            DefaultTableModel model = (DefaultTableModel) tblUnPaid.getModel();
+            for (int row = 0; row < model.getRowCount(); row++) {
+                if ((int) model.getValueAt(row, 0) == id) { // giả sử cột 0 là id
+                    tblUnPaid.setRowSelectionInterval(row, row);
+                    tblUnPaid.scrollRectToVisible(tblUnPaid.getCellRect(row, 0, true));
+                    loadFormInvoice(row);
+                    break;
+                }
+            }
+
         } else {
             JOptionPane.showMessageDialog(this, "Tạo hóa đơn thất bại!");
         }
@@ -1332,10 +1343,6 @@ public class BanHangView extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tblPaidMouseClicked
 
-    private void btnLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiActionPerformed
-        loadTableProduct();
-    }//GEN-LAST:event_btnLamMoiActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
@@ -1345,7 +1352,6 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JButton btnCreateInvoice;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnIssueIvoice;
-    private javax.swing.JButton btnLamMoi;
     private javax.swing.JButton btnPaid;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
