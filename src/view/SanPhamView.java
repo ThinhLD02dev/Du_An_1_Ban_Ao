@@ -8,6 +8,7 @@ package view;
  *
  * @author LHH05
  */
+import java.text.DecimalFormat;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -37,6 +38,7 @@ public class SanPhamView extends javax.swing.JPanel {
     SanPhamChiTietRepository spctRepo = new SanPhamChiTietRepository();
     ChatLieuRepository clRepo = new ChatLieuRepository();
     ThuongHieuRepository thRepo = new ThuongHieuRepository();
+    DecimalFormat df = new DecimalFormat("#,###");
 
     public void loadChatLieu() {
         try {
@@ -81,34 +83,24 @@ public class SanPhamView extends javax.swing.JPanel {
 
         String sql = """
         SELECT 
-        qa.id,
-        qa.ma_sp,
-        qa.ten_ao,
-        qa.mo_ta,
-        qa.ngay_tao,
+        v.id,
+        v.ma_sp,
+        v.ten_ao,
+        v.mo_ta,
+        v.ngay_tao,
         cl.ten_chat_lieu,
         th.ten_thuong_hieu,
         SUM(ct.so_luong) AS so_luong,
-        qa.gia_ban,
-        qa.trang_thai
-        FROM quan_ao qa
-        LEFT JOIN quan_ao_chi_tiet ct 
-            ON qa.id = ct.quan_ao_id
+        v.gia_goc,
+        v.gia_thuc_te,
+        v.ten_dot
+        FROM v_san_pham_ban_hang v
+        LEFT JOIN quan_ao_chi_tiet ct ON v.id = ct.quan_ao_id
         LEFT JOIN chat_lieu cl
-            ON qa.chat_lieu_id = cl.id
+            ON v.chat_lieu_id = cl.id
         LEFT JOIN thuong_hieu th
-            ON qa.thuong_hieu_id = th.id
-        
-        GROUP BY 
-        qa.id,
-        qa.ma_sp,
-        qa.ten_ao,
-        qa.mo_ta,
-        qa.ngay_tao,
-        cl.ten_chat_lieu,
-        th.ten_thuong_hieu,
-        qa.gia_ban,
-        qa.trang_thai
+            ON v.thuong_hieu_id = th.id
+        GROUP BY v.id, v.ma_sp, v.ten_ao, v.mo_ta, v.ngay_tao, cl.ten_chat_lieu, th.ten_thuong_hieu, v.gia_goc, v.gia_thuc_te, v.ten_dot
         """;
 
         try (
@@ -126,7 +118,8 @@ public class SanPhamView extends javax.swing.JPanel {
                     rs.getString("ten_chat_lieu"),
                     rs.getString("ten_thuong_hieu"),
                     rs.getInt("so_luong"),
-                    rs.getBigDecimal("gia_ban"),
+                    df.format(rs.getBigDecimal("gia_thuc_te")), // Hiển thị giá đã giảm
+                    rs.getString("ten_dot") == null ? "Không có" : rs.getString("ten_dot"),
                     tt
                 };
 
@@ -327,7 +320,7 @@ public class SanPhamView extends javax.swing.JPanel {
                 rs.getString("ten_chat_lieu"),
                 rs.getString("ten_thuong_hieu"),
                 rs.getInt("so_luong"),
-                rs.getDouble("gia_ban")
+                df.format(rs.getDouble("gia_ban"))
             });
         }
         if (!coDuLieu) {
@@ -397,7 +390,7 @@ public class SanPhamView extends javax.swing.JPanel {
                 rs.getString("ten_chat_lieu"),
                 rs.getString("ten_thuong_hieu"),
                 rs.getInt("so_luong"),
-                rs.getDouble("gia_ban")
+                df.format(rs.getDouble("gia_ban"))
             });
         }
         if (!coDuLieu) {
