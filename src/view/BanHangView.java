@@ -5,6 +5,7 @@
 package view;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +56,7 @@ public class BanHangView extends javax.swing.JPanel {
     private List<Map<String, Object>> listCart = new ArrayList<>();
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
+    DecimalFormat df = new DecimalFormat("#,###");
     SpinnerNumberModel SpnModel = new SpinnerNumberModel(1, 1, 1000, 1);
     private final Integer idNhanVien;
     private CreateCustomerView customerDialog = null;
@@ -675,8 +677,8 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void calculateChange() {
         try {
-            String tienNhanStr = txtGiveMoney.getText().trim();
-            String tienThanhToanStr = txtMoneyPaid.getText().trim();
+            String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
+            String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
 
             BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
             BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
@@ -688,7 +690,7 @@ public class BanHangView extends javax.swing.JPanel {
                 tienThua = BigDecimal.ZERO;
             }
 
-            txtChange.setText(String.valueOf(tienThua));
+            txtChange.setText(df.format(tienThua));
         } catch (NumberFormatException e) {
             // Nếu nhập không phải số, set tiền thừa về 0
             txtChange.setText("0");
@@ -743,8 +745,8 @@ public class BanHangView extends javax.swing.JPanel {
                 item.get("tenKichThuoc"),
                 item.get("tenMau"),
                 item.get("soLuong"),
-                item.get("donGia"),
-                item.get("tongGia")
+                df.format(item.get("donGia")),
+                df.format(item.get("tongGia"))
             };
             model.addRow(row);
         }
@@ -778,7 +780,7 @@ public class BanHangView extends javax.swing.JPanel {
                     mau,
                     moTa,
                     soLuong,
-                    giaBan
+                    df.format(giaBan)
                 });
             }
 
@@ -813,12 +815,12 @@ public class BanHangView extends javax.swing.JPanel {
             // Handle null cho các field số
             BigDecimal tongTien = (BigDecimal) hd.get("tongTien");
             tongTien = tongTien != null ? tongTien : BigDecimal.ZERO;
-            txtSumMoney.setText(String.valueOf(tongTien));
+            txtSumMoney.setText(df.format(tongTien));
 
             String maGiamGia = (String) hd.get("maGiamGia");
             txtSale.setText(maGiamGia != null ? maGiamGia : "");
 
-            // Tính tiền cần thanh toán: nếu không có mã giảm giá thì bằng tổng tiền
+            // Tính tiền cần thanh toán
             BigDecimal tienThanhToan;
             if (maGiamGia == null || maGiamGia.trim().isEmpty()) {
                 tienThanhToan = tongTien;
@@ -826,12 +828,12 @@ public class BanHangView extends javax.swing.JPanel {
                 // Tạm thời chưa xử lý giảm giá, vẫn bằng tổng tiền
                 tienThanhToan = tongTien;
             }
-            txtMoneyPaid.setText(String.valueOf(tienThanhToan));
+            txtMoneyPaid.setText(df.format(tienThanhToan));
 
             // Tiền khách đưa
             BigDecimal tienNhan = (BigDecimal) hd.get("tienNhan");
             tienNhan = tienNhan != null ? tienNhan : BigDecimal.ZERO;
-            txtGiveMoney.setText(String.valueOf(tienNhan));
+            txtGiveMoney.setText(df.format(tienNhan));
 
             // Tính tiền thừa = tiền khách đưa - tiền cần thanh toán
             BigDecimal tienThua = tienNhan.subtract(tienThanhToan);
@@ -839,7 +841,7 @@ public class BanHangView extends javax.swing.JPanel {
             if (tienThua.compareTo(BigDecimal.ZERO) < 0) {
                 tienThua = BigDecimal.ZERO;
             }
-            txtChange.setText(String.valueOf(tienThua));
+            txtChange.setText(df.format(tienThua));
         } else {
             clearForm();
         }
@@ -863,7 +865,7 @@ public class BanHangView extends javax.swing.JPanel {
                     sp.get("tenMau"),
                     sp.get("moTa"),
                     sp.get("soLuong"),
-                    sp.get("giaBan")
+                    df.format(sp.get("giaBan"))
                 };
                 model.addRow(row);
             }
@@ -1377,9 +1379,9 @@ public class BanHangView extends javax.swing.JPanel {
         try {
             // Lấy giá trị từ các text field
             String maGiamGia = txtSale.getText().trim();
-            String tienThanhToanStr = txtMoneyPaid.getText().trim();
-            String tienNhanStr = txtGiveMoney.getText().trim();
-            String tienThuaStr = txtChange.getText().trim();
+            String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
+            String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
+            String tienThuaStr = txtChange.getText().trim().replace(",", "");
 
             // Validate và chuyển đổi sang BigDecimal
             BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);

@@ -5,6 +5,7 @@
 package view;
 
 import java.awt.Component;
+import java.text.DecimalFormat;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.security.Timestamp;
@@ -36,6 +37,7 @@ public class HoaDonView extends javax.swing.JPanel {
     
     private List<Map<String, Object>> listHD = new ArrayList<>();
     
+    DecimalFormat df = new DecimalFormat("#,###");
     Date date = new Date();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
 
@@ -86,7 +88,7 @@ public class HoaDonView extends javax.swing.JPanel {
                 hd.get("id"),
                 hd.get("tenNhanVien"),
                 hd.get("tenKhachHang"),
-                hd.get("tongTien"),
+                df.format(hd.get("tongTien")),
                 ngayTao != null ? ngayTao.format(format) : "",
                 ngayThanhToan != null ? ngayThanhToan.format(format) : ""
             };
@@ -107,8 +109,8 @@ public class HoaDonView extends javax.swing.JPanel {
                 hdct.get("tenMau"),
                 hdct.get("tenKichThuoc"),
                 hdct.get("soLuong"),
-                hdct.get("donGia"),
-                hdct.get("tongGia")
+                df.format(hdct.get("donGia")),
+                df.format(hdct.get("tongGia"))
             };
             model.addRow(row);
         }
@@ -389,7 +391,7 @@ public class HoaDonView extends javax.swing.JPanel {
                 hd.get("id"),
                 hd.get("tenNhanVien"),
                 hd.get("tenKhachHang"),
-                hd.get("tongTien"),
+                df.format(hd.get("tongTien")),
                 ngayTao != null ? ngayTao.format(format) : "",
                 ngayThanhToan != null ? ngayThanhToan.format(format) : ""
             };
