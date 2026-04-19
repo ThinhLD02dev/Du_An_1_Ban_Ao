@@ -278,23 +278,23 @@ public class KhachHangView extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("CUSTOMER MANAGEMENT");
+        jLabel1.setText("QUẢN LÝ KHÁCH HÀNG");
 
         javax.swing.GroupLayout pnNorthLayout = new javax.swing.GroupLayout(pnNorth);
         pnNorth.setLayout(pnNorthLayout);
         pnNorthLayout.setHorizontalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(279, 279, 279)
+                .addGap(315, 315, 315)
                 .addComponent(jLabel1)
-                .addContainerGap(316, Short.MAX_VALUE))
+                .addContainerGap(320, Short.MAX_VALUE))
         );
         pnNorthLayout.setVerticalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
+                .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         add(pnNorth, java.awt.BorderLayout.PAGE_START);

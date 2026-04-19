@@ -457,17 +457,17 @@ public class NhanVienView extends javax.swing.JPanel {
         pnNorth.setLayout(pnNorthLayout);
         pnNorthLayout.setHorizontalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(279, 279, 279)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnNorthLayout.createSequentialGroup()
+                .addContainerGap(336, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addContainerGap(390, Short.MAX_VALUE))
+                .addGap(331, 331, 331))
         );
         pnNorthLayout.setVerticalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnNorthLayout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         add(pnNorth, java.awt.BorderLayout.PAGE_START);
