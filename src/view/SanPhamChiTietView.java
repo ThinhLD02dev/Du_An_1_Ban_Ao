@@ -261,6 +261,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             double soLuong = Double.parseDouble(txtSoLuong.getText());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Số lượng phải là số, không được nhập chữ");
+            return false;
         }
 
         double sl = Double.parseDouble(txtSoLuong.getText());

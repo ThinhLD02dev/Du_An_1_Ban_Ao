@@ -20,6 +20,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.table.DefaultTableModel;
+import repository.MaGiamGiaRepository;
 import model.HoaDon;
 import model.KhachHang;
 import repository.HoaDonChiTietRepository;
@@ -40,6 +41,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.util.Date;
 
 /**
  *
@@ -51,6 +53,7 @@ public class BanHangView extends javax.swing.JPanel {
     HoaDonRepository hdRepo = new HoaDonRepository();
     KhachHangRepository khRepo = new KhachHangRepository();
     HoaDonChiTietRepository hdctRepo = new HoaDonChiTietRepository();
+    MaGiamGiaRepository maGiamGiaRepo = new MaGiamGiaRepository();
     private int currentHoaDonId = -1;
     private List<Map<String, Object>> listSP = new ArrayList<>();
     private List<Map<String, Object>> listCart = new ArrayList<>();
@@ -136,6 +139,27 @@ public class BanHangView extends javax.swing.JPanel {
                     cbbCustomer.getEditor().setItem(kh.getTenKhachHang());
                     cbbCustomer.hidePopup();
                     isSelectingCustomer = false;
+                }
+            }
+        });
+        
+        // Nhấn Enter ở ô mã giảm giá để áp dụng
+        txtSale.addActionListener(e -> {
+            if (currentHoaDonId > 0) {
+                String ma = txtSale.getText().trim();
+                if(ma.isEmpty()){
+                    hdRepo.updateInvoice(currentHoaDonId, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+                    loadFormInvoice(currentHoaDonId);
+                    return;
+                }
+                // Cần validate mã trước khi update
+                if (maGiamGiaRepo.isValidVoucher(ma, new java.sql.Date(System.currentTimeMillis()))) {
+                    // Tạm tính toán để lưu, hoặc chỉ cần lưu mã rồi loadFormInvoice sẽ tính
+                    hdRepo.updateInvoice(currentHoaDonId, ma, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+                    loadFormInvoice(currentHoaDonId);
+                    JOptionPane.showMessageDialog(this, "Áp dụng mã thành công!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Mã giảm giá không tồn tại hoặc hết hạn!");
                 }
             }
         });
@@ -819,15 +843,38 @@ public class BanHangView extends javax.swing.JPanel {
 
             String maGiamGia = (String) hd.get("maGiamGia");
             txtSale.setText(maGiamGia != null ? maGiamGia : "");
-
-            // Tính tiền cần thanh toán
-            BigDecimal tienThanhToan;
-            if (maGiamGia == null || maGiamGia.trim().isEmpty()) {
-                tienThanhToan = tongTien;
-            } else {
-                // Tạm thời chưa xử lý giảm giá, vẫn bằng tổng tiền
-                tienThanhToan = tongTien;
+            
+            BigDecimal giamGia = BigDecimal.ZERO;
+            if (maGiamGia != null && !maGiamGia.isEmpty()) {
+                Map<String, Object> voucher = maGiamGiaRepo.getVoucherDetails(maGiamGia);
+                if (voucher != null) {
+                    BigDecimal minOrder = (BigDecimal) voucher.get("donToiThieu");
+                    minOrder = minOrder != null ? minOrder : BigDecimal.ZERO;
+                    
+                    // Chỉ áp dụng nếu tổng tiền >= đơn tối thiểu
+                    if (tongTien.compareTo(minOrder) >= 0) {
+                        BigDecimal value = (BigDecimal) voucher.get("giaTri");
+                        value = value != null ? value : BigDecimal.ZERO;
+                        int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
+                        
+                        if (loaiGiam == 1) { 
+                            // Tính số tiền được giảm theo %
+                            giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+                            
+                            // Kiểm tra mức giảm tối đa
+                            BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
+                            maxLimit = maxLimit != null ? maxLimit : BigDecimal.ZERO;
+                            if (maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) {
+                                giamGia = maxLimit;
+                            }
+                        } else { 
+                            // Giảm tiền mặt cố định
+                            giamGia = value;
+                        }
+                    }
+                }
             }
+            BigDecimal tienThanhToan = tongTien.subtract(giamGia);
             txtMoneyPaid.setText(df.format(tienThanhToan));
 
             // Tiền khách đưa
@@ -1495,10 +1542,10 @@ public class BanHangView extends javax.swing.JPanel {
         try {
             // Lấy giá trị từ các text field
             String maGiamGia = txtSale.getText().trim();
-            String tongTienStr = txtSumMoney.getText().trim();
-            String tienThanhToanStr = txtMoneyPaid.getText().trim();
-            String tienNhanStr = txtGiveMoney.getText().trim();
-            String tienThuaStr = txtChange.getText().trim();
+            String tongTienStr = txtSumMoney.getText().trim().replace(",", "");
+            String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
+            String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
+            String tienThuaStr = txtChange.getText().trim().replace(",", "");
 
             // Validate và chuyển đổi sang BigDecimal
             BigDecimal tongTien = tongTienStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tongTienStr);
