@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +21,12 @@ public class MaGiamGia {
     private Integer id;
     private String ma;
     private Integer giaTri;
+    private BigDecimal giaTriToiDa;
+    private BigDecimal giaTriDon;
     private String dangGiam;
     private String loaiApDung;    
     private Date ngayBatDau;
     private Date ngayKetThuc;
     private Integer gioiHanSuDung;
-    private String trangThai;
+    private Integer trangThai;
 }

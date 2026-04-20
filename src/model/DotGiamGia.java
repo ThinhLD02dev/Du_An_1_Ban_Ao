@@ -22,5 +22,5 @@ public class DotGiamGia {
     private Integer giaTri;
     private Date ngayBatDau;
     private Date ngayKetThuc;
-    private String trangThai;
+    private Integer trangThai;
 }
