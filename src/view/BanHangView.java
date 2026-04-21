@@ -382,12 +382,6 @@ public class BanHangView extends javax.swing.JPanel {
 
         jLabel7.setText("Mã Giảm Giá :");
 
-        txtSale.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtSaleActionPerformed(evt);
-            }
-        });
-
         jLabel8.setText("Tiền Cần Thanh Toán :");
 
         txtMoneyPaid.setEditable(false);
@@ -1786,7 +1780,7 @@ public class BanHangView extends javax.swing.JPanel {
             btnSave.setEnabled(false);
             btnPaid.setEnabled(false);
         }
-    }
+    }//GEN-LAST:event_tblPaidMouseClicked
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         // Nếu dialog đã tồn tại, dispose nó trước
@@ -1819,20 +1813,6 @@ public class BanHangView extends javax.swing.JPanel {
 
         customerDialog.setLocationRelativeTo(null);
         customerDialog.setVisible(true);
-    }
-
-    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = tblPaid.getSelectedRow();
-        if (row >= 0) {
-            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
-            currentHoaDonId = hoaDonId;
-            btnAdd.setEnabled(false);
-            btnCreateInvoice.setEnabled(false);
-            btnSave.setEnabled(false);
-            btnPaid.setEnabled(false);
-        }
     }
 
 
@@ -1874,6 +1854,7 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lbNotify;
     private javax.swing.JPanel pnHeader;
     private javax.swing.JPanel pnLeft1;
     private javax.swing.JPanel pnLeft2;
