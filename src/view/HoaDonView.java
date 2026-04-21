@@ -17,6 +17,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.swing.table.DefaultTableModel;
 import repository.HoaDonChiTietRepository;
 import repository.HoaDonRepository;
@@ -182,8 +190,18 @@ public class HoaDonView extends javax.swing.JPanel {
         jPanel2.setPreferredSize(new java.awt.Dimension(1077, 60));
 
         btnInHD.setText("In Hóa Đơn");
+        btnInHD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInHDActionPerformed(evt);
+            }
+        });
 
         btnXuatHD.setText("Xuất File Excel");
+        btnXuatHD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXuatHDActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Từ :");
 
@@ -405,6 +423,80 @@ public class HoaDonView extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) tblHoaDonChiTiet.getModel();
         model.setRowCount(0);
     }//GEN-LAST:event_btnLamMoiActionPerformed
+
+    private void btnInHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInHDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnInHDActionPerformed
+
+    private void btnXuatHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatHDActionPerformed
+        if (tblHoaDon.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu hóa đơn để xuất!");
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+        
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String filePath = fileToSave.getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                filePath += ".xlsx";
+            }
+
+            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Danh Sách Hóa Đơn");
+
+                // Định dạng Font cho tiêu đề
+                XSSFFont headerFont = workbook.createFont();
+                headerFont.setBold(true);
+                headerFont.setFontHeightInPoints((short) 12);
+                headerFont.setColor(IndexedColors.WHITE.getIndex());
+
+                // Định dạng Style cho tiêu đề (màu xanh dương nhạt)
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFont(headerFont);
+                headerStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerStyle.setBorderBottom(BorderStyle.THIN);
+
+                // Tạo dòng tiêu đề (Header)
+                Row headerRow = sheet.createRow(0);
+                String[] columns = {"ID", "Tên Nhân Viên", "Tên Khách Hàng", "Tổng Tiền", "Ngày Tạo", "Ngày Thanh Toán"};
+                for (int i = 0; i < columns.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(columns[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // Đổ dữ liệu từ table model vào các dòng
+                DefaultTableModel model = (DefaultTableModel) tblHoaDon.getModel();
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    Row row = sheet.createRow(i + 1);
+                    for (int j = 0; j < model.getColumnCount(); j++) {
+                        Object value = model.getValueAt(i, j);
+                        row.createCell(j).setCellValue(value != null ? value.toString() : "");
+                    }
+                }
+
+                // Tự động căn chỉnh độ rộng cột
+                for (int i = 0; i < columns.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                // Ghi file
+                try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                    workbook.write(fileOut);
+                    JOptionPane.showMessageDialog(this, "Xuất hóa đơn ra Excel thành công!");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnXuatHDActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

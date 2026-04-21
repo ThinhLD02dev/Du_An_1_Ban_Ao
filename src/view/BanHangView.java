@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.table.DefaultTableModel;
 import repository.MaGiamGiaRepository;
 import model.HoaDon;
+import model.NhanVien;
 import model.KhachHang;
 import repository.HoaDonChiTietRepository;
 import repository.HoaDonRepository;
@@ -54,6 +55,7 @@ public class BanHangView extends javax.swing.JPanel {
     KhachHangRepository khRepo = new KhachHangRepository();
     HoaDonChiTietRepository hdctRepo = new HoaDonChiTietRepository();
     MaGiamGiaRepository maGiamGiaRepo = new MaGiamGiaRepository();
+    NhanVienRepository nvRepo = new NhanVienRepository();
     private int currentHoaDonId = -1;
     private List<Map<String, Object>> listSP = new ArrayList<>();
     private List<Map<String, Object>> listCart = new ArrayList<>();
@@ -80,12 +82,20 @@ public class BanHangView extends javax.swing.JPanel {
         loadTableProduct();
         loadTableUnpaid();
         loadTablePaid();
+        setCurrentEmployeeName();
+        saleNotify();
 
         btnAdd.setEnabled(false);
         btnSave.setEnabled(false);
 
         spnNumberAdd.setModel(SpnModel);
         spnNumberDelete.setModel(SpnModel);
+        
+        restrictSpinnerToNumbers(spnNumberAdd);
+        restrictSpinnerToNumbers(spnNumberDelete);
+        
+        lbNotify.setText("Không có mã!!!");
+        lbNotify.setForeground(Color.GRAY);
 
         // Add DocumentListener to txtSearch for real-time search
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
@@ -181,6 +191,35 @@ public class BanHangView extends javax.swing.JPanel {
                 calculateChange();
             }
         });
+       
+    }
+
+    private void restrictSpinnerToNumbers(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            JTextField textField = ((JSpinner.DefaultEditor) editor).getTextField();
+            textField.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar();
+                    if (!Character.isDigit(c)) {
+                        e.consume();
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Hiển thị tên nhân viên đang đăng nhập dựa trên idNhanVien
+     */
+    private void setCurrentEmployeeName() {
+        for (NhanVien nv : nvRepo.getAll()) {
+            if (nv.getId() == idNhanVien) {
+                txtUseCreate.setText(nv.getTenNhanVien());
+                break;
+            }
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -214,6 +253,7 @@ public class BanHangView extends javax.swing.JPanel {
         cbbCustomer = new javax.swing.JComboBox<>();
         jLabel14 = new javax.swing.JLabel();
         txtUseCreate = new javax.swing.JTextField();
+        lbNotify = new javax.swing.JLabel();
         pnLeft3 = new javax.swing.JPanel();
         btnSave = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
@@ -333,19 +373,31 @@ public class BanHangView extends javax.swing.JPanel {
             }
         });
 
+        txtTimeCreate.setEditable(false);
+
         jLabel6.setText("Tổng Tiền :");
+
+        txtSumMoney.setEditable(false);
 
         jLabel7.setText("Mã Giảm Giá :");
 
         jLabel8.setText("Tiền Cần Thanh Toán :");
 
+        txtMoneyPaid.setEditable(false);
+
         jLabel9.setText("Tiền Khách Đưa :");
 
         jLabel10.setText("Tiền Thừa :");
 
+        txtChange.setEditable(false);
+
         cbbCustomer.setEditable(true);
 
         jLabel14.setText("Người Tạo :");
+
+        txtUseCreate.setEditable(false);
+
+        lbNotify.setText("jLabel15");
 
         javax.swing.GroupLayout pnLeft2Layout = new javax.swing.GroupLayout(pnLeft2);
         pnLeft2.setLayout(pnLeft2Layout);
@@ -356,15 +408,16 @@ public class BanHangView extends javax.swing.JPanel {
                 .addGroup(pnLeft2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtTimeCreate)
                     .addGroup(pnLeft2Layout.createSequentialGroup()
-                        .addComponent(cbbCustomer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cbbCustomer, 0, 226, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(btnAddCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtIdInvoice, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtSumMoney)
                     .addComponent(txtSale)
+                    .addComponent(txtChange)
+                    .addComponent(txtUseCreate)
                     .addComponent(txtMoneyPaid)
                     .addComponent(txtGiveMoney)
-                    .addComponent(txtChange)
                     .addGroup(pnLeft2Layout.createSequentialGroup()
                         .addGroup(pnLeft2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
@@ -372,12 +425,14 @@ public class BanHangView extends javax.swing.JPanel {
                             .addComponent(jLabel4)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7)
+                            .addComponent(jLabel14)
                             .addComponent(jLabel8)
                             .addComponent(jLabel9)
                             .addComponent(jLabel10)
-                            .addComponent(jLabel14))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtUseCreate))
+                            .addGroup(pnLeft2Layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(lbNotify)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnLeft2Layout.setVerticalGroup(
@@ -408,7 +463,9 @@ public class BanHangView extends javax.swing.JPanel {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbNotify)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtMoneyPaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -418,8 +475,9 @@ public class BanHangView extends javax.swing.JPanel {
                 .addComponent(txtGiveMoney, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
-                .addComponent(txtChange, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtChange, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         btnSave.setText("Tạm Lưu");
@@ -456,23 +514,25 @@ public class BanHangView extends javax.swing.JPanel {
             pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnLeft3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnPaid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnIssueIvoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnLeft3Layout.createSequentialGroup()
+                        .addComponent(btnPaid)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnIssueIvoice))
+                    .addGroup(pnLeft3Layout.createSequentialGroup()
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         pnLeft3Layout.setVerticalGroup(
             pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnLeft3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnRefresh))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnLeft3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPaid)
                     .addComponent(btnIssueIvoice))
@@ -496,9 +556,9 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pnLeft1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(pnLeft2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnLeft3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -614,7 +674,7 @@ public class BanHangView extends javax.swing.JPanel {
                     .addComponent(spnNumberAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
         );
 
         tblUnPaid.setModel(new javax.swing.table.DefaultTableModel(
@@ -659,6 +719,11 @@ public class BanHangView extends javax.swing.JPanel {
                 "Mã Hóa Đơn", "Ngày Thanh Toán", "Khách Hàng", "Người Tạo"
             }
         ));
+        tblPaid.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPaidMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblPaid);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -988,9 +1053,65 @@ public class BanHangView extends javax.swing.JPanel {
         btnCreateInvoice.setEnabled(true);
         btnSave.setEnabled(false);
         btnPaid.setEnabled(false);
+        
+        lbNotify.setText("Không có mã!!!");
+        lbNotify.setForeground(Color.GRAY);
 
         loadTableCart(0);
         tblUnPaid.setSelectionMode(0);
+    }
+    
+    
+    private void saleNotify(){
+        // Listener cho lbNotify dựa trên txtSale
+        txtSale.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { updateNotify(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { updateNotify(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { updateNotify(); }
+            
+            private void updateNotify() {
+                String code = txtSale.getText().trim();
+                if (code.isEmpty()) {
+                    lbNotify.setText("Không có mã!!!");
+                    lbNotify.setForeground(Color.GRAY);
+                    return;
+                }
+
+                Map<String, Object> voucher = maGiamGiaRepo.getVoucherDetails(code);
+                if (voucher == null) {
+                    lbNotify.setText("Mã chưa đúng");
+                    lbNotify.setForeground(Color.RED);
+                } else {
+                    try {
+                        BigDecimal tongTien = new BigDecimal(txtSumMoney.getText().trim().replace(",", ""));
+                        BigDecimal minOrder = (BigDecimal) voucher.get("donToiThieu");
+                        if (tongTien.compareTo(minOrder != null ? minOrder : BigDecimal.ZERO) < 0) {
+                            lbNotify.setText("Đơn chưa đạt tối thiểu " + df.format(minOrder));
+                            lbNotify.setForeground(Color.ORANGE);
+                            return;
+                        }
+
+                        BigDecimal value = (BigDecimal) voucher.get("giaTri");
+                        int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
+                        BigDecimal giamGia = BigDecimal.ZERO;
+                        String valueStr = (loaiGiam == 1) ? value + "%" : df.format(value) + " VNĐ";
+
+                        if (loaiGiam == 1) {
+                            giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+                            BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
+                            if (maxLimit != null && maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) giamGia = maxLimit;
+                        } else {
+                            giamGia = value;
+                        }
+                        lbNotify.setText("Giá trị: " + valueStr + " - Giảm: " + df.format(giamGia));
+                        lbNotify.setForeground(new Color(0, 128, 0)); // Xanh lá
+                    } catch (Exception ex) { lbNotify.setText("Mã hợp lệ"); }
+                }
+            }
+        });
     }
 
     private void initializeUI() {
@@ -1630,7 +1751,21 @@ public class BanHangView extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
     }//GEN-LAST:event_btnIssueIvoiceActionPerformed
 
-    private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
+    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPaidMouseClicked
+        int row = tblPaid.getSelectedRow();
+        if (row >= 0) {
+            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
+            loadTableCart(hoaDonId);
+            loadFormInvoice(hoaDonId);
+            currentHoaDonId = hoaDonId;
+            btnAdd.setEnabled(false);
+            btnCreateInvoice.setEnabled(false);
+            btnSave.setEnabled(false);
+            btnPaid.setEnabled(false);
+        }
+    }//GEN-LAST:event_tblPaidMouseClicked
+
+    private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         // Nếu dialog đã tồn tại, dispose nó trước
         if (customerDialog != null) {
             customerDialog.dispose();
@@ -1661,22 +1796,7 @@ public class BanHangView extends javax.swing.JPanel {
 
         customerDialog.setLocationRelativeTo(null);
         customerDialog.setVisible(true);
-    }
-
-    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = tblPaid.getSelectedRow();
-        if (row >= 0) {
-            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
-            currentHoaDonId = hoaDonId;
-            btnAdd.setEnabled(false);
-            btnCreateInvoice.setEnabled(false);
-            btnSave.setEnabled(false);
-            btnPaid.setEnabled(false);
-        }
-    }
-
+    }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
@@ -1717,6 +1837,7 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lbNotify;
     private javax.swing.JPanel pnLeft1;
     private javax.swing.JPanel pnLeft2;
     private javax.swing.JPanel pnLeft3;
