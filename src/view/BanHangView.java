@@ -163,6 +163,7 @@ public class BanHangView extends javax.swing.JPanel {
                 if(ma.isEmpty()){
                     hdRepo.updateInvoice(currentHoaDonId, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
                     loadFormInvoice(currentHoaDonId);
+                    loadTableCart(currentHoaDonId);
                     return;
                 }
                 // Cần validate mã trước khi update
@@ -170,6 +171,7 @@ public class BanHangView extends javax.swing.JPanel {
                     // Tạm tính toán để lưu, hoặc chỉ cần lưu mã rồi loadFormInvoice sẽ tính
                     hdRepo.updateInvoice(currentHoaDonId, ma, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
                     loadFormInvoice(currentHoaDonId);
+                    loadTableCart(currentHoaDonId);
                     JOptionPane.showMessageDialog(this, "Áp dụng mã thành công!");
                 } else {
                     JOptionPane.showMessageDialog(this, "Mã giảm giá không tồn tại hoặc hết hạn!");
@@ -868,7 +870,11 @@ public class BanHangView extends javax.swing.JPanel {
     public void loadTableCart(int hoaDonId) {
         DefaultTableModel model = (DefaultTableModel) tblCart.getModel();
         model.setRowCount(0);
-
+        
+        // Lấy mã giảm giá hiện tại từ form
+        String maGiamGia = txtSale.getText().trim();
+        Map<String, Object> voucher = (maGiamGia != null && !maGiamGia.isEmpty()) ? maGiamGiaRepo.getVoucherDetails(maGiamGia) : null;
+        
         listCart = hdctRepo.getAllByCart(hoaDonId);
 
         for (Map<String, Object> item : listCart) {
@@ -878,10 +884,32 @@ public class BanHangView extends javax.swing.JPanel {
                 item.get("soLuong"),
                 item.get("tenMau"),
                 df.format(item.get("donGia")),
-                df.format(item.get("tongGia"))
+                df.format(calculateItemTotalWithDiscount(item, voucher))
             };
             model.addRow(row);
         }
+    }
+
+    private BigDecimal calculateItemTotalWithDiscount(Map<String, Object> item, Map<String, Object> voucher) {
+        BigDecimal tongGia = (BigDecimal) item.get("tongGia");
+        if (voucher == null || (int) voucher.get("loaiApDung") != 1) return tongGia;
+        
+        List<Integer> productIds = maGiamGiaRepo.getProductIdsByVoucherId((int) voucher.get("id"));
+        if (productIds.contains((int) item.get("sanPhamId"))) {
+            BigDecimal value = (BigDecimal) voucher.get("giaTri");
+            int loaiGiam = (int) voucher.get("loaiGiam");
+            BigDecimal discount = BigDecimal.ZERO;
+            
+            if (loaiGiam == 1) { // Giảm theo %
+                discount = tongGia.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+            } else { // Giảm tiền mặt trên mỗi đơn vị sản phẩm
+                discount = value.multiply(new BigDecimal((int) item.get("soLuong")));
+            }
+            
+            BigDecimal result = tongGia.subtract(discount);
+            return result.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : result;
+        }
+        return tongGia;
     }
 
     public void loadTableProduct() {
@@ -962,20 +990,32 @@ public class BanHangView extends javax.swing.JPanel {
                         BigDecimal value = (BigDecimal) voucher.get("giaTri");
                         value = value != null ? value : BigDecimal.ZERO;
                         int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
+                        int loaiApDung = (int) voucher.get("loaiApDung"); // 1: SP, 0: HĐ
 
-                        if (loaiGiam == 1) {
-                            // Tính số tiền được giảm theo %
-                            giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
-
-                            // Kiểm tra mức giảm tối đa
-                            BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
-                            maxLimit = maxLimit != null ? maxLimit : BigDecimal.ZERO;
-                            if (maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) {
-                                giamGia = maxLimit;
+                        if (loaiApDung == 0) { // Giảm trên hóa đơn
+                            if (loaiGiam == 1) {
+                                giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+                            } else {
+                                giamGia = value;
                             }
                         } else {
-                            // Giảm tiền mặt cố định
-                            giamGia = value;
+                            List<Integer> productIds = maGiamGiaRepo.getProductIdsByVoucherId((int) voucher.get("id"));
+                            for (Map<String, Object> item : listCart) {
+                                if (productIds.contains((int) item.get("sanPhamId"))) {
+                                    BigDecimal itemTotal = (BigDecimal) item.get("tongGia");
+                                    if (loaiGiam == 1) {
+                                        giamGia = giamGia.add(itemTotal.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP));
+                                    } else {
+                                        giamGia = giamGia.add(value.multiply(new BigDecimal((int) item.get("soLuong"))));
+                                    }
+                                }
+                            }
+                        }
+                        // Kiểm tra mức giảm tối đa chung cho mã
+                        BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
+                        maxLimit = maxLimit != null ? maxLimit : BigDecimal.ZERO;
+                        if (maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) {
+                            giamGia = maxLimit;
                         }
                     }
                 }
@@ -995,6 +1035,9 @@ public class BanHangView extends javax.swing.JPanel {
                 tienThua = BigDecimal.ZERO;
             }
             txtChange.setText(df.format(tienThua));
+            
+            // Cập nhật lại tiền thừa khi số tiền thanh toán thay đổi
+            calculateChange();
         } else {
             clearForm();
         }
@@ -1137,15 +1180,34 @@ public class BanHangView extends javax.swing.JPanel {
 
                         BigDecimal value = (BigDecimal) voucher.get("giaTri");
                         int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
+                        int loaiApDung = (int) voucher.get("loaiApDung");
                         BigDecimal giamGia = BigDecimal.ZERO;
                         String valueStr = (loaiGiam == 1) ? value + "%" : df.format(value) + " VNĐ";
 
-                        if (loaiGiam == 1) {
-                            giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+                        if (loaiApDung == 0) {
+                            if (loaiGiam == 1) {
+                                giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
+                                BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
+                                if (maxLimit != null && maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) giamGia = maxLimit;
+                            } else {
+                                giamGia = value;
+                            }
+                        } else {
+                            // Lấy giỏ hàng thực tế của hóa đơn này để tính toán
+                            List<Map<String, Object>> currentCart = hdctRepo.getAllByCart(currentHoaDonId);
+                            List<Integer> productIds = maGiamGiaRepo.getProductIdsByVoucherId((int) voucher.get("id"));
+                            for (Map<String, Object> item : currentCart) {
+                                if (productIds.contains((int) item.get("sanPhamId"))) {
+                                    BigDecimal itemTotal = (BigDecimal) item.get("tongGia");
+                                    if (loaiGiam == 1) {
+                                        giamGia = giamGia.add(itemTotal.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP));
+                                    } else {
+                                        giamGia = giamGia.add(value.multiply(new BigDecimal((int) item.get("soLuong"))));
+                                    }
+                                }
+                            }
                             BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
                             if (maxLimit != null && maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) giamGia = maxLimit;
-                        } else {
-                            giamGia = value;
                         }
                         lbNotify.setText("Giá trị: " + valueStr + " - Giảm: " + df.format(giamGia));
                         lbNotify.setForeground(new Color(0, 128, 0)); // Xanh lá
@@ -1477,9 +1539,9 @@ public class BanHangView extends javax.swing.JPanel {
         int row = tblUnPaid.getSelectedRow();
         if (row >= 0) {
             int hoaDonId = (int) tblUnPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
             currentHoaDonId = hoaDonId;
+            loadFormInvoice(hoaDonId);
+            loadTableCart(hoaDonId);
             btnAdd.setEnabled(true);
             btnCreateInvoice.setEnabled(false);
             btnSave.setEnabled(true);
@@ -1860,9 +1922,9 @@ public class BanHangView extends javax.swing.JPanel {
         int row = tblPaid.getSelectedRow();
         if (row >= 0) {
             int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
             currentHoaDonId = hoaDonId;
+            loadFormInvoice(hoaDonId);
+            loadTableCart(hoaDonId);
             btnAdd.setEnabled(false);
             btnCreateInvoice.setEnabled(false);
             btnSave.setEnabled(false);
