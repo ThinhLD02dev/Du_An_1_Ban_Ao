@@ -4,24 +4,27 @@
  */
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
  * @author ngocp
  */
 public class MainView extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainView.class.getName());
 
     /**
      * Creates new form Admin
      */
-    public void loadMain(){
-        if(vt == 2){
+    public void loadMain() {
+        if (vt == 2) {
             lblTaiKhoan.setText("NHÂN VIÊN");
             btnNhanVien.setEnabled(false);
         }
@@ -29,30 +32,36 @@ public class MainView extends javax.swing.JFrame {
     private int vt;
     private int id;
     CardLayout cardLayout;
+
     public MainView(Integer vaiTro, Integer idNhanVien) {
         initComponents();
+        jPanel1.setBorder(null);
+        pnMain.setBorder(null);
         this.vt = vaiTro;
         this.id = idNhanVien;
         loadMain();
         cardLayout = new CardLayout();
         pnMain.setLayout(cardLayout);
 
-        pnMain.add(new SanPhamView(), "sanpham");
-        pnMain.add(new NhanVienView(), "nhanvien");
-        pnMain.add(new KhachHangView(), "khachhang");
-        pnMain.add(new BanHangView(id), "banhang");
-        pnMain.add(new GiamGiaView(), "giamgia");
-        pnMain.add(new HoaDonView(),"hoadon");
-        pnMain.add(new ThongKeView(),"thongke");
-        setLayout(new java.awt.GridBagLayout());
-        add(jPanel1);
+        pnMain.add(wrap(new SanPhamView()), "sanpham");
+        pnMain.add(wrap(new NhanVienView()), "nhanvien");
+        pnMain.add(wrap(new KhachHangView()), "khachhang");
+        pnMain.add(wrap(new BanHangView(id)), "banhang");
+        pnMain.add(wrap(new GiamGiaView()), "giamgia");
+        pnMain.add(wrap(new HoaDonView()), "hoadon");
+        pnMain.add(wrap(new ThongKeView()), "thongke");
+        setContentPane(jPanel1);
         this.setSize(1600, 900);
+        pnMain.setMinimumSize(new Dimension(0, 0));
         this.setLocationRelativeTo(null);
 
     }
 
-    
-    
+    private JPanel wrap(JPanel panel) {
+        JPanel container = new JPanel(new BorderLayout());
+        container.add(panel, BorderLayout.CENTER);
+        return container;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -245,13 +254,13 @@ public class MainView extends javax.swing.JFrame {
 
     private void btnLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogOutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Bạn Có Chắc Muốn Đăng Xuất?",
-            "Xác Nhận",
-            JOptionPane.YES_NO_OPTION
+                this,
+                "Bạn Có Chắc Muốn Đăng Xuất?",
+                "Xác Nhận",
+                JOptionPane.YES_NO_OPTION
         );
 
-        if (confirm == JOptionPane.YES_OPTION){
+        if (confirm == JOptionPane.YES_OPTION) {
             new DangNhapView().setVisible(true);
             dispose();
         }
@@ -281,7 +290,6 @@ public class MainView extends javax.swing.JFrame {
         cardLayout.show(pnMain, "sanpham");
     }//GEN-LAST:event_btnSanPhamActionPerformed
 
-
     /**
      * @param args the command line arguments
      */
@@ -302,9 +310,9 @@ public class MainView extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new MainView(0,0).setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new MainView(0, 0).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

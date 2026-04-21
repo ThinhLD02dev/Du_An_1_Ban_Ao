@@ -135,6 +135,24 @@ public class NhanVienView extends javax.swing.JPanel {
 
         loadTable();
         loadTableTaiKhoan();
+        UI1();
+    }
+    private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnNorth.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnNorth.removeAll();
+
+        // Thêm lại label vào giữa
+        pnNorth.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnNorth.revalidate();
+        pnNorth.repaint();
     }
 
     public void loadTableTaiKhoan() {
@@ -458,16 +476,16 @@ public class NhanVienView extends javax.swing.JPanel {
         pnNorthLayout.setHorizontalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(279, 279, 279)
+                .addGap(319, 319, 319)
                 .addComponent(jLabel1)
-                .addContainerGap(390, Short.MAX_VALUE))
+                .addContainerGap(350, Short.MAX_VALUE))
         );
         pnNorthLayout.setVerticalGroup(
             pnNorthLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnNorthLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnNorthLayout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         add(pnNorth, java.awt.BorderLayout.PAGE_START);

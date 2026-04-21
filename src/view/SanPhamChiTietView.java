@@ -351,7 +351,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("PRODUCT DETAILS");
+        jLabel1.setText("SẢN PHẨM CHI TIẾT");
 
         javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
         pnHeader.setLayout(pnHeaderLayout);
@@ -360,7 +360,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             .addGroup(pnHeaderLayout.createSequentialGroup()
                 .addGap(342, 342, 342)
                 .addComponent(jLabel1)
-                .addContainerGap(417, Short.MAX_VALUE))
+                .addContainerGap(396, Short.MAX_VALUE))
         );
         pnHeaderLayout.setVerticalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
