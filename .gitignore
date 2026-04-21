@@ -22,3 +22,19 @@
 hs_err_pid*
 replay_pid*
 /dist/
+
+# NetBeans private files
+nbproject/private/
+*.form
+
+# Build output
+build/
+dist/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
