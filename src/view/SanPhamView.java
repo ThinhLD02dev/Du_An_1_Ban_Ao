@@ -203,15 +203,15 @@ public class SanPhamView extends javax.swing.JPanel {
         }
         
         try {
-        double giaBan = Double.parseDouble(txtGiaBan.getText());
+            double giaBan = Double.parseDouble(txtGiaBan.getText().replace(",", ""));
+            if (giaBan <= 0) {
+                JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
+                txtGiaBan.requestFocus();
+                return false;
+            }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Giá bán phải là số, không được nhập chữ");
-        }
-
-        double gia = Double.parseDouble(txtGiaBan.getText());
-        if (gia <= 0) {
-            JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
-            txtGiaBan.requestFocus();
+            return false;
         }
 
         return true;
@@ -232,7 +232,7 @@ public class SanPhamView extends javax.swing.JPanel {
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         int chatLieuId = cbChatLieu.getSelectedIndex() + 1;
         int thuongHieuId = cbThuongHieu.getSelectedIndex() + 1;
-        double giaBan = Double.parseDouble(txtGiaBan.getText());
+        double giaBan = Double.parseDouble(txtGiaBan.getText().replace(",", ""));
 
         String sql = "UPDATE quan_ao SET ma_sp=?, ten_ao=?, mo_ta=?, ngay_tao=?, chat_lieu_id=?, thuong_hieu_id=? , gia_ban=? WHERE id=?";
 
@@ -738,7 +738,7 @@ public class SanPhamView extends javax.swing.JPanel {
 
                 ps.setInt(6, cbChatLieu.getSelectedIndex() + 1);
                 ps.setInt(7, cbThuongHieu.getSelectedIndex() + 1);
-                ps.setDouble(8, Double.parseDouble(txtGiaBan.getText()));
+                ps.setDouble(8, Double.parseDouble(txtGiaBan.getText().replace(",", "")));
 
                 ps.executeUpdate();
 
