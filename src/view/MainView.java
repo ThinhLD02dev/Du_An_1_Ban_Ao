@@ -27,6 +27,10 @@ public class MainView extends javax.swing.JFrame {
         if (vt == 2) {
             lblTaiKhoan.setText("NHÂN VIÊN");
             btnNhanVien.setEnabled(false);
+            btnGiamGia.setEnabled(false);
+            btnSanPham.setEnabled(false);
+            btnHoaDon.setEnabled(false);
+            
         }
     }
     private int vt;

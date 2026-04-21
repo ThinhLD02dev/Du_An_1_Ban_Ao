@@ -48,6 +48,7 @@ public class GiamGiaView extends javax.swing.JPanel {
     public GiamGiaView() {
         initComponents();
         UI1();
+        fixMaGiamGiaLayout();
         dcNgayBatDau.getJCalendar().setMinSelectableDate(new Date());
         dcNgayKetThuc.getJCalendar().setMinSelectableDate(new Date());
         dcNgayMaBD.getJCalendar().setMinSelectableDate(new Date());
@@ -154,6 +155,30 @@ public class GiamGiaView extends javax.swing.JPanel {
         // Cập nhật UI
         pnHeader.revalidate();
         pnHeader.repaint();
+    }
+
+    private void fixMaGiamGiaLayout() {
+        jPanel6.removeAll();
+        jPanel6.setLayout(new java.awt.BorderLayout());
+
+        // Tạo JSplitPane để chia form và table
+        javax.swing.JSplitPane splitPane = new javax.swing.JSplitPane(
+                javax.swing.JSplitPane.VERTICAL_SPLIT,
+                jPanel3, // Component trên
+                jScrollPane2 // Component dưới
+        );
+
+        // Cài đặt vị trí chia ban đầu (400px cho form)
+        splitPane.setDividerLocation(400);
+
+        // Cho phép resize linh hoạt (60% form, 40% table)
+        splitPane.setResizeWeight(0.6);
+
+        // Thêm vào jPanel6
+        jPanel6.add(splitPane, java.awt.BorderLayout.CENTER);
+
+        jPanel6.revalidate();
+        jPanel6.repaint();
     }
 
     /**

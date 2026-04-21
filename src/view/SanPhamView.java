@@ -175,12 +175,6 @@ public class SanPhamView extends javax.swing.JPanel {
             return false;
         }
 
-        if (txtMoTa.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Mô tả không được để trống");
-            txtMoTa.requestFocus();
-            return false;
-        }
-
         if (dateNgayTao.getDate() == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày tạo");
             return false;
@@ -450,6 +444,7 @@ public class SanPhamView extends javax.swing.JPanel {
         loadTable();
         dateNgayTao.setDate(date);
         UI1();
+        dateNgayTao.setEnabled(false);
     }
 
     /**
@@ -693,13 +688,13 @@ public class SanPhamView extends javax.swing.JPanel {
 
         tblSanPham.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Trạng Thái"
+                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Đợt Giảm Giá", "Trạng Thái"
             }
         ));
         tblSanPham.addMouseListener(new java.awt.event.MouseAdapter() {

@@ -59,7 +59,7 @@ public class BanHangView extends javax.swing.JPanel {
     private List<Map<String, Object>> listCart = new ArrayList<>();
     private List<Map<String, Object>> listHD = new ArrayList<>();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("ss:mm:HH dd/MM/yyyy");
-    DecimalFormat df = new DecimalFormat("#,###");
+    DecimalFormat df = new DecimalFormat("#,##0.00");
     SpinnerNumberModel SpnModel = new SpinnerNumberModel(1, 1, 1000, 1);
     private final Integer idNhanVien;
     private CreateCustomerView customerDialog = null;
@@ -143,12 +143,12 @@ public class BanHangView extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         // Nhấn Enter ở ô mã giảm giá để áp dụng
         txtSale.addActionListener(e -> {
             if (currentHoaDonId > 0) {
                 String ma = txtSale.getText().trim();
-                if(ma.isEmpty()){
+                if (ma.isEmpty()) {
                     hdRepo.updateInvoice(currentHoaDonId, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
                     loadFormInvoice(currentHoaDonId);
                     return;
@@ -337,6 +337,12 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel6.setText("Tổng Tiền :");
 
         jLabel7.setText("Mã Giảm Giá :");
+
+        txtSale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSaleActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Tiền Cần Thanh Toán :");
 
@@ -738,7 +744,9 @@ public class BanHangView extends javax.swing.JPanel {
             };
             model.addRow(row);
         }
-    }private void UI1() {
+    }
+
+    private void UI1() {
         // Đổi layout header thành BorderLayout
         pnHeader.setLayout(new java.awt.BorderLayout());
 
@@ -860,31 +868,31 @@ public class BanHangView extends javax.swing.JPanel {
 
             String maGiamGia = (String) hd.get("maGiamGia");
             txtSale.setText(maGiamGia != null ? maGiamGia : "");
-            
+
             BigDecimal giamGia = BigDecimal.ZERO;
             if (maGiamGia != null && !maGiamGia.isEmpty()) {
                 Map<String, Object> voucher = maGiamGiaRepo.getVoucherDetails(maGiamGia);
                 if (voucher != null) {
                     BigDecimal minOrder = (BigDecimal) voucher.get("donToiThieu");
                     minOrder = minOrder != null ? minOrder : BigDecimal.ZERO;
-                    
+
                     // Chỉ áp dụng nếu tổng tiền >= đơn tối thiểu
                     if (tongTien.compareTo(minOrder) >= 0) {
                         BigDecimal value = (BigDecimal) voucher.get("giaTri");
                         value = value != null ? value : BigDecimal.ZERO;
                         int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
-                        
-                        if (loaiGiam == 1) { 
+
+                        if (loaiGiam == 1) {
                             // Tính số tiền được giảm theo %
                             giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
-                            
+
                             // Kiểm tra mức giảm tối đa
                             BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
                             maxLimit = maxLimit != null ? maxLimit : BigDecimal.ZERO;
                             if (maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) {
                                 giamGia = maxLimit;
                             }
-                        } else { 
+                        } else {
                             // Giảm tiền mặt cố định
                             giamGia = value;
                         }
@@ -1646,6 +1654,10 @@ public class BanHangView extends javax.swing.JPanel {
 
         JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
     }//GEN-LAST:event_btnIssueIvoiceActionPerformed
+
+    private void txtSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSaleActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSaleActionPerformed
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         // Nếu dialog đã tồn tại, dispose nó trước

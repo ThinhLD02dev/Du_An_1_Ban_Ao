@@ -251,6 +251,25 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
     
     List<SanPhamChiTiet> list = spctRepository.getAll();
 
+    
+
+    public void resetForm() {
+        txtSoLuong.setText("");
+        cbKichThuoc.setSelectedIndex(0);
+        cbMauSac.setSelectedIndex(0);
+    }
+
+    public SanPhamChiTietView(Frame parent, boolean modal, int id) {
+        super(parent, modal);
+        initComponents();
+        this.sanPhamId = id;
+        loadForm();
+        loadTableSPCT();
+        loadKichThuoc();
+        loadMauSac();
+        loadMaSp();
+
+    }
     public boolean validateFormSpct() {
 
 //        if (checkTrungMaSP(txtMasp.getText())) {
@@ -258,16 +277,17 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
 //            return false;
 //        }
         try {
-            double soLuong = Double.parseDouble(txtSoLuong.getText());
+            int sl = Integer.parseInt(txtSoLuong.getText());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Số lượng phải là số, không được nhập chữ");
             return false;
         }
 
-        double sl = Double.parseDouble(txtSoLuong.getText());
+        int sl = Integer.parseInt(txtSoLuong.getText());
         if (sl < 0) {
             JOptionPane.showMessageDialog(this, "Giá phải lớn hơn 0!");
             txtSoLuong.requestFocus();
+            return false;
         }
 
         if (cbMauSac.getSelectedIndex() == -1) {
@@ -297,24 +317,6 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
         }
         
         return true;
-    }
-
-    public void resetForm() {
-        txtSoLuong.setText("");
-        cbKichThuoc.setSelectedIndex(0);
-        cbMauSac.setSelectedIndex(0);
-    }
-
-    public SanPhamChiTietView(Frame parent, boolean modal, int id) {
-        super(parent, modal);
-        initComponents();
-        this.sanPhamId = id;
-        loadForm();
-        loadTableSPCT();
-        loadKichThuoc();
-        loadMauSac();
-        loadMaSp();
-
     }
 
     /**

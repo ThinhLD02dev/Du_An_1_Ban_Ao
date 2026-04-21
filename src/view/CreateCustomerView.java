@@ -8,29 +8,32 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import model.KhachHang;
 import repository.KhachHangRepository;
+import util.ValidationUtils;
 
 /**
  *
  * @author nhocx
  */
 public class CreateCustomerView extends javax.swing.JDialog {
+
     KhachHangRepository khRepo = new KhachHangRepository();
     private OnCustomerAddedListener onCustomerAdded; // Callback interface
-    
+
     /**
      * Interface cho callback khi khách hàng được thêm thành công
      */
     public interface OnCustomerAddedListener {
+
         void onCustomerAdded(KhachHang khachHang);
     }
-    
+
     /**
      * Set listener cho khi khách hàng được thêm
      */
     public void setOnCustomerAddedListener(OnCustomerAddedListener listener) {
         this.onCustomerAdded = listener;
     }
-    
+
     /**
      * Creates new form CreateCustomerView
      */
@@ -41,6 +44,7 @@ public class CreateCustomerView extends javax.swing.JDialog {
         this.setSize(300, 450); // ✅ Đặt kích thước cố định thay vì pack()
         this.setLocationRelativeTo(null);
     }
+
     public boolean validateForm() {
         if (txtTenKH.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tên khách hàng không được để trống");
@@ -52,8 +56,10 @@ public class CreateCustomerView extends javax.swing.JDialog {
             txtSDT.requestFocus();
             return false;
         }
-        if (!txtSDT.getText().trim().matches("\\d{10,11}")) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ (10-11 chữ số)");
+        String phone = txtSDT.getText().trim();
+        if (!ValidationUtils.isValidPhoneNumber(phone)) {
+            JOptionPane.showMessageDialog(this,
+                    "Số điện thoại không hợp lệ (Ví dụ: 0912345678 hoặc +84912345678)");
             txtSDT.requestFocus();
             return false;
         }
@@ -62,8 +68,10 @@ public class CreateCustomerView extends javax.swing.JDialog {
             txtEmail.requestFocus();
             return false;
         }
-        if (!txtEmail.getText().trim().contains("@")) {
-            JOptionPane.showMessageDialog(this, "Email không hợp lệ");
+        String email = txtEmail.getText().trim();
+        if (!ValidationUtils.isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this,
+                    "Email không hợp lệ (Ví dụ: user@example.com)");
             txtEmail.requestFocus();
             return false;
         }
@@ -74,7 +82,7 @@ public class CreateCustomerView extends javax.swing.JDialog {
         }
         return true;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -191,26 +199,26 @@ public class CreateCustomerView extends javax.swing.JDialog {
             return;
         }
         KhachHang kh = new KhachHang(0, txtTenKH.getText().trim(), txtSDT.getText().trim(), txtEmail.getText().trim(), txtDiaChi.getText().trim());
-        
+
         // add() giờ return int (ID), không phải boolean
         int newId = khRepo.add(kh);
         if (newId > 0) {
             JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
-            
+
             // Cập nhật ID vào object
             kh.setId(newId);
-            
+
             // Gọi callback với object đã có ID chính xác
             if (onCustomerAdded != null) {
                 onCustomerAdded.onCustomerAdded(kh);
             }
-            
+
             // Xóa dữ liệu form
             txtTenKH.setText("");
             txtSDT.setText("");
             txtEmail.setText("");
             txtDiaChi.setText("");
-            
+
             // Đóng dialog sau 1 giây
             javax.swing.Timer timer = new javax.swing.Timer(1000, e -> dispose());
             timer.setRepeats(false);
