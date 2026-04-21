@@ -91,10 +91,10 @@ public class BanHangView extends javax.swing.JPanel {
 
         spnNumberAdd.setModel(SpnModel);
         spnNumberDelete.setModel(SpnModel);
-        
+
         restrictSpinnerToNumbers(spnNumberAdd);
         restrictSpinnerToNumbers(spnNumberDelete);
-        
+
         lbNotify.setText("Không có mã!!!");
         lbNotify.setForeground(Color.GRAY);
 
@@ -153,7 +153,7 @@ public class BanHangView extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         // Nhấn Enter ở ô mã giảm giá để áp dụng
         txtSale.addActionListener(e -> {
             if (currentHoaDonId > 0) {
@@ -192,7 +192,7 @@ public class BanHangView extends javax.swing.JPanel {
                 calculateChange();
             }
         });
-       
+
     }
 
     private void restrictSpinnerToNumbers(JSpinner spinner) {
@@ -381,6 +381,12 @@ public class BanHangView extends javax.swing.JPanel {
         txtSumMoney.setEditable(false);
 
         jLabel7.setText("Mã Giảm Giá :");
+
+        txtSale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSaleActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Tiền Cần Thanh Toán :");
 
@@ -803,7 +809,9 @@ public class BanHangView extends javax.swing.JPanel {
             };
             model.addRow(row);
         }
-    }private void UI1() {
+    }
+
+    private void UI1() {
         // Đổi layout header thành BorderLayout
         pnHeader.setLayout(new java.awt.BorderLayout());
 
@@ -850,7 +858,7 @@ public class BanHangView extends javax.swing.JPanel {
                 item.get("tenAo"),
                 item.get("tenKichThuoc"),
                 item.get("soLuong"),
-                item.get("tenMau"),                
+                item.get("tenMau"),
                 df.format(item.get("donGia")),
                 df.format(item.get("tongGia"))
             };
@@ -923,31 +931,31 @@ public class BanHangView extends javax.swing.JPanel {
 
             String maGiamGia = (String) hd.get("maGiamGia");
             txtSale.setText(maGiamGia != null ? maGiamGia : "");
-            
+
             BigDecimal giamGia = BigDecimal.ZERO;
             if (maGiamGia != null && !maGiamGia.isEmpty()) {
                 Map<String, Object> voucher = maGiamGiaRepo.getVoucherDetails(maGiamGia);
                 if (voucher != null) {
                     BigDecimal minOrder = (BigDecimal) voucher.get("donToiThieu");
                     minOrder = minOrder != null ? minOrder : BigDecimal.ZERO;
-                    
+
                     // Chỉ áp dụng nếu tổng tiền >= đơn tối thiểu
                     if (tongTien.compareTo(minOrder) >= 0) {
                         BigDecimal value = (BigDecimal) voucher.get("giaTri");
                         value = value != null ? value : BigDecimal.ZERO;
                         int loaiGiam = (int) voucher.get("loaiGiam"); // 1: %, 0: VNĐ
-                        
-                        if (loaiGiam == 1) { 
+
+                        if (loaiGiam == 1) {
                             // Tính số tiền được giảm theo %
                             giamGia = tongTien.multiply(value).divide(new BigDecimal(100), 0, java.math.RoundingMode.HALF_UP);
-                            
+
                             // Kiểm tra mức giảm tối đa
                             BigDecimal maxLimit = (BigDecimal) voucher.get("giaTriToiDa");
                             maxLimit = maxLimit != null ? maxLimit : BigDecimal.ZERO;
                             if (maxLimit.compareTo(BigDecimal.ZERO) > 0 && giamGia.compareTo(maxLimit) > 0) {
                                 giamGia = maxLimit;
                             }
-                        } else { 
+                        } else {
                             // Giảm tiền mặt cố định
                             giamGia = value;
                         }
@@ -1068,15 +1076,15 @@ public class BanHangView extends javax.swing.JPanel {
         btnCreateInvoice.setEnabled(true);
         btnSave.setEnabled(false);
         btnPaid.setEnabled(false);
-        
+
         lbNotify.setText("Không có mã!!!");
         lbNotify.setForeground(Color.GRAY);
 
         loadTableCart(0);
         tblUnPaid.setSelectionMode(0);
     }
-    
-    
+
+
     private void saleNotify(){
         // Listener cho lbNotify dựa trên txtSale
         txtSale.getDocument().addDocumentListener(new DocumentListener() {
@@ -1086,7 +1094,7 @@ public class BanHangView extends javax.swing.JPanel {
             public void removeUpdate(DocumentEvent e) { updateNotify(); }
             @Override
             public void changedUpdate(DocumentEvent e) { updateNotify(); }
-            
+
             private void updateNotify() {
                 String code = txtSale.getText().trim();
                 if (code.isEmpty()) {
@@ -1778,9 +1786,9 @@ public class BanHangView extends javax.swing.JPanel {
             btnSave.setEnabled(false);
             btnPaid.setEnabled(false);
         }
-    }//GEN-LAST:event_tblPaidMouseClicked
+    }
 
-    private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
+    private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         // Nếu dialog đã tồn tại, dispose nó trước
         if (customerDialog != null) {
             customerDialog.dispose();
@@ -1811,7 +1819,22 @@ public class BanHangView extends javax.swing.JPanel {
 
         customerDialog.setLocationRelativeTo(null);
         customerDialog.setVisible(true);
-    }//GEN-LAST:event_btnAddCustomerActionPerformed
+    }
+
+    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
+        int row = tblPaid.getSelectedRow();
+        if (row >= 0) {
+            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
+            loadTableCart(hoaDonId);
+            loadFormInvoice(hoaDonId);
+            currentHoaDonId = hoaDonId;
+            btnAdd.setEnabled(false);
+            btnCreateInvoice.setEnabled(false);
+            btnSave.setEnabled(false);
+            btnPaid.setEnabled(false);
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
@@ -1851,7 +1874,6 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JLabel lbNotify;
     private javax.swing.JPanel pnHeader;
     private javax.swing.JPanel pnLeft1;
     private javax.swing.JPanel pnLeft2;

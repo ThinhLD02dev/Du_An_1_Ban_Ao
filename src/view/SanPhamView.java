@@ -118,7 +118,7 @@ public class SanPhamView extends javax.swing.JPanel {
                     rs.getString("ten_chat_lieu"),
                     rs.getString("ten_thuong_hieu"),
                     rs.getInt("so_luong"),
-                    df.format(rs.getBigDecimal("gia_thuc_te")),
+                    df.format(rs.getBigDecimal("gia_thuc_te")), // Hiển thị giá đã giảm
                     rs.getString("ten_dot") == null ? "Không có" : rs.getString("ten_dot"),
                     tt
                 };
@@ -694,7 +694,7 @@ public class SanPhamView extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Đợt giảm giá", "Trạng Thái"
+                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Đợt Giảm Giá", "Trạng Thái"
             }
         ));
         tblSanPham.addMouseListener(new java.awt.event.MouseAdapter() {
