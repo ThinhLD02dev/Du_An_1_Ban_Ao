@@ -7,6 +7,14 @@ package view;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.sql.Timestamp;
+import java.io.File;
+import java.io.FileOutputStream;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Element;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -506,7 +514,7 @@ public class BanHangView extends javax.swing.JPanel {
             }
         });
 
-        btnIssueIvoice.setText("Xuất Hóa Đơn");
+        btnIssueIvoice.setText("In và thanh toán");
         btnIssueIvoice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnIssueIvoiceActionPerformed(evt);
@@ -1115,6 +1123,139 @@ public class BanHangView extends javax.swing.JPanel {
 
         // Hiển thị dropdown
         cbbCustomer.showPopup();
+    }
+    
+    private boolean paid(boolean shouldClear){
+        // Kiểm tra xem có hoá đơn được chọn không
+        if (currentHoaDonId <= 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để thanh toán!");
+            return false;
+        }
+
+        // Kiểm tra giỏ hàng có sản phẩm không
+        if (listCart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
+            return false;
+        }
+
+        try {
+            // Lấy giá trị từ các text field
+            String maGiamGia = txtSale.getText().trim();
+            String tongTienStr = txtSumMoney.getText().trim().replace(",", "");
+            String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
+            String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
+            String tienThuaStr = txtChange.getText().trim().replace(",", "");
+
+            // Validate và chuyển đổi sang BigDecimal
+            BigDecimal tongTien = tongTienStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tongTienStr);
+            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
+            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
+            BigDecimal tienThua = tienThuaStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThuaStr);
+
+            // Kiểm tra tiền khách đưa >= tiền cần thanh toán
+            if (tienNhan.compareTo(tienThanhToan) < 0) {
+                JOptionPane.showMessageDialog(this, "Tiền khách đưa phải lớn hơn hoặc bằng tiền cần thanh toán!");
+                return false;
+            }
+
+            // Xác nhận thanh toán
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Xác nhận thanh toán hoá đơn #" + currentHoaDonId + "?\n"
+                    + "Tổng tiền: " + tongTien + "\n"
+                    + "Tiền thanh toán: " + tienThanhToan + "\n"
+                    + "Tiền khách đưa: " + tienNhan + "\n"
+                    + "Tiền thừa: " + tienThua,
+                    "Xác nhận thanh toán",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Gọi repository để thanh toán hoá đơn
+                boolean success = hdRepo.payInvoice(currentHoaDonId,
+                        maGiamGia.isEmpty() ? null : maGiamGia,
+                        tongTien, tienThanhToan, tienNhan, tienThua);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thành công!");
+
+                    // Reload các bảng
+                    loadTableUnpaid();
+                    loadTablePaid();
+                    
+                    if (shouldClear) {
+                        clearForm();
+                    }
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thất bại!");
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho các trường tiền!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi thanh toán: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void exportToPDF() {
+        String maHD = txtIdInvoice.getText();
+        String tenKH = ((javax.swing.JTextField) cbbCustomer.getEditor().getEditorComponent()).getText();
+        String tongTien = txtMoneyPaid.getText();
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Lưu Hóa Đơn PDF");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files (*.pdf)", "pdf"));
+        
+        String defaultName = "HD_" + maHD + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf";
+        fileChooser.setSelectedFile(new File(defaultName));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            String path = file.getAbsolutePath();
+            if (!path.toLowerCase().endsWith(".pdf")) path += ".pdf";
+            
+            Document document = new Document();
+            try (FileOutputStream fos = new FileOutputStream(path)) {
+                PdfWriter.getInstance(document, fos);
+                document.open();
+
+                com.itextpdf.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+                Paragraph title = new Paragraph("HOA DON BAN HANG", titleFont);
+                title.setAlignment(Element.ALIGN_CENTER);
+                document.add(title);
+                document.add(new Paragraph(" "));
+
+                document.add(new Paragraph("Ma Hoa Don: " + maHD));
+                document.add(new Paragraph("Khach Hang: " + tenKH));
+                document.add(new Paragraph("Ngay xuat: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))));
+                document.add(new Paragraph(" "));
+
+                PdfPTable pdfTable = new PdfPTable(tblCart.getColumnCount());
+                pdfTable.setWidthPercentage(100);
+
+                for (int i = 0; i < tblCart.getColumnCount(); i++) pdfTable.addCell(tblCart.getColumnName(i));
+
+                for (int r = 0; r < tblCart.getRowCount(); r++) {
+                    for (int c = 0; c < tblCart.getColumnCount(); c++) {
+                        Object val = tblCart.getValueAt(r, c);
+                        pdfTable.addCell(val != null ? val.toString() : "");
+                    }
+                }
+                document.add(pdfTable);
+                document.add(new Paragraph(" "));
+                document.add(new Paragraph("Tong thanh toan: " + tongTien + " VND"));
+
+                document.close();
+                JOptionPane.showMessageDialog(this, "Đã xuất hóa đơn PDF thành công!");
+
+                if (java.awt.Desktop.isDesktopSupported()) {
+                    java.awt.Desktop.getDesktop().open(new File(path));
+                }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi ghi file PDF: " + e.getMessage());
+            }
+        }
     }
 
     private void clearForm() {
@@ -1815,107 +1956,14 @@ public class BanHangView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
-        // Kiểm tra xem có hoá đơn được chọn không
-        if (currentHoaDonId <= 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để thanh toán!");
-            return;
-        }
-
-        // Kiểm tra giỏ hàng có sản phẩm không
-        if (listCart.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
-            return;
-        }
-
-        try {
-            // Lấy giá trị từ các text field
-            String maGiamGia = txtSale.getText().trim();
-            String tongTienStr = txtSumMoney.getText().trim().replace(",", "");
-            String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
-            String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
-            String tienThuaStr = txtChange.getText().trim().replace(",", "");
-
-            // Validate và chuyển đổi sang BigDecimal
-            BigDecimal tongTien = tongTienStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tongTienStr);
-            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
-            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
-            BigDecimal tienThua = tienThuaStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThuaStr);
-
-            // Kiểm tra tiền khách đưa >= tiền cần thanh toán
-            if (tienNhan.compareTo(tienThanhToan) < 0) {
-                JOptionPane.showMessageDialog(this, "Tiền khách đưa phải lớn hơn hoặc bằng tiền cần thanh toán!");
-                return;
-            }
-
-            // Xác nhận thanh toán
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "Xác nhận thanh toán hoá đơn #" + currentHoaDonId + "?\n"
-                    + "Tổng tiền: " + tongTien + "\n"
-                    + "Tiền thanh toán: " + tienThanhToan + "\n"
-                    + "Tiền khách đưa: " + tienNhan + "\n"
-                    + "Tiền thừa: " + tienThua,
-                    "Xác nhận thanh toán",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                // Gọi repository để thanh toán hoá đơn
-                boolean success = hdRepo.payInvoice(currentHoaDonId,
-                        maGiamGia.isEmpty() ? null : maGiamGia,
-                        tongTien, tienThanhToan, tienNhan, tienThua);
-
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thành công!");
-
-                    // Reload các bảng
-                    loadTableUnpaid();
-                    loadTablePaid();
-                    loadTableCart(0);
-
-                    // Reset form
-                    txtIdInvoice.setText("");
-                    isSelectingCustomer = true;
-                    cbbCustomer.getEditor().setItem("");
-                    isSelectingCustomer = false;
-                    txtTimeCreate.setText("");
-                    txtSumMoney.setText("");
-                    txtSale.setText("");
-                    txtMoneyPaid.setText("");
-                    txtGiveMoney.setText("");
-                    txtChange.setText("");
-
-                    // Reset các biến và trạng thái nút
-                    currentHoaDonId = -1;
-                    kh = null;
-                    cbbCustomer.setModel(new DefaultComboBoxModel<>());
-                    btnAdd.setEnabled(false);
-                    btnCreateInvoice.setEnabled(true);
-                    btnSave.setEnabled(false);
-                    btnPaid.setEnabled(false);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Thanh toán hoá đơn thất bại!");
-                }
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho các trường tiền!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi thanh toán: " + e.getMessage());
-            e.printStackTrace();
-        }
+        paid(true);
     }//GEN-LAST:event_btnPaidActionPerformed
 
     private void btnIssueIvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIssueIvoiceActionPerformed
-        if (currentHoaDonId <= 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hoá đơn để xuất!");
-            return;
+        if (paid(false)) { // Thanh toán thành công nhưng chưa xoá form
+            exportToPDF(); // Xuất file PDF
+            clearForm();   // Xoá trắng form sau khi in xong
         }
-
-        // Kiểm tra giỏ hàng có sản phẩm không
-        if (listCart.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi xuất hóa đơn.");
-            return;
-        }
-
-        JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
     }//GEN-LAST:event_btnIssueIvoiceActionPerformed
 
     private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPaidMouseClicked

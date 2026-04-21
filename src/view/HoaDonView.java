@@ -8,7 +8,7 @@ import java.awt.Component;
 import java.text.DecimalFormat;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.io.File;
 import java.io.FileOutputStream;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Element;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -369,10 +375,19 @@ public class HoaDonView extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tblHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDonMouseClicked
+        // Đảm bảo lấy đúng index kể cả khi bảng đã được sắp xếp (sort) hoặc lọc (filter)
         int row = tblHoaDon.getSelectedRow();
-        if (row != -1) {
-            int hoaDonId = (int) tblHoaDon.getValueAt(row, 0);
-            loadTableHoaDonChiTiet(hoaDonId);
+        if (row >= 0) {
+            try {
+                // Lấy ID hóa đơn từ cột 0
+                Object idObj = tblHoaDon.getValueAt(row, 0);
+                int hoaDonId = Integer.parseInt(idObj.toString());
+                
+                // Hiển thị hóa đơn chi tiết vào bảng tblHoaDonChiTiet
+                loadTableHoaDonChiTiet(hoaDonId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }//GEN-LAST:event_tblHoaDonMouseClicked
 
@@ -443,7 +458,82 @@ public class HoaDonView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnLamMoiActionPerformed
 
     private void btnInHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInHDActionPerformed
-        // TODO add your handling code here:
+        int row = tblHoaDon.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để in PDF!");
+            return;
+        }
+
+        // Lấy thông tin cơ bản từ bảng hóa đơn tổng quát
+        String maHD = tblHoaDon.getValueAt(row, 0).toString();
+        String tenKH = tblHoaDon.getValueAt(row, 2).toString();
+        String tongTien = tblHoaDon.getValueAt(row, 3).toString();
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Lưu Hóa Đơn PDF");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files (*.pdf)", "pdf"));
+        
+        // Tự động tạo tên file dựa trên mã hóa đơn
+        String defaultName = "HD_" + maHD + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf";
+        fileChooser.setSelectedFile(new File(defaultName));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            String path = file.getAbsolutePath();
+            if (!path.toLowerCase().endsWith(".pdf")) {
+                path += ".pdf";
+            }
+            
+            Document document = new Document();
+            try (FileOutputStream fos = new FileOutputStream(path)) {
+                PdfWriter.getInstance(document, fos);
+                document.open();
+
+                // Thêm tiêu đề
+                com.itextpdf.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+                Paragraph title = new Paragraph("HOA DON BAN HANG", titleFont);
+                title.setAlignment(Element.ALIGN_CENTER);
+                document.add(title);
+                document.add(new Paragraph(" ")); // Dòng trống
+
+                // Thêm thông tin hóa đơn
+                document.add(new Paragraph("Ma Hoa Don: " + maHD));
+                document.add(new Paragraph("Khach Hang: " + tenKH));
+                document.add(new Paragraph("Ngay xuat: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))));
+                document.add(new Paragraph(" "));
+
+                // Tạo bảng trong PDF từ tblHoaDonChiTiet
+                PdfPTable pdfTable = new PdfPTable(tblHoaDonChiTiet.getColumnCount());
+                pdfTable.setWidthPercentage(100);
+
+                // Thêm Header cho bảng PDF
+                for (int i = 0; i < tblHoaDonChiTiet.getColumnCount(); i++) {
+                    pdfTable.addCell(tblHoaDonChiTiet.getColumnName(i));
+                }
+
+                // Thêm dữ liệu từ bảng chi tiết vào PDF
+                for (int r = 0; r < tblHoaDonChiTiet.getRowCount(); r++) {
+                    for (int c = 0; c < tblHoaDonChiTiet.getColumnCount(); c++) {
+                        Object val = tblHoaDonChiTiet.getValueAt(r, c);
+                        pdfTable.addCell(val != null ? val.toString() : "");
+                    }
+                }
+                document.add(pdfTable);
+                document.add(new Paragraph(" "));
+                document.add(new Paragraph("Tong thanh toan: " + tongTien + " VND"));
+
+                document.close();
+                JOptionPane.showMessageDialog(this, "Đã xuất hóa đơn PDF thành công!");
+
+                // Mở file ngay lập tức
+                if (java.awt.Desktop.isDesktopSupported()) {
+                    java.awt.Desktop.getDesktop().open(new File(path));
+                }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi ghi file PDF: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_btnInHDActionPerformed
 
     private void btnXuatHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatHDActionPerformed
@@ -456,6 +546,10 @@ public class HoaDonView extends javax.swing.JPanel {
         fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
         
+        // Đảm bảo set tên file TRƯỚC khi mở dialog
+        String fileName = "DanhSachHoaDon_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
+        fileChooser.setSelectedFile(new File(fileName));
+
         int userSelection = fileChooser.showSaveDialog(this);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -508,10 +602,17 @@ public class HoaDonView extends javax.swing.JPanel {
                 // Ghi file
                 try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
                     workbook.write(fileOut);
-                    JOptionPane.showMessageDialog(this, "Xuất hóa đơn ra Excel thành công!");
+                    
+                    // Thông báo và hỏi người dùng có muốn mở file không
+                    int open = JOptionPane.showConfirmDialog(this, "Xuất hóa đơn ra Excel thành công! Bạn có muốn mở file ngay không?", "Thành công", JOptionPane.YES_NO_OPTION);
+                    if (open == JOptionPane.YES_OPTION && java.awt.Desktop.isDesktopSupported()) {
+                        java.awt.Desktop.getDesktop().open(new File(filePath));
+                    }
                 }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + e.getMessage());
+            } catch (Throwable e) {
+                // Sử dụng Throwable để bắt cả lỗi thiếu thư viện JAR (NoClassDefFoundError)
+                JOptionPane.showMessageDialog(this, "Lỗi nghiêm trọng khi xuất file: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_btnXuatHDActionPerformed
