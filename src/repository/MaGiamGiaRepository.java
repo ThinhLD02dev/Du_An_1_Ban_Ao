@@ -228,4 +228,19 @@ public class MaGiamGiaRepository {
         }
         return false;
     }
+
+    public List<Integer> getProductIdsByVoucherId(int voucherId) {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT quan_ao_id FROM ma_giam_gia_san_pham WHERE ma_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, voucherId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(rs.getInt("quan_ao_id"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

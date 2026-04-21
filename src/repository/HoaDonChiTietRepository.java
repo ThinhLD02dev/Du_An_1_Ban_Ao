@@ -25,7 +25,7 @@ public class HoaDonChiTietRepository {
 
     public List<Map<String, Object>> getAllByCart(int hoaDonId) {
         List<Map<String, Object>> list = new ArrayList<>();
-        String sql = " SELECT hdct.id, hdct.quan_ao_chi_tiet_id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, hdct.so_luong, qa.gia_ban, hdct.tong_gia "
+        String sql = " SELECT hdct.id, hdct.quan_ao_chi_tiet_id, qa.id as san_pham_id, qa.ten_ao, kt.ten_kich_thuoc, ms.ten_mau, hdct.so_luong, qa.gia_ban, hdct.tong_gia "
                 + " FROM hoa_don_chi_tiet hdct "
                 + " JOIN quan_ao_chi_tiet qact ON hdct.quan_ao_chi_tiet_id = qact.id "
                 + " JOIN quan_ao qa ON qact.quan_ao_id = qa.id "
@@ -33,12 +33,15 @@ public class HoaDonChiTietRepository {
                 + " JOIN mau_sac ms ON qact.mau_sac_id = ms.id "
                 + " WHERE hdct.hoa_don_id = ? ";
 
-        try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DbConnection.getConnection(); 
+                PreparedStatement ps = con.prepareStatement(sql)
+                ){
             ps.setInt(1, hoaDonId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
                     row.put("id", rs.getInt("id"));
+                    row.put("sanPhamId", rs.getInt("san_pham_id"));
                     row.put("sanPhamChiTietId", rs.getInt("quan_ao_chi_tiet_id"));
                     row.put("tenAo", rs.getString("ten_ao"));
                     row.put("tenKichThuoc", rs.getString("ten_kich_thuoc"));
@@ -132,7 +135,7 @@ public class HoaDonChiTietRepository {
         }
         return false;
     }
-
+    
     public boolean deleteAllCartItems(int hoaDonId) {
         String sql = "DELETE FROM hoa_don_chi_tiet WHERE hoa_don_id = ?";
         try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -151,10 +154,8 @@ public class HoaDonChiTietRepository {
             ps.setInt(2, sanPhamChiTietId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("Error deleting from cart: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
     }
-
 }
