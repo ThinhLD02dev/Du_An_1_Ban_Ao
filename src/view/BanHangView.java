@@ -1903,21 +1903,6 @@ public class BanHangView extends javax.swing.JPanel {
         customerDialog.setVisible(true);
     }
 
-    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = tblPaid.getSelectedRow();
-        if (row >= 0) {
-            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
-            currentHoaDonId = hoaDonId;
-            btnAdd.setEnabled(false);
-            btnCreateInvoice.setEnabled(false);
-            btnSave.setEnabled(false);
-            btnPaid.setEnabled(false);
-        }
-    }
-// Add these helper methods to BanHangView:
-
     private int toInteger(Object obj, int defaultValue) {
         if (obj == null) {
             return defaultValue;
