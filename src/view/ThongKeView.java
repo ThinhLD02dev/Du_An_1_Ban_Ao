@@ -16,6 +16,7 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 
 public class ThongKeView extends JPanel {
 
@@ -35,14 +36,14 @@ public class ThongKeView extends JPanel {
         loadData();
     }
 
-    // ================= TOP (CARD) =================
+    // ================= TOP =================
     private JPanel createTop() {
         JPanel pn = new JPanel(new BorderLayout());
         pn.setBorder(new EmptyBorder(10,10,10,10));
-        pn.setBackground(new Color(240,242,245));
+        pn.setBackground(getBackground());
 
         JPanel cards = new JPanel(new GridLayout(1,4,10,0));
-        cards.setBackground(pn.getBackground());
+        cards.setBackground(getBackground());
 
         cards.add(createCard("💰 Doanh thu", c -> lblRevenue = c));
         cards.add(createCard("🧾 Đơn hàng", c -> lblOrders = c));
@@ -82,7 +83,7 @@ public class ThongKeView extends JPanel {
     private JPanel createCenter() {
         JPanel main = new JPanel(new BorderLayout(10,10));
         main.setBorder(new EmptyBorder(0,10,10,10));
-        main.setBackground(new Color(240,242,245));
+        main.setBackground(getBackground());
 
         // Chart
         chartPanel = new JPanel(new BorderLayout());
@@ -100,7 +101,7 @@ public class ThongKeView extends JPanel {
         return main;
     }
 
-    // ================= LOAD DATA =================
+    // ================= LOAD =================
     private void loadData() {
         loadStats();
         loadTable();
@@ -168,7 +169,7 @@ public class ThongKeView extends JPanel {
                         rs.getInt(2),
                         rs.getString(3),
                         rs.getInt(4),
-                        rs.getLong(5)
+                        df.format(rs.getLong(5)) + " đ"
                 });
             }
 
@@ -179,7 +180,7 @@ public class ThongKeView extends JPanel {
         }
     }
 
-    // ================= CHART (WEB ADMIN STYLE) =================
+    // ================= CHART =================
     private void loadChart() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -223,30 +224,23 @@ public class ThongKeView extends JPanel {
         plot.setBackgroundPaint(Color.WHITE);
         plot.setRangeGridlinePaint(new Color(230,230,230));
 
-        // ===== FIX TRỤC Y =====
+        // Trục Y
         NumberAxis axis = (NumberAxis) plot.getRangeAxis();
         axis.setNumberFormatOverride(new DecimalFormat("#,###"));
-        axis.setLabelFont(new Font("Segoe UI", Font.BOLD, 12));
 
-        // ===== STYLE CỘT =====
-        BarRenderer renderer = new BarRenderer() {
-            @Override
-            public Paint getItemPaint(int row, int column) {
-                return new GradientPaint(
-                        0, 0, new Color(52,152,219),
-                        0, 300, new Color(41,128,185)
-                );
-            }
-        };
-
+        // Renderer KHÔNG dùng anonymous class
+        BarRenderer renderer = new BarRenderer();
+        renderer.setSeriesPaint(0, new GradientPaint(
+                0, 0, new Color(52,152,219),
+                0, 300, new Color(41,128,185)
+        ));
         renderer.setShadowVisible(false);
         renderer.setMaximumBarWidth(0.08);
 
-        // ===== TOOLTIP =====
-        renderer.setDefaultToolTipGenerator((d, r, c) -> {
-            Number v = d.getValue(r,c);
-            return "💰 " + df.format(v) + " VNĐ";
-        });
+        // Tooltip
+        renderer.setDefaultToolTipGenerator(
+                new StandardCategoryToolTipGenerator()
+        );
 
         plot.setRenderer(renderer);
 

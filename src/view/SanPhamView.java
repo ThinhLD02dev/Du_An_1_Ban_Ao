@@ -195,13 +195,13 @@ public class SanPhamView extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn thương hiệu");
             return false;
         }
-        
-        if(txtGiaBan.getText().trim().isEmpty()){
+
+        if (txtGiaBan.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Giá bán không được để trống");
             txtGiaBan.requestFocus();
             return false;
         }
-        
+
         try {
             double giaBan = Double.parseDouble(txtGiaBan.getText().replace(",", ""));
             if (giaBan <= 0) {
@@ -259,17 +259,17 @@ public class SanPhamView extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
-    
+
     public void timTheoTen() {
-    DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
-    model.setRowCount(0);
+        DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
+        model.setRowCount(0);
 
-    String ten = txtTimKiem.getText();
-    
-    try {
-        Connection con = DbConnection.getConnection();
+        String ten = txtTimKiem.getText();
 
-        String sql = """
+        try {
+            Connection con = DbConnection.getConnection();
+
+            String sql = """
         SELECT 
                  qa.id,
                  qa.ma_sp,
@@ -303,43 +303,44 @@ public class SanPhamView extends javax.swing.JPanel {
                  qa.trang_thai
         """;
 
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setString(1, "%" + ten + "%");
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, "%" + ten + "%");
 
-        ResultSet rs = ps.executeQuery();
-        boolean coDuLieu = false;
+            ResultSet rs = ps.executeQuery();
+            boolean coDuLieu = false;
 
-        while (rs.next()) {
-            coDuLieu = true;
-            model.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("ma_sp"),
-                rs.getString("ten_ao"),
-                rs.getString("mo_ta"),
-                rs.getDate("ngay_tao"),
-                rs.getString("ten_chat_lieu"),
-                rs.getString("ten_thuong_hieu"),
-                rs.getInt("so_luong"),
-                df.format(rs.getDouble("gia_ban"))
-            });
+            while (rs.next()) {
+                coDuLieu = true;
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("ma_sp"),
+                    rs.getString("ten_ao"),
+                    rs.getString("mo_ta"),
+                    rs.getDate("ngay_tao"),
+                    rs.getString("ten_chat_lieu"),
+                    rs.getString("ten_thuong_hieu"),
+                    rs.getInt("so_luong"),
+                    df.format(rs.getDouble("gia_ban"))
+                });
+            }
+            if (!coDuLieu) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (!coDuLieu) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm!");
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
+
     public void timTheoMa() {
-    DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
-    model.setRowCount(0);
+        DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
+        model.setRowCount(0);
 
-    String ma = txtTimKiem.getText();
+        String ma = txtTimKiem.getText();
 
-    try {
-        Connection con = DbConnection.getConnection();
-        String sql = """
+        try {
+            Connection con = DbConnection.getConnection();
+            String sql = """
         SELECT 
         qa.id,
         qa.ma_sp,
@@ -373,34 +374,34 @@ public class SanPhamView extends javax.swing.JPanel {
         qa.trang_thai
         """;
 
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setString(1, "%" + ma + "%");
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, "%" + ma + "%");
 
-        ResultSet rs = ps.executeQuery();
-        boolean coDuLieu = false;
+            ResultSet rs = ps.executeQuery();
+            boolean coDuLieu = false;
 
-        while (rs.next()) {
-            coDuLieu = true;
-            model.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("ma_sp"),
-                rs.getString("ten_ao"),
-                rs.getString("mo_ta"),
-                rs.getDate("ngay_tao"),
-                rs.getString("ten_chat_lieu"),
-                rs.getString("ten_thuong_hieu"),
-                rs.getInt("so_luong"),
-                df.format(rs.getDouble("gia_ban"))
-            });
+            while (rs.next()) {
+                coDuLieu = true;
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("ma_sp"),
+                    rs.getString("ten_ao"),
+                    rs.getString("mo_ta"),
+                    rs.getDate("ngay_tao"),
+                    rs.getString("ten_chat_lieu"),
+                    rs.getString("ten_thuong_hieu"),
+                    rs.getInt("so_luong"),
+                    df.format(rs.getDouble("gia_ban"))
+                });
+            }
+            if (!coDuLieu) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (!coDuLieu) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm!");
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
 
     public String getMaSp() {
         String maSp = txtMasp.getText();
@@ -419,16 +420,36 @@ public class SanPhamView extends javax.swing.JPanel {
         loadTable();
     }
 
+    private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnHeader.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnHeader.removeAll();
+
+        // Thêm lại label vào giữa
+        pnHeader.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnHeader.revalidate();
+        pnHeader.repaint();
+    }
+
     /**
      * Creates new form ProductView
      */
     Date date = Date.valueOf(LocalDate.now());
+
     public SanPhamView() {
         initComponents();
         loadChatLieu();
         loadThuongHieu();
         loadTable();
         dateNgayTao.setDate(date);
+        UI1();
     }
 
     /**
@@ -476,17 +497,18 @@ public class SanPhamView extends javax.swing.JPanel {
         pnHeader.setPreferredSize(new java.awt.Dimension(1015, 60));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("PRODUCT");
+        jLabel1.setText("QUẢN LÝ SẢN PHẨM");
 
         javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
         pnHeader.setLayout(pnHeaderLayout);
         pnHeaderLayout.setHorizontalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnHeaderLayout.createSequentialGroup()
-                .addGap(379, 379, 379)
+                .addGap(363, 363, 363)
                 .addComponent(jLabel1)
-                .addContainerGap(565, Short.MAX_VALUE))
+                .addContainerGap(433, Short.MAX_VALUE))
         );
         pnHeaderLayout.setVerticalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

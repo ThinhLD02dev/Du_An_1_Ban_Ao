@@ -47,6 +47,7 @@ public class HoaDonView extends javax.swing.JPanel {
     public HoaDonView() {
         initComponents();
         loadTableInvoice();
+        UI1();
         dateEnd.setDate(date);
         dateEnd.setMaxSelectableDate(date);
         dateEnd.setDateFormatString("dd/MM/yyyy");
@@ -74,7 +75,23 @@ public class HoaDonView extends javax.swing.JPanel {
         });
         
     }
-    
+    private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnHeader.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnHeader.removeAll();
+
+        // Thêm lại label vào giữa
+        pnHeader.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnHeader.revalidate();
+        pnHeader.repaint();
+    }
     public void loadTableInvoice() {
         DefaultTableModel model = (DefaultTableModel) tblHoaDon.getModel();
         tblHoaDon.setDefaultEditor(Object.class, null);
@@ -153,16 +170,17 @@ public class HoaDonView extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("RECEIPT MANAGEMENT");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("QUẢN LÝ HÓA ĐƠN");
 
         javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
         pnHeader.setLayout(pnHeaderLayout);
         pnHeaderLayout.setHorizontalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnHeaderLayout.createSequentialGroup()
-                .addGap(293, 293, 293)
+                .addGap(341, 341, 341)
                 .addComponent(jLabel1)
-                .addContainerGap(465, Short.MAX_VALUE))
+                .addContainerGap(471, Short.MAX_VALUE))
         );
         pnHeaderLayout.setVerticalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

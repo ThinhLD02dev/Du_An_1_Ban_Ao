@@ -25,6 +25,7 @@ import repository.MaGiamGiaRepository;
  * @author LHH05
  */
 public class GiamGiaView extends javax.swing.JPanel {
+
     private final DotGiamGiaRepository dotGiamGiaRepo = new DotGiamGiaRepository();
     private final MaGiamGiaRepository maGiamGiaRepo = new MaGiamGiaRepository();
     private final List<Map<String, Object>> listDotGiamGia = new ArrayList<>();
@@ -41,19 +42,20 @@ public class GiamGiaView extends javax.swing.JPanel {
     private final DecimalFormat df = new DecimalFormat("#,###");
     private boolean isSelectingSP = false;
     private boolean isSelectingSPVoucher = false;
-    
+
     SpinnerNumberModel SpnModel = new SpinnerNumberModel();
-    
+
     public GiamGiaView() {
         initComponents();
+        UI1();
         dcNgayBatDau.getJCalendar().setMinSelectableDate(new Date());
         dcNgayKetThuc.getJCalendar().setMinSelectableDate(new Date());
         dcNgayMaBD.getJCalendar().setMinSelectableDate(new Date());
         dcNgayMaKT.getJCalendar().setMinSelectableDate(new Date());
-        
+
         // Cấu hình ban đầu cho Spinner giá trị
         spnGiaTri1.setModel(new SpinnerNumberModel(1, 0, 100, 1));
-        
+
         // Khởi tạo Timer debounce cho tìm kiếm sản phẩm (300ms)
         searchTimer = new Timer(300, e -> doProductSearch());
         searchTimer.setRepeats(false);
@@ -112,7 +114,7 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         loadDotGiamGiaTable();
         loadTableSanPhamGiamGia();
-        loadTableMaGiamGia();     
+        loadTableMaGiamGia();
         loadTableMaGiamGiaSanPham();
 
         rdbPhanTram.addActionListener(e -> {
@@ -134,6 +136,24 @@ public class GiamGiaView extends javax.swing.JPanel {
             cbbSanPhamApDung.setEnabled(false);
         });
 
+    }
+
+    private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnHeader.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnHeader.removeAll();
+
+        // Thêm lại label vào giữa
+        pnHeader.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnHeader.revalidate();
+        pnHeader.repaint();
     }
 
     /**
@@ -222,7 +242,7 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("DISCOUNT MANAGEMENT ");
+        jLabel1.setText("QUẢN LÝ MÃ GIẢM GIÁ");
 
         javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
         pnHeader.setLayout(pnHeaderLayout);
@@ -231,7 +251,7 @@ public class GiamGiaView extends javax.swing.JPanel {
             .addGroup(pnHeaderLayout.createSequentialGroup()
                 .addGap(255, 255, 255)
                 .addComponent(jLabel1)
-                .addContainerGap(340, Short.MAX_VALUE))
+                .addContainerGap(384, Short.MAX_VALUE))
         );
         pnHeaderLayout.setVerticalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -743,7 +763,7 @@ public class GiamGiaView extends javax.swing.JPanel {
         Map<String, Object> data = listDotGiamGia.get(row);
         selectedDotGiamGiaId = (Integer) data.get("dotGiamId");
         // Lưu ý: selectedSanPhamId sẽ không còn quan trọng nếu bạn áp dụng cho nhiều SP
-        
+
         txtTenDotGiam.setText(data.get("tenDot") != null ? (String) data.get("tenDot") : "");
         Integer giaTriValue = (Integer) data.get("giaTri");
         spnGiaTri1.setValue(giaTriValue != null ? giaTriValue : 1);
@@ -767,7 +787,7 @@ public class GiamGiaView extends javax.swing.JPanel {
         selectedMaGiamGiaId = (Integer) data.get("id");
 
         txtMa.setText(data.get("ma") != null ? (String) data.get("ma") : "");
-        
+
         Integer loaiGiam = (Integer) data.get("loaiGiam");
         if (loaiGiam != null && loaiGiam == 1) { // 1 là Phần trăm
             rdbPhanTram.setSelected(true);
@@ -776,7 +796,7 @@ public class GiamGiaView extends javax.swing.JPanel {
             rdbCoDinh.setSelected(true);
             spnGiaTri2.setModel(new SpinnerNumberModel(100_000, 1, 100_000_000, 100_000));
         }
-        
+
         Object giaTriObj = data.get("giaTri");
         if (giaTriObj != null) {
             // Chuyển đổi giá trị về kiểu int để set vào Spinner
@@ -825,7 +845,7 @@ public class GiamGiaView extends javax.swing.JPanel {
 
     private void btnLamMoiDotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiDotActionPerformed
         clearDotGiamGiaForm();
-        loadDotGiamGiaTable();        
+        loadDotGiamGiaTable();
     }//GEN-LAST:event_btnLamMoiDotActionPerformed
 
     private void btnTaoDotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoDotActionPerformed
@@ -962,22 +982,22 @@ public class GiamGiaView extends javax.swing.JPanel {
     private void loadTableMaGiamGia() {
         DefaultTableModel model = (DefaultTableModel) tblMaGiamGia.getModel();
         model.setRowCount(0);
-        
+
         listMaGiamGia.clear();
         listMaGiamGia.addAll(maGiamGiaRepo.getAll());
-        
+
         for (Map<String, Object> m : listMaGiamGia) {
             Integer loaiGiamVal = (Integer) m.get("loaiGiam");
             int dangGiam = loaiGiamVal != null ? loaiGiamVal : 0;
             String loaiGiamStr = (dangGiam == 1) ? "%" : "VNĐ";
-            
-            String loaiAp = (int)m.get("loaiApDung") == 1 ? "Sản phẩm" : "Hóa đơn";
-            String status = (int)m.get("trangThai") == 1 ? "Khả dụng" : "Ngừng";
-            
+
+            String loaiAp = (int) m.get("loaiApDung") == 1 ? "Sản phẩm" : "Hóa đơn";
+            String status = (int) m.get("trangThai") == 1 ? "Khả dụng" : "Ngừng";
+
             // Format hiển thị giá trị: Nếu là tiền thì dùng df, nếu % thì giữ nguyên
-            String hienThiGiaTri = (dangGiam == 1) 
-                                 ? (m.get("giaTri") != null ? m.get("giaTri").toString() + "%" : "0%")
-                                 : (m.get("giaTri") != null ? df.format(m.get("giaTri")) : "0");
+            String hienThiGiaTri = (dangGiam == 1)
+                    ? (m.get("giaTri") != null ? m.get("giaTri").toString() + "%" : "0%")
+                    : (m.get("giaTri") != null ? df.format(m.get("giaTri")) : "0");
 
             model.addRow(new Object[]{
                 m.get("ma"),
@@ -1043,7 +1063,7 @@ public class GiamGiaView extends javax.swing.JPanel {
         selectedSanPhamIdSearch = null;
         isSelectingSP = true;
         cbbSanPham.setSelectedIndex(-1);
-        ((JTextField)cbbSanPham.getEditor().getEditorComponent()).setText("");
+        ((JTextField) cbbSanPham.getEditor().getEditorComponent()).setText("");
         isSelectingSP = false;
     }
 
@@ -1055,10 +1075,10 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         // 1. Kiểm tra xem mã đã từng được sử dụng trong bất kỳ hóa đơn nào chưa
         if (maGiamGiaRepo.isUsedInAnyInvoice(selectedMaGiamGiaId)) {
-            JOptionPane.showMessageDialog(this, 
-                "Không thể xoá vĩnh viễn! Mã giảm giá này đã có lịch sử sử dụng trong hóa đơn.\n" +
-                "Để đảm bảo tính toàn vẹn dữ liệu, bạn chỉ nên chuyển trạng thái sang 'Ngừng kích hoạt'.", 
-                "Cảnh báo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Không thể xoá vĩnh viễn! Mã giảm giá này đã có lịch sử sử dụng trong hóa đơn.\n"
+                    + "Để đảm bảo tính toàn vẹn dữ liệu, bạn chỉ nên chuyển trạng thái sang 'Ngừng kích hoạt'.",
+                    "Cảnh báo", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1089,7 +1109,7 @@ public class GiamGiaView extends javax.swing.JPanel {
         rdbMaKhaDung.setSelected(true);
         tblMaGiamGia.clearSelection();
         selectedSanPhamIdSearchVoucher = null;
-        ((JTextField)cbbSanPhamApDung.getEditor().getEditorComponent()).setText("");
+        ((JTextField) cbbSanPhamApDung.getEditor().getEditorComponent()).setText("");
         loadTableMaGiamGia();
         loadTableMaGiamGiaSanPham();
     }
@@ -1102,10 +1122,10 @@ public class GiamGiaView extends javax.swing.JPanel {
 
         // 1. Kiểm tra xem đợt giảm giá có đang được áp dụng cho sản phẩm nào không
         if (dotGiamGiaRepo.isCampaignUsed(selectedDotGiamGiaId)) {
-            JOptionPane.showMessageDialog(this, 
-                "Không thể xoá! Đợt giảm giá này đang được áp dụng cho một hoặc nhiều sản phẩm.\n" +
-                "Vui lòng huỷ áp dụng (gỡ bỏ) khỏi các sản phẩm đó trước khi xoá.", 
-                "Cảnh báo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Không thể xoá! Đợt giảm giá này đang được áp dụng cho một hoặc nhiều sản phẩm.\n"
+                    + "Vui lòng huỷ áp dụng (gỡ bỏ) khỏi các sản phẩm đó trước khi xoá.",
+                    "Cảnh báo", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1174,7 +1194,7 @@ public class GiamGiaView extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Số lần dùng phải là số nguyên dương!");
             return;
         }
-        
+
         double giaToiDa = 0;
         double donToiThieu = 0;
         try {
@@ -1184,7 +1204,7 @@ public class GiamGiaView extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Giá trị tối đa và đơn tối thiểu không được âm!");
                 return;
             }
-            
+
             // Logic nghiệp vụ: Nếu giảm theo cố định VNĐ
             if (loaiGiam == 0) {
                 giaToiDa = giaTri; // Giảm tối đa chính là số tiền đó
@@ -1207,11 +1227,11 @@ public class GiamGiaView extends javax.swing.JPanel {
             return;
         }
 
-        int newVoucherId = maGiamGiaRepo.insert(ma, giaTri, loaiGiam, loaiAp, 
-                new java.sql.Date(start.getTime()), 
-                new java.sql.Date(end.getTime()), 
+        int newVoucherId = maGiamGiaRepo.insert(ma, giaTri, loaiGiam, loaiAp,
+                new java.sql.Date(start.getTime()),
+                new java.sql.Date(end.getTime()),
                 soLuong, status, giaToiDa, donToiThieu);
-        
+
         if (newVoucherId > 0) {
             // Nếu áp dụng cho SP cụ thể thì lưu vào bảng trung gian
             if (loaiAp == 1) {
@@ -1256,8 +1276,8 @@ public class GiamGiaView extends javax.swing.JPanel {
         // 2. Kiểm tra overlap với các đợt giảm giá khác
         if (trangThai && dotGiamGiaRepo.hasOverlappingCampaign(ngayBatDau, ngayKetThuc)) {
             int confirm = JOptionPane.showConfirmDialog(this,
-                "Đợt giảm giá này có thể trùng thời gian với các đợt khác đang active.\nBạn có muốn tiếp tục tạo?",
-                "Cảnh báo trùng lặp", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    "Đợt giảm giá này có thể trùng thời gian với các đợt khác đang active.\nBạn có muốn tiếp tục tạo?",
+                    "Cảnh báo trùng lặp", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (confirm != JOptionPane.YES_OPTION) {
                 return;
             }
