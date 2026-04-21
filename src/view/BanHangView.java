@@ -849,8 +849,8 @@ public class BanHangView extends javax.swing.JPanel {
             Object[] row = {
                 item.get("tenAo"),
                 item.get("tenKichThuoc"),
-                item.get("tenMau"),
                 item.get("soLuong"),
+                item.get("tenMau"),                
                 df.format(item.get("donGia")),
                 df.format(item.get("tongGia"))
             };
@@ -876,7 +876,6 @@ public class BanHangView extends javax.swing.JPanel {
                 String tenAo = String.valueOf(sp.getOrDefault("tenAo", ""));
                 String size = String.valueOf(sp.getOrDefault("tenKichThuoc", ""));
                 String mau = String.valueOf(sp.getOrDefault("tenMau", ""));
-                String moTa = String.valueOf(sp.getOrDefault("moTa", ""));
                 Object soLuong = sp.getOrDefault("soLuong", 0);
                 Object giaBan = sp.getOrDefault("giaBan", 0);
 
@@ -884,7 +883,6 @@ public class BanHangView extends javax.swing.JPanel {
                     tenAo,
                     size,
                     mau,
-                    moTa,
                     soLuong,
                     df.format(giaBan)
                 });
