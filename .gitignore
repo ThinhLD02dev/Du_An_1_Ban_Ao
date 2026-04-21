@@ -22,3 +22,16 @@
 hs_err_pid*
 replay_pid*
 /dist/
+
+
+# Build output
+build/
+dist/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
