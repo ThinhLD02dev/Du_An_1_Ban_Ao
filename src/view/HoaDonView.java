@@ -55,6 +55,7 @@ public class HoaDonView extends javax.swing.JPanel {
     public HoaDonView() {
         initComponents();
         loadTableInvoice();
+        UI1();
         dateEnd.setDate(date);
         dateEnd.setMaxSelectableDate(date);
         dateEnd.setDateFormatString("dd/MM/yyyy");
@@ -82,7 +83,23 @@ public class HoaDonView extends javax.swing.JPanel {
         });
         
     }
-    
+    private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnHeader.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnHeader.removeAll();
+
+        // Thêm lại label vào giữa
+        pnHeader.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnHeader.revalidate();
+        pnHeader.repaint();
+    }
     public void loadTableInvoice() {
         DefaultTableModel model = (DefaultTableModel) tblHoaDon.getModel();
         tblHoaDon.setDefaultEditor(Object.class, null);
@@ -140,11 +157,11 @@ public class HoaDonView extends javax.swing.JPanel {
         btnInHD = new javax.swing.JButton();
         btnXuatHD = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        dateStart = new com.toedter.calendar.JDateChooser();
         jLabel3 = new javax.swing.JLabel();
-        dateEnd = new com.toedter.calendar.JDateChooser();
         txtTimKiem = new javax.swing.JTextField();
         btnTimKiem = new javax.swing.JButton();
+        dateStart = new com.toedter.calendar.JDateChooser();
+        dateEnd = new com.toedter.calendar.JDateChooser();
         jPanel5 = new javax.swing.JPanel();
         tblHoaDonKH = new javax.swing.JScrollPane();
         tblHoaDon = new javax.swing.JTable();
@@ -161,16 +178,17 @@ public class HoaDonView extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("RECEIPT MANAGEMENT");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("QUẢN LÝ HÓA ĐƠN");
 
         javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
         pnHeader.setLayout(pnHeaderLayout);
         pnHeaderLayout.setHorizontalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnHeaderLayout.createSequentialGroup()
-                .addGap(293, 293, 293)
+                .addGap(341, 341, 341)
                 .addComponent(jLabel1)
-                .addContainerGap(465, Short.MAX_VALUE))
+                .addContainerGap(471, Short.MAX_VALUE))
         );
         pnHeaderLayout.setVerticalGroup(
             pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,12 +244,12 @@ public class HoaDonView extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dateStart, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addComponent(dateStart, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
+                .addComponent(dateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -247,12 +265,12 @@ public class HoaDonView extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(dateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnTimKiem))
-                    .addComponent(dateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(dateStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(19, 19, 19))
         );

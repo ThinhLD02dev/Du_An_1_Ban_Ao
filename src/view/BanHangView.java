@@ -78,6 +78,7 @@ public class BanHangView extends javax.swing.JPanel {
         initComponents();
         this.idNhanVien = id;
         initializeUI();
+        UI1();
 
         loadTableProduct();
         loadTableUnpaid();
@@ -226,7 +227,7 @@ public class BanHangView extends javax.swing.JPanel {
     private void initComponents() {
 
         jSpinner2 = new javax.swing.JSpinner();
-        jPanel1 = new javax.swing.JPanel();
+        pnHeader = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         pnLeft1 = new javax.swing.JPanel();
@@ -285,31 +286,31 @@ public class BanHangView extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setBackground(new java.awt.Color(74, 144, 226));
-        jPanel1.setPreferredSize(new java.awt.Dimension(1078, 60));
+        pnHeader.setBackground(new java.awt.Color(74, 144, 226));
+        pnHeader.setPreferredSize(new java.awt.Dimension(1078, 60));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("BÁN HÀNG");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnHeaderLayout = new javax.swing.GroupLayout(pnHeader);
+        pnHeader.setLayout(pnHeaderLayout);
+        pnHeaderLayout.setHorizontalGroup(
+            pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnHeaderLayout.createSequentialGroup()
                 .addGap(430, 430, 430)
                 .addComponent(jLabel1)
                 .addContainerGap(505, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        pnHeaderLayout.setVerticalGroup(
+            pnHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnHeaderLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(21, 21, 21))
         );
 
-        add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        add(pnHeader, java.awt.BorderLayout.PAGE_START);
 
         jPanel2.setBackground(new java.awt.Color(245, 247, 250));
         jPanel2.setPreferredSize(new java.awt.Dimension(300, 658));
@@ -802,6 +803,22 @@ public class BanHangView extends javax.swing.JPanel {
             };
             model.addRow(row);
         }
+    }private void UI1() {
+        // Đổi layout header thành BorderLayout
+        pnHeader.setLayout(new java.awt.BorderLayout());
+
+        // Căn giữa label
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        // Xóa hết component cũ (nếu có)
+        pnHeader.removeAll();
+
+        // Thêm lại label vào giữa
+        pnHeader.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        // Cập nhật UI
+        pnHeader.revalidate();
+        pnHeader.repaint();
     }
 
     public void loadTablePaid() {
@@ -1824,7 +1841,6 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1838,6 +1854,7 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lbNotify;
+    private javax.swing.JPanel pnHeader;
     private javax.swing.JPanel pnLeft1;
     private javax.swing.JPanel pnLeft2;
     private javax.swing.JPanel pnLeft3;
