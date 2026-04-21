@@ -59,6 +59,7 @@ public class SanPhamChiTietView extends javax.swing.JDialog {
             txtMasp.requestFocus();
             return false;
         }
+        
 
         if (cbKichThuoc.getSelectedIndex() == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn chất liệu");
