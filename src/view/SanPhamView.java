@@ -118,7 +118,7 @@ public class SanPhamView extends javax.swing.JPanel {
                     rs.getString("ten_chat_lieu"),
                     rs.getString("ten_thuong_hieu"),
                     rs.getInt("so_luong"),
-                    df.format(rs.getBigDecimal("gia_thuc_te")), // Hiển thị giá đã giảm
+                    df.format(rs.getBigDecimal("gia_thuc_te")),
                     rs.getString("ten_dot") == null ? "Không có" : rs.getString("ten_dot"),
                     tt
                 };
@@ -172,12 +172,6 @@ public class SanPhamView extends javax.swing.JPanel {
         if (txtTensp.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tên sản phẩm không được để trống");
             txtTensp.requestFocus();
-            return false;
-        }
-
-        if (txtMoTa.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Mô tả không được để trống");
-            txtMoTa.requestFocus();
             return false;
         }
 
@@ -450,6 +444,7 @@ public class SanPhamView extends javax.swing.JPanel {
         loadTable();
         dateNgayTao.setDate(date);
         UI1();
+        dateNgayTao.setEnabled(false);
     }
 
     /**
@@ -693,13 +688,13 @@ public class SanPhamView extends javax.swing.JPanel {
 
         tblSanPham.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Trạng Thái"
+                "ID", "Mã Sản Phẩm ", "Tên Sản Phẩm", "Mô tả", "Ngày Tạo", "Chất Liệu", "Thương Hiệu", "Số Lượng", "Giá Bán", "Đợt giảm giá", "Trạng Thái"
             }
         ));
         tblSanPham.addMouseListener(new java.awt.event.MouseAdapter() {
