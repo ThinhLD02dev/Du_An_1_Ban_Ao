@@ -405,21 +405,6 @@ public class NhanVienView extends javax.swing.JPanel {
         }
     }
 
-    private void tblNhanVienMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = tblNhanVien.getSelectedRow();
-        if (row < 0) {
-            return;
-        }
-
-        txtTenNV.setText(tblNhanVien.getValueAt(row, 1).toString());
-        txtSDT.setText(tblNhanVien.getValueAt(row, 2).toString());
-        txtEmail.setText(tblNhanVien.getValueAt(row, 3).toString());
-        txtDiaChi.setText(tblNhanVien.getValueAt(row, 4).toString());
-
-        String tt = tblNhanVien.getValueAt(row, 5).toString();
-        cbTrangThai.setSelectedItem(tt); // "Đang Làm" hoặc "Đã Nghỉ"
-    }
-
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -771,13 +756,23 @@ public class NhanVienView extends javax.swing.JPanel {
         //
      * TODO add your handling code here:
     }//GEN-LAST:event_btnThemActionPerformed
-
+  */
     private void tblNhanVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblNhanVienMouseClicked
-        //
-     * TODO add your handling code here:
+     int row = tblNhanVien.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+
+        txtTenNV.setText(tblNhanVien.getValueAt(row, 1).toString());
+        txtSDT.setText(tblNhanVien.getValueAt(row, 2).toString());
+        txtEmail.setText(tblNhanVien.getValueAt(row, 3).toString());
+        txtDiaChi.setText(tblNhanVien.getValueAt(row, 4).toString());
+
+        String tt = tblNhanVien.getValueAt(row, 5).toString();
+        cbTrangThai.setSelectedItem(tt); // "Đang Làm" hoặc "Đã Nghỉ"
     }//GEN-LAST:event_tblNhanVienMouseClicked
 
-     */
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

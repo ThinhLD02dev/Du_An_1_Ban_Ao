@@ -42,6 +42,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.util.Date;
+import util.ValidationUtils;
+import static util.ValidationUtils.toInteger;
 
 /**
  *
@@ -711,20 +713,42 @@ public class BanHangView extends javax.swing.JPanel {
             String tienNhanStr = txtGiveMoney.getText().trim().replace(",", "");
             String tienThanhToanStr = txtMoneyPaid.getText().trim().replace(",", "");
 
-            BigDecimal tienNhan = tienNhanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienNhanStr);
-            BigDecimal tienThanhToan = tienThanhToanStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(tienThanhToanStr);
+            // Validate input
+            if (tienNhanStr.isEmpty() || tienThanhToanStr.isEmpty()) {
+                txtChange.setText("0.00");
+                return;
+            }
+
+            // Validate format
+            if (!tienNhanStr.matches("\\d+(\\.\\d+)?")) {
+                JOptionPane.showMessageDialog(this, "Tiền khách đưa phải là số!");
+                txtGiveMoney.requestFocus();
+                txtChange.setText("0.00");
+                return;
+            }
+
+            BigDecimal tienNhan = new BigDecimal(tienNhanStr);
+            BigDecimal tienThanhToan = new BigDecimal(tienThanhToanStr);
+
+            // Validate negative
+            if (tienNhan.compareTo(BigDecimal.ZERO) < 0) {
+                JOptionPane.showMessageDialog(this, "Tiền khách đưa không thể âm!");
+                txtGiveMoney.requestFocus();
+                txtChange.setText("0.00");
+                return;
+            }
 
             BigDecimal tienThua = tienNhan.subtract(tienThanhToan);
-
-            // Nếu tiền thừa âm thì set về 0
             if (tienThua.compareTo(BigDecimal.ZERO) < 0) {
                 tienThua = BigDecimal.ZERO;
             }
 
-            txtChange.setText(df.format(tienThua));
+            txtChange.setText(ValidationUtils.formatCurrency(tienThua));
         } catch (NumberFormatException e) {
-            // Nếu nhập không phải số, set tiền thừa về 0
-            txtChange.setText("0");
+            JOptionPane.showMessageDialog(this,
+                    "Lỗi: Nhập sai định dạng số!");
+            txtGiveMoney.requestFocus();
+            txtChange.setText("0.00");
         }
     }
 
@@ -1519,36 +1543,100 @@ public class BanHangView extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCreateInvoiceActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        int row = tblProduct.getSelectedRow();
-        if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
-            return;
+        try {
+            int row = tblProduct.getSelectedRow();
+            if (row < 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!");
+                return;
+            }
+
+            if (row >= listSP.size()) {
+                JOptionPane.showMessageDialog(this,
+                        "Sản phẩm không hợp lệ!");
+                return;
+            }
+
+            if (currentHoaDonId <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Vui lòng tạo hoặc chọn một hóa đơn trước!");
+                return;
+            }
+
+            Map<String, Object> product = listSP.get(row);
+            if (product == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Lỗi: Không tìm thấy dữ liệu sản phẩm!");
+                return;
+            }
+
+            int sanPhamChiTietId = toInteger(product.get("id"), -1);
+            if (sanPhamChiTietId <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "ID sản phẩm không hợp lệ!");
+                return;
+            }
+
+            int numberAdd = toInteger(spnNumberAdd.getValue(), 0);
+            if (numberAdd <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Số lượng phải lớn hơn 0!");
+                spnNumberAdd.setValue(1);
+                return;
+            }
+
+            if (numberAdd > 1000) {
+                JOptionPane.showMessageDialog(this,
+                        "Số lượng tối đa là 1000!");
+                spnNumberAdd.setValue(1000);
+                return;
+            }
+
+            // Check stock
+            int soLuongTonKho = toInteger(product.get("soLuong"), 0);
+            if (numberAdd > soLuongTonKho) {
+                JOptionPane.showMessageDialog(this,
+                        String.format("Tồn kho không đủ! Chỉ còn %d sản phẩm",
+                                soLuongTonKho));
+                spnNumberAdd.setValue(soLuongTonKho);
+                return;
+            }
+
+            // Add to cart
+            boolean cartUpdated = false;
+            if (hdctRepo.existsInCart(currentHoaDonId, sanPhamChiTietId)) {
+                cartUpdated = hdctRepo.updateCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
+            } else {
+                cartUpdated = hdctRepo.insertToCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
+            }
+
+            if (!cartUpdated) {
+                JOptionPane.showMessageDialog(this,
+                        "Lỗi khi thêm vào giỏ hàng!");
+                return;
+            }
+
+            // Update stock
+            boolean stockUpdated = spctRepo.updateQuantity(sanPhamChiTietId, -numberAdd);
+            if (!stockUpdated) {
+                // Rollback
+                hdctRepo.deleteFromCart(currentHoaDonId, sanPhamChiTietId);
+                JOptionPane.showMessageDialog(this,
+                        "Lỗi khi cập nhật tồn kho!");
+                return;
+            }
+
+            // Success
+            loadTableCart(currentHoaDonId);
+            loadTableProduct();
+            loadFormInvoice(currentHoaDonId);
+            spnNumberAdd.setValue(1);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Lỗi: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        if (currentHoaDonId <= 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng tạo hoặc chọn một hóa đơn trước khi thêm sản phẩm!");
-            return;
-        }
-
-        int sanPhamChiTietId = (Integer) listSP.get(row).get("id");
-        int numberAdd = (Integer) spnNumberAdd.getValue();
-        if (numberAdd <= 0) {
-            JOptionPane.showMessageDialog(this, "Số lượng thêm phải lớn hơn 0!");
-            return;
-        }
-
-        if (hdctRepo.existsInCart(currentHoaDonId, sanPhamChiTietId)) {
-            hdctRepo.updateCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
-        } else {
-            hdctRepo.insertToCart(currentHoaDonId, sanPhamChiTietId, numberAdd);
-        }
-
-        // Cập nhật số lượng sản phẩm trong kho
-        spctRepo.updateQuantity(sanPhamChiTietId, -numberAdd);
-
-        loadTableCart(currentHoaDonId);
-        loadTableProduct();
-        loadFormInvoice(currentHoaDonId);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
@@ -1705,7 +1793,38 @@ public class BanHangView extends javax.swing.JPanel {
             btnPaid.setEnabled(false);
         }
     }
+// Add these helper methods to BanHangView:
 
+    private int toInteger(Object obj, int defaultValue) {
+        if (obj == null) {
+            return defaultValue;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue();
+        }
+        try {
+            return Integer.parseInt(obj.toString());
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private BigDecimal toBigDecimal(Object obj, BigDecimal defaultValue) {
+        if (obj == null) {
+            return defaultValue;
+        }
+        if (obj instanceof BigDecimal) {
+            return (BigDecimal) obj;
+        }
+        if (obj instanceof Number) {
+            return new BigDecimal(((Number) obj).doubleValue());
+        }
+        try {
+            return new BigDecimal(obj.toString());
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

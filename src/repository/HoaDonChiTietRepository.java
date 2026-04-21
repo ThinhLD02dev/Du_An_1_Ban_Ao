@@ -33,9 +33,7 @@ public class HoaDonChiTietRepository {
                 + " JOIN mau_sac ms ON qact.mau_sac_id = ms.id "
                 + " WHERE hdct.hoa_don_id = ? ";
 
-        try (Connection con = DbConnection.getConnection(); 
-                PreparedStatement ps = con.prepareStatement(sql)
-                ){
+        try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, hoaDonId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -134,13 +132,26 @@ public class HoaDonChiTietRepository {
         }
         return false;
     }
-    
+
     public boolean deleteAllCartItems(int hoaDonId) {
         String sql = "DELETE FROM hoa_don_chi_tiet WHERE hoa_don_id = ?";
         try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, hoaDonId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteFromCart(int hoaDonId, int sanPhamChiTietId) {
+        String sql = "DELETE FROM hoa_don_chi_tiet WHERE hoa_don_id = ? AND quan_ao_chi_tiet_id = ?";
+        try (Connection con = DbConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, hoaDonId);
+            ps.setInt(2, sanPhamChiTietId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.err.println("Error deleting from cart: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
