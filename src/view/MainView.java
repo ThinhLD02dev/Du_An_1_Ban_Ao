@@ -30,7 +30,10 @@ public class MainView extends javax.swing.JFrame {
             btnGiamGia.setEnabled(false);
             btnSanPham.setEnabled(false);
             btnHoaDon.setEnabled(false);
-            
+            btnKhachHang.setEnabled(false);
+            btnThongKe.setEnabled(false);
+            cardLayout.show(pnMain, "banhang");
+ 
         }
     }
     private int vt;
@@ -43,7 +46,7 @@ public class MainView extends javax.swing.JFrame {
         pnMain.setBorder(null);
         this.vt = vaiTro;
         this.id = idNhanVien;
-        loadMain();
+        
         cardLayout = new CardLayout();
         pnMain.setLayout(cardLayout);
 
@@ -54,6 +57,7 @@ public class MainView extends javax.swing.JFrame {
         pnMain.add(wrap(new GiamGiaView()), "giamgia");
         pnMain.add(wrap(new HoaDonView()), "hoadon");
         pnMain.add(wrap(new ThongKeView()), "thongke");
+        loadMain();
         setContentPane(jPanel1);
         this.setSize(1600, 900);
         pnMain.setMinimumSize(new Dimension(0, 0));
