@@ -1768,7 +1768,7 @@ public class BanHangView extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this, "Xuất hoá đơn #" + currentHoaDonId + " thành công!");
     }//GEN-LAST:event_btnIssueIvoiceActionPerformed
 
-    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {                                     
+    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPaidMouseClicked
         int row = tblPaid.getSelectedRow();
         if (row >= 0) {
             int hoaDonId = (int) tblPaid.getValueAt(row, 0);
@@ -1780,7 +1780,7 @@ public class BanHangView extends javax.swing.JPanel {
             btnSave.setEnabled(false);
             btnPaid.setEnabled(false);
         }
-    }
+    }//GEN-LAST:event_tblPaidMouseClicked
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         // Nếu dialog đã tồn tại, dispose nó trước
@@ -1813,20 +1813,6 @@ public class BanHangView extends javax.swing.JPanel {
 
         customerDialog.setLocationRelativeTo(null);
         customerDialog.setVisible(true);
-    }
-
-    private void tblPaidMouseClicked(java.awt.event.MouseEvent evt) {
-        int row = tblPaid.getSelectedRow();
-        if (row >= 0) {
-            int hoaDonId = (int) tblPaid.getValueAt(row, 0);
-            loadTableCart(hoaDonId);
-            loadFormInvoice(hoaDonId);
-            currentHoaDonId = hoaDonId;
-            btnAdd.setEnabled(false);
-            btnCreateInvoice.setEnabled(false);
-            btnSave.setEnabled(false);
-            btnPaid.setEnabled(false);
-        }
     }
 
 
