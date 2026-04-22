@@ -831,8 +831,10 @@ public class GiamGiaView extends javax.swing.JPanel {
         Integer loaiApDung = (Integer) data.get("loaiApDung");
         if (loaiApDung != null && loaiApDung == 1) {
             rdbSanPham.setSelected(true);
+            cbbSanPhamApDung.setEnabled(true);
         } else {
             rdbHoaDon.setSelected(true);
+            cbbSanPhamApDung.setEnabled(false);
         }
 
         dcNgayMaBD.setDate((Date) data.get("ngayBatDau"));
