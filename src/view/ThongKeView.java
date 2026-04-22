@@ -52,10 +52,10 @@ public class ThongKeView extends JPanel {
         JPanel cards = new JPanel(new GridLayout(1, 4, 10, 0));
         cards.setBackground(getBackground());
 
-        cards.add(createCard("💰 Doanh thu", c -> lblRevenue = c));
-        cards.add(createCard("🧾 Đơn hàng", c -> lblOrders = c));
-        cards.add(createCard("📊 Trung bình", c -> lblAvg = c));
-        cards.add(createCard("📦 Sản phẩm", c -> lblProducts = c));
+        cards.add(createCard(" Doanh thu", c -> lblRevenue = c));
+        cards.add(createCard(" Đơn hàng", c -> lblOrders = c));
+        cards.add(createCard(" Trung bình", c -> lblAvg = c));
+        cards.add(createCard(" Sản phẩm", c -> lblProducts = c));
 
         pn.add(cards, BorderLayout.CENTER);
         return pn;

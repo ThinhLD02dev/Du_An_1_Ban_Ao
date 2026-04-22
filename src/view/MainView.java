@@ -31,7 +31,6 @@ public class MainView extends javax.swing.JFrame {
             btnSanPham.setEnabled(false);
             btnHoaDon.setEnabled(false);
             btnKhachHang.setEnabled(false);
-            btnThongKe.setEnabled(false);
             cardLayout.show(pnMain, "banhang");
  
         }
